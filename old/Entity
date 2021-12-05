@@ -1,0 +1,104 @@
+package thewall.engine.twilight.entity;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
+import thewall.engine.twilight.models.TexturedModel;
+import lombok.Getter;
+import thewall.engine.twilight.terrain.Terrain;
+
+@Deprecated(forRemoval = true)
+public abstract class Entity {
+    @Getter
+    private final TexturedModel model;
+
+    private int textureIndex = 0;
+
+    private final Vector3f position;
+    @Getter
+    private final Vector3f rotation = new Vector3f(0, 0, 0);
+    @Getter
+    private float scale;
+
+    private volatile boolean isCollisionDetectionSystemEnabled = false;
+
+
+    private boolean isShowed = true;
+
+    public Entity(TexturedModel texturedModel, int index, Vector3f vector3f, float scale) {
+        this.textureIndex = index;
+        this.model = texturedModel;
+        this.position = vector3f;
+        this.scale = scale;
+    }
+
+    public Entity(TexturedModel texturedModel, Vector3f vector3f, float scale) {
+        this.model = texturedModel;
+        this.position = vector3f;
+        this.scale = scale;
+    }
+
+    public float getTextureXOffset(){
+        int column = textureIndex % model.getModelTexture().getNumberOfRows();
+        return (float) column / (float) model.getModelTexture().getNumberOfRows();
+    }
+
+    public float getTextureYOffset(){
+        int row = textureIndex / model.getModelTexture().getNumberOfRows();
+        return (float) row / (float) model.getModelTexture().getNumberOfRows();
+    }
+
+    public void move(@NotNull Vector3f vector3f){
+
+        float z = vector3f.z + position.z;
+        float y = vector3f.y + position.y;
+        float height = world.getHeightOfTerrain(vector3f.x + position.x, z) + 2;
+        if(y < height) {
+            y = height;
+        }
+
+        position.set(vector3f.x + position.x, y, z);
+    }
+
+    public void move(float x, float y, float z){
+        move(new Vector3f(x, y, z));
+    }
+
+    public void setPosition(Vector3f vector3f){
+        position.set(vector3f);
+    }
+
+    public void setPosition(float x, float y, float z){
+        position.set(new Vector3f(x, y, z));
+    }
+
+    public Vector3f getPosition(){
+        return position;
+    }
+
+    public void enableCollisionSystem(){
+        if(this.isCollisionDetectionSystemEnabled){
+            throw new IllegalStateException("Collision system is already switch on");
+        }
+        this.isCollisionDetectionSystemEnabled = true;
+    }
+
+    public void disableCollisionSystem(){
+        if(!this.isCollisionDetectionSystemEnabled){
+            throw new IllegalStateException("Collision system is already switch off");
+        }
+
+        this.isCollisionDetectionSystemEnabled = false;
+    }
+
+    public void show(){
+        this.isShowed = true;
+    }
+
+    public void hide(){
+        this.isShowed = false;
+    }
+
+    public boolean isHidden(){
+        return !isShowed;
+    }
+}
