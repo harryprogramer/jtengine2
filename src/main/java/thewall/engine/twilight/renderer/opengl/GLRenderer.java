@@ -9,16 +9,14 @@ import org.joml.Vector2i;
 import thewall.engine.twilight.Node;
 import thewall.engine.twilight.RenderQueue;
 import thewall.engine.twilight.ViewPort;
-import thewall.engine.twilight.display.Window;
+import thewall.engine.twilight.display.Display;
 import thewall.engine.twilight.events.endpoints.EndpointHandler;
-import thewall.engine.twilight.entity.Camera;
-import thewall.engine.twilight.entity.Light;
-import thewall.engine.twilight.entity.Spatial;
+import thewall.engine.twilight.spatials.Camera;
+import thewall.engine.twilight.spatials.Light;
+import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.errors.TextureDecoderException;
 import thewall.engine.twilight.material.Material;
 import thewall.engine.twilight.math.Maths;
-import thewall.engine.twilight.renderer.EntityRenderer;
-import thewall.engine.twilight.renderer.MasterRenderer;
 import thewall.engine.twilight.renderer.Renderer;
 import thewall.engine.twilight.renderer.TerrainRenderer;
 import thewall.engine.twilight.renderer.opengl.vao.VAOManager;
@@ -30,7 +28,7 @@ import thewall.engine.twilight.texture.PixelFormat;
 import thewall.engine.twilight.texture.TerrainTexture;
 import thewall.engine.twilight.texture.TerrainTexturePack;
 import thewall.engine.twilight.texture.opengl.GLTextureManager;
-import thewall.engine.twilight.utils.Colour;
+import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.utils.Validation;
 
 import java.awt.image.BufferedImage;
@@ -66,7 +64,7 @@ public class GLRenderer implements Renderer {
     private final GL gl;
     private final GL gl2;
     private final GL gl3;
-    private final Window window;
+    private final Display display;
     private final VAOManager vaoManager;
     private final GLTextureManager textureManager;
 
@@ -79,7 +77,7 @@ public class GLRenderer implements Renderer {
 
     private final EndpointHandler endpointHandler;
 
-    public GLRenderer(GL gl, VAOManager vao, GLTextureManager glTextureManager, Window window, EndpointHandler endpointHandler){
+    public GLRenderer(GL gl, VAOManager vao, GLTextureManager glTextureManager, Display display, EndpointHandler endpointHandler){
         Validation.checkNull(gl);
         Validation.checkNull(vao);
         Validation.checkNull(glTextureManager);
@@ -88,7 +86,7 @@ public class GLRenderer implements Renderer {
         this.gl3 = gl instanceof GL3 ? (GL3) gl : null;
         this.vaoManager = vao;
         this.textureManager = glTextureManager;
-        this.window = window;
+        this.display = display;
         this.endpointHandler = endpointHandler;
 
         String error = "";
@@ -177,7 +175,7 @@ public class GLRenderer implements Renderer {
         gl.glEnable(GL_CULL_FACE);
         gl.glCullFace(GL_BACK);
 
-        Vector2i windowSize = window.getWindowSize();
+        Vector2i windowSize = display.getSize();
         createProjectionMatrix(windowSize.x, windowSize.y, viewPort);
         setViewPort(0, 0, windowSize.x, windowSize.y);
 
@@ -334,9 +332,10 @@ public class GLRenderer implements Renderer {
         terrainShader.loadViewMatrix(camera);
         terrainRenderer.render(terrains);
         terrainShader.stop();
-
          */
         skyboxRender.render(viewPort.getCamera());
+
+        gl.glFlush();
 
         queue.clear();
     }

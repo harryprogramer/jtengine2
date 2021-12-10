@@ -5,8 +5,8 @@ import thewall.engine.twilight.renderer.opengl.GL;
 
 public final class GuiShader extends ShaderProgram{
 
-    private static final String VERTEX_FILE = "gui/guiVertexShader.vert";
-    private static final String FRAGMENT_FILE = "gui/guiFragmentShader.frag";
+    private static final String VERTEX_FILE = "gui/Gui.vert";
+    private static final String FRAGMENT_FILE = "gui/Gui.frag";
 
     private int location_transformationMatrix;
 

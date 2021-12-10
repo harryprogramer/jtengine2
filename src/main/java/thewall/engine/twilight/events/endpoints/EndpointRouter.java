@@ -125,10 +125,9 @@ public abstract class EndpointRouter implements EndpointHandler {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Runnable[] getRoutes(String endpoint) {
         Object obj = routes.get(endpoint);
-        return obj != null ? (Runnable[]) routes.get(endpoint).toArray() : null;
+        return obj != null ? routes.get(endpoint).toArray(new Runnable[0]) : null;
     }
 
     protected abstract void onClose();

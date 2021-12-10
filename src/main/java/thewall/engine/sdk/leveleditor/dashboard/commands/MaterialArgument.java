@@ -2,13 +2,13 @@ package thewall.engine.sdk.leveleditor.dashboard.commands;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import thewall.engine.sdk.leveleditor.dashboard.DashboardSession;
+import thewall.engine.sdk.leveleditor.dashboard.ConsoleSession;
 import thewall.engine.sdk.leveleditor.dashboard.SpatialService;
 import thewall.engine.sdk.leveleditor.dashboard.args.Argument;
 import thewall.engine.sdk.leveleditor.dashboard.args.parser.LineArgument;
-import thewall.engine.twilight.entity.Spatial;
+import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.material.Material;
-import thewall.engine.twilight.utils.Colour;
+import thewall.engine.twilight.material.Colour;
 
 public class MaterialArgument extends Argument {
     private final static Logger logger = LogManager.getLogger(MaterialArgument.class);
@@ -18,7 +18,7 @@ public class MaterialArgument extends Argument {
         this.service = service;
     }
     @Override
-    public void handle(LineArgument arg, DashboardSession session) {
+    public void handle(LineArgument arg, ConsoleSession session) {
         String[] args = arg.getArguments();
         int spatialID = 0;
         try {

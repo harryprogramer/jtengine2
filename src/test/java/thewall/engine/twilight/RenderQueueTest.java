@@ -3,8 +3,8 @@ package thewall.engine.twilight;
 import lombok.SneakyThrows;
 import org.joml.Vector3f;
 import org.junit.jupiter.api.Test;
-import thewall.engine.twilight.entity.Box;
-import thewall.engine.twilight.entity.Spatial;
+import thewall.engine.twilight.spatials.Box;
+import thewall.engine.twilight.spatials.Spatial;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ class  RenderQueueTest {
         RenderQueue renderQueue = new RenderQueue();
         RendererTest rendererTest = new RendererTest();
         Node node = new Node();
-        node.attachChild(new Box(new Vector3f(0, 0, 0), 1, 1, 1));
+        node.attachChild(new Box( 1, 1, 1));
         renderQueue.add(node);
         for (int i = 0; i < 10; i++){
             rendererTest.prepare(renderQueue);
@@ -31,14 +31,14 @@ class  RenderQueueTest {
         RendererTest rendererTest = new RendererTest();
         RenderQueue renderQueue = new RenderQueue();
         Node node = new Node();
-        node.attachChild(new Box(new Vector3f(0, 0, 0), 1, 1, 1));
-        node.attachChild(new Box(new Vector3f(1, 0, 0), 1, 1, 1));
-        node.attachChild(new Box(new Vector3f(2, 0, 0), 1, 1, 1));
-        node.attachChild(new Box(new Vector3f(3, 0, 0), 1, 1, 1));
-        node.attachChild(new Box(new Vector3f(0, 0, 0), 1, 1, 1));
-        node.attachChild(new Box(new Vector3f(0, 0, 0), 1, 1, 1));
-        node.attachChild(new Box(new Vector3f(0, 0, 0), 1, 1, 1));
-        node.attachChild(new Box(new Vector3f(0, 0, 0), 1, 1, 1));
+        node.attachChild(new Box(1, 1, 1));
+        node.attachChild(new Box(1, 1, 1));
+        node.attachChild(new Box(1, 1, 1));
+        node.attachChild(new Box(1, 1, 1));
+        node.attachChild(new Box(1, 1, 1));
+        node.attachChild(new Box(1, 1, 1));
+        node.attachChild(new Box(1, 1, 1));
+        node.attachChild(new Box(1, 1, 1));
         renderQueue.add(node);
         for(int i = 0; i < 5; i++) {
             System.out.println("INDEX: " + i);

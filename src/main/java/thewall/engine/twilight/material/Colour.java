@@ -1,8 +1,8 @@
-package thewall.engine.twilight.utils;
+package thewall.engine.twilight.material;
 
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Range;
+import org.joml.Vector3f;
 
 import java.awt.*;
 
@@ -107,6 +107,10 @@ public class Colour {
         this.g = g;
         this.b = b;
         this.alpha = alpha;
+    }
+
+    public Vector3f getVectorColor(){
+        return new Vector3f(r, g, b);
     }
 
     @Contract(pure = true)

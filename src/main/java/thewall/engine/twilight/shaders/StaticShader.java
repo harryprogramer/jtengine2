@@ -4,12 +4,12 @@ import org.joml.Matrix4f;
 import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import thewall.engine.twilight.entity.Camera;
-import thewall.engine.twilight.entity.Light;
+import thewall.engine.twilight.spatials.Camera;
+import thewall.engine.twilight.spatials.Light;
 import thewall.engine.twilight.math.Maths;
 import org.jetbrains.annotations.NotNull;
 import thewall.engine.twilight.renderer.opengl.GL;
-import thewall.engine.twilight.utils.Colour;
+import thewall.engine.twilight.material.Colour;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public final class StaticShader extends ShaderProgram {
     private int locationRandom;
 
     public StaticShader(GL gl){
-        super("vertexShader.frag", "fragmentShader.vert", gl);
+        super("Lighting.frag", "Lighting.vert", gl);
     }
 
     @Override
@@ -95,7 +95,7 @@ public final class StaticShader extends ShaderProgram {
         for(int i = 0; i < MAX_LIGHTS; i++) {
             if(i < lights.size()) {
                 super.loadVector(locationLightPosition[i], lights.get(i).getPosition());
-                super.loadVector(locationLightColor[i], lights.get(i).getColour());
+                super.loadVector(locationLightColor[i], lights.get(i).getColour().getVectorColor());
                 super.loadVector(locationAttenuation[i], lights.get(i).getAttenuation());
             }else {
                 super.loadVector(locationLightColor[i], new Vector3f(0, 0, 0));

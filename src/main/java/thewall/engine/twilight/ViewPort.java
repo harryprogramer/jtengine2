@@ -1,14 +1,9 @@
 package thewall.engine.twilight;
 
-import org.apache.spark.internal.config.R;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
-import thewall.engine.twilight.entity.Camera;
-import thewall.engine.twilight.entity.Light;
-import thewall.engine.twilight.entity.Spatial;
+import thewall.engine.twilight.spatials.Camera;
+import thewall.engine.twilight.spatials.Light;
 import thewall.engine.twilight.utils.Validation;
 
-import javax.swing.text.View;
 import java.util.ArrayList;
 import java.util.List;
 

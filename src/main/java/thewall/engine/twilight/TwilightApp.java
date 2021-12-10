@@ -15,10 +15,11 @@ import thewall.engine.twilight.audio.SoundMaster;
 import thewall.engine.twilight.debugger.TEngineDebugger;
 import thewall.engine.twilight.debugger.console.DebugConsole;
 import thewall.engine.twilight.display.DisplayResizeCallback;
-import thewall.engine.twilight.display.GLFWWindow;
+import thewall.engine.twilight.display.GLFWDisplay;
 import thewall.engine.twilight.display.WindowResizeSystem;
-import thewall.engine.twilight.entity.Light;
-import thewall.engine.twilight.entity.Spatial;
+import thewall.engine.twilight.material.Colour;
+import thewall.engine.twilight.spatials.Light;
+import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.errors.InitializationException;
 import thewall.engine.twilight.events.EventManager;
 import thewall.engine.twilight.events.JTEEventManager;
@@ -31,8 +32,7 @@ import thewall.engine.twilight.hardware.PlatformEnum;
 import thewall.engine.twilight.hardware.hna.RealtimeHNAccess;
 import thewall.engine.twilight.input.Input;
 import thewall.engine.twilight.input.InputProvider;
-import thewall.engine.twilight.input.keyboard.TKeyboardCallback;
-import thewall.engine.twilight.input.keyboard.KeyboardKeys;
+import thewall.engine.twilight.input.keyboard.KeyListener;
 import thewall.engine.twilight.models.Loader;
 import thewall.engine.twilight.renderer.MasterRenderer;
 import thewall.engine.twilight.runtime.AbstractRuntime;
@@ -47,6 +47,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static thewall.engine.twilight.system.lwjgl.GLFWInputUtils.keyToEnum;
 
 /**
  * Base class for engine app
@@ -55,7 +56,7 @@ import static org.lwjgl.glfw.GLFW.*;
  */
 @Deprecated(forRemoval = true)
 @SuppressWarnings("unused")
-public abstract class TwilightApp extends GLFWWindow {
+public abstract class TwilightApp extends GLFWDisplay {
     private static final AtomicBoolean isInit = new AtomicBoolean(false);
     private final static Logger logger = LogManager.getLogger(TwilightApp.class);
     private final static PlatformEnum[] supportedPlatform = {PlatformEnum.WINDOWS, PlatformEnum.LINUX, PlatformEnum.MACOS};
@@ -90,7 +91,7 @@ public abstract class TwilightApp extends GLFWWindow {
     private String name = "App";
 
     @Getter
-    private Light light = new Light(new Vector3f(0, 0, 0) ,new Vector3f(0, 0, 0), new Vector3f(0.4f, 0.4f, 0.4f));
+    private Light light = new Light(new Vector3f(0, 0, 0), Colour.WHITE, new Vector3f(0.4f, 0.4f, 0.4f));
     //@Getter
     //private Camera rndrCamera = new Camera();
 
@@ -134,7 +135,7 @@ public abstract class TwilightApp extends GLFWWindow {
      * @param width width of display
      * @param height height of display
      *  */
-    public void setWindowSize(int width, int height){
+    public void setSize(int width, int height){
         windowHeight = height;
         windowWidth = width;
     }
@@ -192,11 +193,11 @@ public abstract class TwilightApp extends GLFWWindow {
         logCallback = callback;
     }
 
-    public void setKeyboardCallback(TKeyboardCallback TKeyboardCallback){
+    public void setKeyboardCallback(KeyListener KeyListener){
         checkInit();
         runtime.executeTask(() -> glfwSetKeyCallback(getWindow(), (window, key, scancode, action, mods) -> {
             try {
-                TKeyboardCallback.invoke(KeyboardKeys.keyToEnum(key), scancode, action, mods);
+                KeyListener.invoke(keyToEnum(key), scancode, action, mods);
             }catch (Exception e){
                 //logger.warn("Keyboard callback error " + e.getMessage());
             }

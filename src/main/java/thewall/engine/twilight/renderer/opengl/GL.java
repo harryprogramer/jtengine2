@@ -1341,6 +1341,13 @@ public interface GL {
      */
     void glDrawArrays(int mode, int first, int count);
 
+    /**
+     * Causes all previously issued GL commands to complete in finite time (although such commands may still be executing when {@code Flush} returns).
+     *
+     * @see <a target="_blank" href="http://docs.gl/gl4/glFlush">Reference Page</a>
+     */
+    void glFlush();
+
     boolean isGL2Support();
 
     boolean isGL3Support();

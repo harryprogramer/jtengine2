@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class GLFWWindow extends GLFWDisplayManager implements Window {
+public class GLFWDisplay extends GLFWDisplayManager implements Display {
     private final static short MAX_CALLBACKS = 10;
 
     private final AtomicReference<String> windowName = new AtomicReference<>(null);
@@ -22,17 +22,17 @@ public class GLFWWindow extends GLFWDisplayManager implements Window {
 
     private final List<DisplayResizeCallback> resizeCallbacks = new ArrayList<>(10);
 
-    public GLFWWindow() {
+    public GLFWDisplay() {
         super();
     }
 
     @Override
-    public String getWindowName() {
+    public String getTitleName() {
         return windowName.get() == null ? null : windowName.get();
     }
 
     @Override
-    public void setWindowName(String name) {
+    public void setTitle(String name) {
         glfwSetWindowTitle(getWindow(), name);
         windowName.set(name);
     }
@@ -43,12 +43,12 @@ public class GLFWWindow extends GLFWDisplayManager implements Window {
     }
 
     @Override
-    public void hideWindow() {
+    public void hide() {
         glfwHideWindow(getWindow());
     }
 
     @Override
-    public void setWindowSize(int x, int y) {
+    public void setSize(int x, int y) {
         glfwSetWindowSize(getWindow(), x, y);
     }
 
@@ -73,7 +73,7 @@ public class GLFWWindow extends GLFWDisplayManager implements Window {
     }
 
     @Override
-    public Vector2i getWindowSize() {
+    public Vector2i getSize() {
         IntBuffer x = BufferUtils.createIntBuffer(1);
         IntBuffer y = BufferUtils.createIntBuffer(1);
         glfwGetWindowSize(getWindow(), x, y);
@@ -81,83 +81,87 @@ public class GLFWWindow extends GLFWDisplayManager implements Window {
     }
 
     @Override
-    public boolean isWindowFocus() {
+    public boolean isFocus() {
         return glfwGetWindowAttrib(getWindow(), GLFW_FOCUSED) == 1;
     }
 
     @Override
-    public void requestWindowFocus() {
-        glfwRequestWindowAttention(getWindow());
+    public void requestFocus() {
+        glfwFocusWindow(getWindow());
     }
 
     @Override
-    public void switchFullScreen() {
+    public void switchFullscreen() {
         throw NotImplementedException.NOT_IMPLEMENTED; // TODO
     }
 
     @Override
-    public void iconifyWindow() {
+    public void iconify() {
         glfwIconifyWindow(getWindow());
     }
 
     @Override
-    public void maximizeWindow() {
+    public void maximize() {
         glfwMaximizeWindow(getWindow());
     }
 
     @Override
-    public void destroyWindow() {
-        glfwDestroyWindow(getWindow());
-    }
-
-    @Override
-    public void setWindowSizeLimit(int xMin, int yMin, int xMax, int yMax) {
+    public void setResizeLimit(int xMin, int yMin, int xMax, int yMax) {
         glfwSetWindowSizeLimits(getWindow(), xMin, yMin, xMax, yMin);
     }
 
     @Override
-    public Vector2i getWindowSizeLimit() {
+    public Vector2i getResizeLimit() {
         return windowSizeLimit.get() == null ? new Vector2i(0, 0) : windowSizeLimit.get();
     }
 
     @Override
-    public void setWindowPosition(int x, int y) {
+    public void setPosition(int x, int y) {
         glfwSetWindowPos(getWindow(), x, y);
     }
 
     @Override
 
-    public void setWindowIcon(BufferedImage bufferedImage) {
+    public void setIcon(BufferedImage bufferedImage) {
         throw NotImplementedException.NOT_IMPLEMENTED; // TODO
     }
 
     @Override
-    public void setWindowIcon(String file) {
+    public void setIcon(String file) {
         throw NotImplementedException.NOT_IMPLEMENTED; // TODO
     }
 
     @Override
-    public void sendWindowAttentionRequest() {
+    public void attentionRequest() {
         glfwRequestWindowAttention(getWindow());
     }
 
     @Override
-    public void setWindowTransparency(float transparency) {
+    public void setTransparency(float transparency) {
         throw NotImplementedException.NOT_IMPLEMENTED; // TODO
     }
 
     @Override
-    public float getWindowTransparency() {
+    public float getTransparency() {
         throw NotImplementedException.NOT_IMPLEMENTED; // TODO
     }
 
     @Override
-    public void setWindowContentScale(float x, float y) {
+    public void setContentScale(float x, float y) {
         throw NotImplementedException.NOT_IMPLEMENTED; // TODO
     }
 
     @Override
-    public Vector2f getWindowContentScale() {
+    public Vector2f getContentScale() {
         throw NotImplementedException.NOT_IMPLEMENTED; // TODO
+    }
+
+    @Override
+    public void setVSync(boolean vSync) {
+        if(!vSync) {
+            glfwSwapInterval(0);
+        }else {
+            glfwSwapInterval(1);
+        }
     }
 }

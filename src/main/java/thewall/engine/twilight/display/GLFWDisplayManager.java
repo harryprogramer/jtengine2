@@ -1,6 +1,8 @@
 package thewall.engine.twilight.display;
 
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
@@ -14,6 +16,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 
 public class GLFWDisplayManager implements GLDisplayManager {
+    private final static Logger logger = LogManager.getLogger(GLFWDisplayManager.class);
     private static volatile long window;
 
     private volatile boolean isInit = false;
@@ -71,20 +74,6 @@ public class GLFWDisplayManager implements GLDisplayManager {
         }
         glfwMakeContextCurrent(window);
 
-        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE ) {
-                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-            }
-
-            if(key == GLFW_KEY_F3 && action == GLFW_RELEASE){
-                if(glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL){
-                    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-                }else {
-                    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-                }
-            }
-        });
-
         GL.createCapabilities();
 
         lastFrameTime = System.currentTimeMillis();
@@ -119,6 +108,9 @@ public class GLFWDisplayManager implements GLDisplayManager {
 
     @Override
     public long getWindow() {
+        if(window == 0){
+            logger.warn("Requested window is still null, NULL pointer returned");
+        }
         return window;
     }
 }

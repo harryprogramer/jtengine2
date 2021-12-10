@@ -3,8 +3,8 @@ package thewall.engine.twilight.shaders;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import thewall.engine.twilight.entity.Camera;
-import thewall.engine.twilight.entity.Light;
+import thewall.engine.twilight.spatials.Camera;
+import thewall.engine.twilight.spatials.Light;
 import thewall.engine.twilight.math.Maths;
 import thewall.engine.twilight.renderer.opengl.GL;
 
@@ -29,7 +29,7 @@ public final class TerrainShader extends ShaderProgram{
     private int locationBlendMap;
 
     public TerrainShader(GL gl){
-        super("terrain/terrainVertexShader.vert", "terrain/terrainfragmentShader.frag", gl);
+        super("terrain/TerrainLighting.vert", "terrain/TerrainLighting.frag", gl);
     }
 
     @Override
@@ -88,7 +88,7 @@ public final class TerrainShader extends ShaderProgram{
         for(int i = 0; i < MAX_LIGHTS; i++) {
             if(i < lights.size()) {
                 super.loadVector(locationLightPosition[i], lights.get(i).getPosition());
-                super.loadVector(locationLightColor[i], lights.get(i).getColour());
+                super.loadVector(locationLightColor[i], lights.get(i).getColour().getVectorColor());
                 super.loadVector(locationAttenuation[i], lights.get(i).getAttenuation());
             }else {
                 super.loadVector(locationLightColor[i], new Vector3f(0, 0, 0));

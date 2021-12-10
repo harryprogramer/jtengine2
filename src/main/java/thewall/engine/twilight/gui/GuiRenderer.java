@@ -6,7 +6,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import thewall.engine.twilight.entity.Spatial;
 import thewall.engine.twilight.models.Loader;
 import thewall.engine.twilight.shaders.GuiShader;
 import thewall.engine.twilight.math.Maths;

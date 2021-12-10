@@ -1,6 +1,6 @@
 package thewall.engine.sdk.leveleditor.dashboard;
 
-import thewall.engine.twilight.entity.Spatial;
+import thewall.engine.twilight.spatials.Spatial;
 
 import java.util.HashMap;
 import java.util.Map;

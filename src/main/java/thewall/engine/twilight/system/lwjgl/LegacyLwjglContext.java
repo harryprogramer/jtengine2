@@ -6,8 +6,8 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.system.MemoryUtil;
 import thewall.engine.twilight.audio.SoundMaster;
-import thewall.engine.twilight.display.Window;
-import thewall.engine.twilight.display.GLFWWindow;
+import thewall.engine.twilight.display.Display;
+import thewall.engine.twilight.display.GLFWDisplay;
 import thewall.engine.twilight.events.endpoints.EndpointHandler;
 import thewall.engine.twilight.events.endpoints.StaticRouter;
 import thewall.engine.twilight.events.EventManager;
@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 import static org.lwjgl.glfw.GLFW.*;
 
 
-public class LegacyLwjglContext extends GLFWWindow implements JTEContext {
+public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
     private final EndpointHandler endpointHandler = new StaticRouter();
     private final static Logger logger = LogManager.getLogger(LegacyLwjglContext.class);
     private final GL glContext = new LwjglGL();
@@ -63,7 +63,7 @@ public class LegacyLwjglContext extends GLFWWindow implements JTEContext {
     }
 
     @Override
-    public Window getDisplay() {
+    public Display getDisplay() {
         return this;
     }
 
@@ -115,16 +115,13 @@ public class LegacyLwjglContext extends GLFWWindow implements JTEContext {
 
         GLFWErrorCallback.createPrint(System.err).set();
 
-        glfwSetErrorCallback((i, l) -> {
-            logger.error(String.format("[GLFW ERROR %s]: %s", i, l));
-        });
+        createWindow((int) appSettings.getSettingsMap().get(AppSettings.SettingsType.WINDOW_X),
+                (int) appSettings.getSettingsMap().get(AppSettings.SettingsType.WINDOW_Y),
+                (String) appSettings.getSettingsMap().get(AppSettings.SettingsType.TITLE));
 
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
-        createWindow((int) appSettings.getSettingsMap().get(AppSettings.SettingsType.WINDOW_X),
-                (int) appSettings.getSettingsMap().get(AppSettings.SettingsType.WINDOW_Y),
-                (String) appSettings.getSettingsMap().get(AppSettings.SettingsType.TITLE));
 
 
         createCapacities();

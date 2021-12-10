@@ -1,14 +1,14 @@
 package thewall.engine.twilight.shaders;
 
 import org.joml.Matrix4f;
-import thewall.engine.twilight.entity.Camera;
+import thewall.engine.twilight.spatials.Camera;
 import thewall.engine.twilight.math.Maths;
 import thewall.engine.twilight.renderer.opengl.GL;
 
 public final class SkyboxShader extends ShaderProgram{
 
-	private static final String VERTEX_FILE = "skybox/skyboxVertexShader.vert";
-	private static final String FRAGMENT_FILE = "skybox/skyboxFragmentShader.frag";
+	private static final String VERTEX_FILE = "skybox/Skybox.vert";
+	private static final String FRAGMENT_FILE = "skybox/Skybox.frag";
 	
 	private int location_projectionMatrix;
 	private int location_viewMatrix;

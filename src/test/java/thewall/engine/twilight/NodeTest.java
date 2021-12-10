@@ -1,8 +1,8 @@
 package thewall.engine.twilight;
 
 import org.junit.jupiter.api.Test;
-import thewall.engine.twilight.entity.Box;
-import thewall.engine.twilight.entity.Spatial;
+import thewall.engine.twilight.spatials.Box;
+import thewall.engine.twilight.spatials.Spatial;
 import org.joml.Vector3f;
 
 class NodeTest {
@@ -13,7 +13,7 @@ class NodeTest {
     @Test
     void test(){
         Node test = new Node();
-        Box box = new Box(new Vector3f(0, 0, 0), 1, 1, 1);
+        Box box = new Box(1, 1, 1);
         test.attachChild(box);
         Spatial test2 = test.getChild(0);
         test2.getMesh().setID(69);

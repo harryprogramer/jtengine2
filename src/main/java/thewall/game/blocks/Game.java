@@ -13,14 +13,14 @@ import org.lwjgl.glfw.GLFW;
 import thewall.engine.LegacyApp;
 import thewall.engine.twilight.display.GLFWDisplayManager;
 import thewall.engine.twilight.events.endpoints.Endpoint;
-import thewall.engine.twilight.entity.Box;
-import thewall.engine.twilight.entity.Camera;
+import thewall.engine.twilight.spatials.Box;
+import thewall.engine.twilight.spatials.Camera;
 import thewall.engine.twilight.gui.imgui.ImmediateModeGUI;
 import thewall.engine.twilight.input.Input;
 import thewall.engine.twilight.input.keyboard.KeyboardKeys;
 import thewall.engine.twilight.input.mouse.CursorPosition;
 import thewall.engine.twilight.material.Material;
-import thewall.engine.twilight.utils.Colour;
+import thewall.engine.twilight.material.Colour;
 
 public class Game extends LegacyApp {
     private final static Logger logger = LogManager.getLogger(Game.class);
@@ -41,7 +41,7 @@ public class Game extends LegacyApp {
         viewPort.setCamera(camera);
 
         for(int i = 0; i < 1; i++){
-            Box box = new Box(new Vector3f(0, 0, 0), 1, 1, 1);
+            Box box = new Box(1, 1, 1);
             box.setTransformation(new Vector3f(50, 50, 50));
             box.setMaterial(new Material("Box Material").loadColour(Colour.AQUA));
             boxes[i] = box;
@@ -54,33 +54,12 @@ public class Game extends LegacyApp {
     @Override
     protected void onUpdate() {
         long endTime = System.currentTimeMillis();
-        if(endTime - previousTime > 500){
+        if(endTime - previousTime > 1000){
             previousTime = System.currentTimeMillis();
-            logger.info("Cam: " + viewPort.getCamera().getTransformation().y);
-            logger.info("Distance between [Box #1]: " + viewPort.getCamera().getTransformation().distance(boxes[0].getTransformation()));
+            getDisplay().setTitle("FPS: " + getFPS());
         }
-
-        //viewPort.getCamera().setRotation((float) input().getMouse().getCursorPosition().getXPos(), 0, 0);
 
         checkInputs();
-        /*
-        if(input().getKeyboard().isKeyPressed(KeyboardKeys.W_KEY)){
-            viewPort.getCamera().getTransformation().add(0, 0, 1 * speed);
-        }
-
-        if(input().getKeyboard().isKeyPressed(KeyboardKeys.S_KEY)){
-            viewPort.getCamera().getTransformation().add(0, 0, -1 * speed);
-        }
-
-        if(input().getKeyboard().isKeyPressed(KeyboardKeys.A_KEY)){
-            viewPort.getCamera().getTransformation().add(-1  * speed, 0, 0);
-        }
-
-        if(input().getKeyboard().isKeyPressed(KeyboardKeys.D_KEY)){
-            viewPort.getCamera().getTransformation().add(1 * speed, 0, 0);
-        }
-
-         */
 
     }
 
@@ -102,7 +81,7 @@ public class Game extends LegacyApp {
     }
 
     public void checkInputs(){
-        Input input = input();
+        Input input = getInput();
         CursorPosition pos = input.getMouse().getCursorPosition();
         double newMouseX = pos.getXPos();
         double newMouseY = pos.getYPos();

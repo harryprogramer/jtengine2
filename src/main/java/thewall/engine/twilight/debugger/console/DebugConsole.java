@@ -22,7 +22,7 @@ import java.util.concurrent.*;
 
 public final class DebugConsole {
     @Getter
-    private static DebugConsole console = new DebugConsole();
+    private static final DebugConsole console = new DebugConsole();
 
     private static final Logger logger = LogManager.getLogger(DebugConsole.class);
 

@@ -10,10 +10,11 @@ import thewall.engine.twilight.events.endpoints.EndpointHandler;
 import thewall.engine.twilight.gui.imgui.ImmediateModeGUI;
 import thewall.engine.twilight.hardware.SoundCard;
 import thewall.engine.twilight.renderer.Renderer;
+import thewall.engine.twilight.renderer.SyncTimer;
 import thewall.engine.twilight.runtime.AbstractRuntime;
 import thewall.engine.twilight.system.JTEContext;
 import thewall.engine.twilight.system.JTESystem;
-import thewall.engine.twilight.utils.Colour;
+import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.utils.Validation;
 import thewall.engine.twilight.utils.WatchdogMonitor;
 
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class JTEEnvironment extends AbstractRuntime<Application> {
     private final static Logger logger = LogManager.getLogger(JTEEnvironment.class);
+    private final static SyncTimer syncTimer = new SyncTimer(SyncTimer.LWJGL_GLFW);
     private final List<Runnable> rendererTasks = new ArrayList<>();
     private final AtomicBoolean shouldClose = new AtomicBoolean(false);
     private final AtomicBoolean isReady = new AtomicBoolean(false);
@@ -122,6 +124,7 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
         this.app.setEventManager(context.getEventManager());
         this.app.setInput(context.getInput());
         this.app.setSound(context.getSoundMaster());
+        this.app.setDisplay(context.getDisplay());
         this.renderer = context.getRenderer();
     }
     @Override
@@ -135,6 +138,7 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
 
         logger.info("Stopping JTE runtime watchdog");
         watchdog.stop();
+        app.onClose();
         DebugConsole.getConsole().closeConsole();
     }
 
@@ -179,6 +183,7 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
 
                 watchdog.keepAlive();
 
+                syncTimer.sync(app.getFrameLimit());
             }catch (Throwable t){
                 logger.error("Error while pulsing engine", t);
                 break;

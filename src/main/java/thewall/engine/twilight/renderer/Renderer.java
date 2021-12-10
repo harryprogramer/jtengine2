@@ -4,7 +4,7 @@ import org.joml.Matrix4f;
 import thewall.engine.twilight.RenderQueue;
 import thewall.engine.twilight.ViewPort;
 import thewall.engine.twilight.renderer.opengl.GLRenderer;
-import thewall.engine.twilight.utils.Colour;
+import thewall.engine.twilight.material.Colour;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;

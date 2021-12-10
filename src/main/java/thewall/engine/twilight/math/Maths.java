@@ -5,9 +5,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3fc;
-import oshi.driver.windows.wmi.Win32Bios;
-import thewall.engine.twilight.entity.Camera;
+import thewall.engine.twilight.spatials.Camera;
 
 public class Maths {
     static int index = 0;

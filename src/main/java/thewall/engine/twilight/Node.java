@@ -1,12 +1,10 @@
 package thewall.engine.twilight;
 
-import thewall.engine.twilight.entity.Spatial;
+import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.material.Material;
-import thewall.engine.twilight.models.Mesh;
 import thewall.engine.twilight.utils.SafeArrayList;
 import thewall.engine.twilight.utils.Validation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Node extends Spatial{

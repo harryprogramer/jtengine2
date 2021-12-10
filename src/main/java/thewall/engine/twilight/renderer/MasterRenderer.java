@@ -1,6 +1,5 @@
 package thewall.engine.twilight.renderer;
 
-import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -9,13 +8,12 @@ import org.lwjgl.opengl.GL11;
 import thewall.engine.twilight.display.GLFWDisplayManager;
 import thewall.engine.twilight.display.DisplayUtils;
 import thewall.engine.twilight.display.Resolution;
-import thewall.engine.twilight.entity.Camera;
-import thewall.engine.twilight.entity.Light;
-import thewall.engine.twilight.entity.Spatial;
+import thewall.engine.twilight.spatials.Camera;
+import thewall.engine.twilight.spatials.Light;
+import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.errors.NotImplementedException;
 import thewall.engine.twilight.models.Loader;
 import thewall.engine.twilight.models.TexturedModel;
-import thewall.engine.twilight.renderer.opengl.lwjgl.LwjglGL;
 import thewall.engine.twilight.shaders.StaticShader;
 import thewall.engine.twilight.shaders.TerrainShader;
 import thewall.engine.twilight.skybox.SkyboxRender;
@@ -66,8 +64,6 @@ public class MasterRenderer {
     }
 
     private final StaticShader shader = new StaticShader(null);
-    @Getter
-    private EntityRenderer entityRenderer;
 
     private final Map<TexturedModel, List<Spatial>> entities = new HashMap<>();
 

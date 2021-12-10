@@ -1,7 +1,7 @@
 package thewall.engine.twilight.system;
 
 import thewall.engine.twilight.audio.SoundMaster;
-import thewall.engine.twilight.display.Window;
+import thewall.engine.twilight.display.Display;
 import thewall.engine.twilight.events.endpoints.EndpointHandler;
 import thewall.engine.twilight.events.EventManager;
 import thewall.engine.twilight.input.Input;
@@ -12,7 +12,7 @@ public interface JTEContext {
 
     SoundMaster getSoundMaster();
 
-    Window getDisplay();
+    Display getDisplay();
 
     EventManager getEventManager();
 

@@ -9,7 +9,7 @@ import thewall.engine.sdk.leveleditor.dashboard.args.parser.JTEArgumentParser;
 import thewall.engine.sdk.leveleditor.dashboard.args.parser.LineParser;
 import thewall.engine.twilight.errors.NotImplementedException;
 import thewall.engine.twilight.errors.SyntaxException;
-import thewall.engine.twilight.utils.Colour;
+import thewall.engine.twilight.material.Colour;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -17,10 +17,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
 
-public class AWTDashboard extends JFrame implements EditorDashboard, DashboardSession {
-    private static final Logger logger = LogManager.getLogger(AWTDashboard.class);
+public class AWTConsole extends JFrame implements EditorDashboard, ConsoleSession {
+    private static final Logger logger = LogManager.getLogger(AWTConsole.class);
     private final ArgsHandlerService argsHandlerService;
     private final static String VERSION = "1.0.20";
     private final LineParser lineParser = new JTEArgumentParser();
@@ -32,7 +31,7 @@ public class AWTDashboard extends JFrame implements EditorDashboard, DashboardSe
     private final InputMap iMap;
     private final ActionMap aMap;
 
-    public AWTDashboard(){
+    public AWTConsole(){
         super("JTEEditor " + VERSION);
         textPane = new ColorPane();
         textPane.setPreferredSize(new Dimension(525, 600));
@@ -209,7 +208,15 @@ public class AWTDashboard extends JFrame implements EditorDashboard, DashboardSe
 
     @Override
     public void disableDashboard() {
+        argsHandlerService.stop();
 
+        EventQueue.invokeLater(() -> {
+            WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
+            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+
+            setVisible(false);
+            dispose();
+        });
     }
 
     @Override

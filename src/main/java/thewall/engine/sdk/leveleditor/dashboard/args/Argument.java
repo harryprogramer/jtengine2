@@ -1,6 +1,6 @@
 package thewall.engine.sdk.leveleditor.dashboard.args;
 
-import thewall.engine.sdk.leveleditor.dashboard.DashboardSession;
+import thewall.engine.sdk.leveleditor.dashboard.ConsoleSession;
 import thewall.engine.sdk.leveleditor.dashboard.args.parser.LineArgument;
 
 public abstract class Argument {
@@ -14,5 +14,5 @@ public abstract class Argument {
         return isAsync;
     }
 
-    public abstract void handle(LineArgument arg, DashboardSession session);
+    public abstract void handle(LineArgument arg, ConsoleSession session);
 }

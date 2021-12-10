@@ -1,7 +1,6 @@
 package thewall.engine.twilight.assets;
 
-import thewall.engine.twilight.entity.Spatial;
-import thewall.engine.twilight.material.Material;
+import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.texture.PixelFormat;
 import thewall.engine.twilight.texture.Texture;
 

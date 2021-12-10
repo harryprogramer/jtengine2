@@ -8,7 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import thewall.engine.twilight.TwilightApp;
-import thewall.engine.twilight.entity.*;
+import thewall.engine.twilight.material.Colour;
+import thewall.engine.twilight.spatials.*;
 import thewall.engine.twilight.gui.GuiTexture;
 import thewall.engine.twilight.gui.imgui.ImGuiDesigner;
 import thewall.engine.twilight.gui.imgui.OnImmediateGUI;
@@ -108,10 +109,10 @@ public class TheWall extends TwilightApp {
         //        new Vector3f(300, 0, 600), 0, 0, 0, 1, terrain);
         texture = treemodel.getModelTexture();
 
-        lights.add(new Light(new Vector3f(418, 100, 227), new Vector3f(255, 255, 255), new Vector3f(1, 0.01f, 0.02f)));
+        lights.add(new Light(new Vector3f(418, 100, 227), new Colour(255, 255, 255), new Vector3f(1, 0.01f, 0.02f)));
         //lights.add(new Light(new Vector3f(418,10, 227),new Vector3f(0,0,10), new Vector3f(1, 0.01f, 0.002f)));
-        lights.add(new Light(new Vector3f(370,17,-300),new Vector3f(10,0,0), new Vector3f(1, 0.01f, 0.002f)));
-        lights.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
+        lights.add(new Light(new Vector3f(370,17,-300),new Colour(10,0,0), new Vector3f(1, 0.01f, 0.002f)));
+        lights.add(new Light(new Vector3f(293, 7, -305), new Colour(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
         ModelData lampModel = OBJFileLoader.loadOBJ("fern");
         // FIXME TexturedModel lamp = new TexturedModel(getLoader().loadToVAO(lampModel.getVertices(), lampModel.getIndices(),
                // lampModel.getTextureCoords(), lampModel.getNormals()), new ModelTexture(getLoader().loadTexture("lamp", GL_RGBA, 0)));
@@ -218,7 +219,7 @@ public class TheWall extends TwilightApp {
     @OnImmediateGUI
     public void onImmediateGUI() {
         ImGuiDesigner gui = getImmediateGUI();
-        Vector2i windowSize = getWindowSize();
+        Vector2i windowSize = getSize();
         if(!isWindowSizeSet) {
             gui.beginWindow("Engine Stats");
             isWindowSizeSet = true;

@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 import thewall.engine.twilight.texture.PixelFormat;
 import thewall.engine.twilight.texture.Texture;
-import thewall.engine.twilight.utils.Colour;
 import thewall.engine.twilight.utils.Validation;
 
 import java.nio.ByteBuffer;
@@ -14,6 +13,7 @@ import java.nio.ByteBuffer;
 public class Material {
     private final static Logger logger = LogManager.getLogger(Material.class);
 
+    private static int index = -1;
     private int x, y, id = -1;
     private ByteBuffer materialBuffer;
     private PixelFormat materialFormat;
@@ -28,6 +28,10 @@ public class Material {
     public Material(String name){
         Validation.checkNull(name);
         this.name = name;
+    }
+
+    public Material(){
+        this.name = "Material-" + ++index;
     }
 
     /*
@@ -64,7 +68,7 @@ public class Material {
      */
 
 
-    public Material loadColour(@NotNull Colour colour){
+    public void setColour(@NotNull Colour colour){
         ByteBuffer buffer = BufferUtils.createByteBuffer(PixelFormat.RGBA.getSize());
         buffer.put((byte) colour.getRed());
         buffer.put((byte) colour.getGreen());
@@ -76,7 +80,11 @@ public class Material {
         this.materialFormat = PixelFormat.RGBA;
         this.x = 1;
         this.y = 1;
+    }
 
+    @Deprecated
+    public Material loadColour(@NotNull Colour colour){
+        setColour(colour);
         return this;
     }
 

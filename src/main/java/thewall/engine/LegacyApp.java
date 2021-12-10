@@ -1,6 +1,8 @@
 package thewall.engine;
 
 import io.github.alexarchambault.windowsansi.WindowsAnsi;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.fusesource.jansi.AnsiConsole;
@@ -12,10 +14,10 @@ import thewall.engine.twilight.ViewPort;
 import thewall.engine.twilight.audio.SoundMaster;
 import thewall.engine.twilight.debugger.TEngineDebugger;
 import thewall.engine.twilight.debugger.console.DebugConsole;
-import thewall.engine.twilight.entity.Camera;
+import thewall.engine.twilight.display.Display;
+import thewall.engine.twilight.spatials.Camera;
 import thewall.engine.twilight.errors.InitializationException;
 import thewall.engine.twilight.events.EventManager;
-import thewall.engine.twilight.events.JTEEventManager;
 import thewall.engine.twilight.hardware.Hardware;
 import thewall.engine.twilight.hardware.PlatformEnum;
 import thewall.engine.twilight.input.Input;
@@ -29,7 +31,6 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static thewall.engine.twilight.utils.Validation.checkNull;
 
 
@@ -37,12 +38,15 @@ public abstract class LegacyApp implements Application {
     private final static PlatformEnum[] supportedPlatform = {PlatformEnum.WINDOWS, PlatformEnum.LINUX, PlatformEnum.MACOS};
     private final static Logger logger = LogManager.getLogger(LegacyApp.class);
     private final Hardware hardware = JTESystem.createBestHardware();
-    private static AtomicBoolean isInit = new AtomicBoolean(false);
-    private int fps = 0;
+    private static final AtomicBoolean isInit = new AtomicBoolean(false);
     public final Node rootNode = new Node();
     private EventManager eventManager;
     public final ViewPort guiViewPort;
     public final ViewPort viewPort;
+    private int fps = 0;
+
+    @Setter private int frameLimit = 60;
+    @Getter private Display display;
 
     private AppSettings appSettings;
 
@@ -74,6 +78,11 @@ public abstract class LegacyApp implements Application {
         this.eventManager = eventManager;
     }
 
+    @Override
+    public int getFrameLimit() {
+        return frameLimit;
+    }
+
     public EventManager getEventManager() {
         return eventManager;
     }
@@ -97,7 +106,7 @@ public abstract class LegacyApp implements Application {
     }
 
     @Override
-    public Input input() {
+    public Input getInput() {
         return input;
     }
 
@@ -107,12 +116,24 @@ public abstract class LegacyApp implements Application {
         this.input = input;
     }
 
+    @Override
+    public void setDisplay(Display display) {
+        this.display = display;
+    }
 
     @Override
     public void setSound(SoundMaster sound) {
         checkNull(sound);
         this.sound = sound;
     }
+
+    @Override
+    public void onClose() {
+        logger.info("Closing app");
+        onExit();
+    }
+
+    public void onExit(){}
 
     private long lastUpdate = System.currentTimeMillis();
     private int frames;
@@ -288,9 +309,6 @@ public abstract class LegacyApp implements Application {
             if(!glfwInit()){
                 throw new InitializationException("Engine", "OpenGL GLFW init failed");
             }
-
-            glfwDefaultWindowHints();
-            glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
             isInit.set(true);
         }

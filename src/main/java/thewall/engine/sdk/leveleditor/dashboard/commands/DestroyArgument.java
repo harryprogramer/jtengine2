@@ -3,12 +3,12 @@ package thewall.engine.sdk.leveleditor.dashboard.commands;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import thewall.engine.sdk.leveleditor.Editor;
-import thewall.engine.sdk.leveleditor.dashboard.DashboardSession;
+import thewall.engine.sdk.leveleditor.dashboard.ConsoleSession;
 import thewall.engine.sdk.leveleditor.dashboard.SpatialService;
 import thewall.engine.sdk.leveleditor.dashboard.args.Argument;
 import thewall.engine.sdk.leveleditor.dashboard.args.parser.LineArgument;
-import thewall.engine.twilight.entity.Spatial;
-import thewall.engine.twilight.utils.Colour;
+import thewall.engine.twilight.spatials.Spatial;
+import thewall.engine.twilight.material.Colour;
 
 public class DestroyArgument extends Argument {
     private final static Logger logger = LogManager.getLogger(DestroyArgument.class);
@@ -21,7 +21,7 @@ public class DestroyArgument extends Argument {
     }
 
     @Override
-    public void handle(LineArgument arg, DashboardSession session) {
+    public void handle(LineArgument arg, ConsoleSession session) {
         int id;
         try {
             id = Integer.parseInt(arg.getArguments()[0]);

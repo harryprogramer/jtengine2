@@ -3,7 +3,7 @@ package thewall.engine.twilight.display;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
-class GLFWWindowManagerTest {
+class GLFWDisplayManagerTest {
     @SneakyThrows
     @Test
     void test(){

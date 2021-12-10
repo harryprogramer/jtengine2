@@ -1,7 +1,9 @@
-package thewall.engine.twilight.entity;
+package thewall.engine.twilight.spatials;
 
 import com.google.common.primitives.Floats;
 import com.google.common.primitives.Ints;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import thewall.engine.twilight.models.Mesh;
@@ -12,9 +14,10 @@ import java.util.ArrayList;
 import static thewall.engine.twilight.math.VectorMath.*;
 
 public class Box extends Spatial {
+    private final static Logger logger = LogManager.getLogger(Box.class);
     Mesh boxMesh = new Mesh();
 
-    public final Vector3f center = new Vector3f(0, 0, 0);
+    public final Vector3f center = new Vector3f(0f, 0f, 0f);
     public float xExtent, yExtent, zExtent;
 
     private static final float[] GEOMETRY_NORMALS_DATA = {
@@ -59,19 +62,14 @@ public class Box extends Spatial {
     };
 
     private final static int[] INDICES = {
-            0,1,3,
-            3,1,2,
-            4,5,7,
-            7,5,6,
-            8,9,11,
-            11,9,10,
-            12,13,15,
-            15,13,14,
-            16,17,19,
-            19,17,18,
-            20,21,23,
-            23,21,22
+            2,  1,  0,  3,  2,  0, // back
+            6,  5,  4,  7,  6,  4, // right
+            10,  9,  8, 11, 10,  8, // front
+            14, 13, 12, 15, 14, 12, // left
+            18, 17, 16, 19, 18, 16, // top
+            22, 21, 20, 23, 22, 20  // bottom
     };
+
 
     private final static float[] TEXTURE_COORDS = {
             0,0,
@@ -101,9 +99,7 @@ public class Box extends Spatial {
 
     };
 
-    public Box(Vector3f center , float xExtent, float yExtent, float zExtent) {
-        Validation.checkNull(center);
-        center.set(center);
+    public Box(float xExtent, float yExtent, float zExtent) {
         this.xExtent = xExtent;
         this.yExtent = yExtent;
         this.zExtent = zExtent;
@@ -111,23 +107,27 @@ public class Box extends Spatial {
         updateGeometry(center, xExtent, yExtent, zExtent);
     }
 
-    protected final Vector3f @NotNull [] computeVertices() {
-        Vector3f[] axes = {
-                new Vector3f(1, 0, 0).mul(xExtent),
-                new Vector3f(0, 1, 0).mul(yExtent),
-                new Vector3f(0, 0, 1).mul(zExtent)
+    protected final thewall.engine.twilight.math.Vector3f @NotNull [] computeVertices() {
+        thewall.engine.twilight.math.Vector3f[] axes = {
+                new thewall.engine.twilight.math.Vector3f(1, 0, 0).mult(xExtent),
+                new thewall.engine.twilight.math.Vector3f(0, 1, 0).mult(yExtent),
+                new thewall.engine.twilight.math.Vector3f(0, 0, 1).mult(zExtent)
         };
 
-        return new Vector3f[] {
-                subtract(subtractLocal(subtractLocal(center,    axes[0]), axes[1]), axes[2]),
-                add(subtractLocal(subtractLocal(center,         axes[0]), axes[1]), axes[2]),
-                subtractLocal(addLocal(add(center,              axes[0]), axes[1]), axes[2]),
-                subtractLocal(addLocal(subtract(center,         axes[0]), axes[1]), axes[2]),
-                addLocal(subtractLocal(add(center,              axes[0]), axes[1]), axes[2]),
-                addLocal(subtractLocal(subtract(center,         axes[0]), axes[1]), axes[2]),
-                addLocal(addLocal(add(center,                   axes[0]), axes[1]), axes[2]),
-                addLocal(addLocal(subtract(center,              axes[0]), axes[1]), axes[2]),
+        thewall.engine.twilight.math.Vector3f nativeCenter = new thewall.engine.twilight.math.Vector3f(center.x, center.y, center.z);
+
+        return new thewall.engine.twilight.math.Vector3f[]{
+                nativeCenter.subtract(axes[0]).subtractLocal(axes[1]).subtractLocal(axes[2]),
+                nativeCenter.add(axes[0]).subtractLocal(axes[1]).subtractLocal(axes[2]),
+                nativeCenter.add(axes[0]).addLocal(axes[1]).subtractLocal(axes[2]),
+                nativeCenter.subtract(axes[0]).addLocal(axes[1]).subtractLocal(axes[2]),
+                nativeCenter.add(axes[0]).subtractLocal(axes[1]).addLocal(axes[2]),
+                nativeCenter.subtract(axes[0]).subtractLocal(axes[1]).addLocal(axes[2]),
+                nativeCenter.add(axes[0]).addLocal(axes[1]).addLocal(axes[2]),
+                nativeCenter.subtract(axes[0]).addLocal(axes[1]).addLocal(axes[2])
         };
+
+
     }
 
     public final void updateGeometry(Vector3f center, float x, float y, float z) {
@@ -136,8 +136,8 @@ public class Box extends Spatial {
         this.yExtent = y;
         this.zExtent = z;
 
-        /*/*
-        Vector3f[] v = computeVertices(); // TODO: compute vertices
+
+        thewall.engine.twilight.math.Vector3f[] v = computeVertices();
         float[] vertices = new float[] {
                 v[0].x, v[0].y, v[0].z, v[1].x, v[1].y, v[1].z, v[2].x, v[2].y, v[2].z, v[3].x, v[3].y, v[3].z, // back
                 v[1].x, v[1].y, v[1].z, v[4].x, v[4].y, v[4].z, v[6].x, v[6].y, v[6].z, v[2].x, v[2].y, v[2].z, // right
@@ -147,10 +147,9 @@ public class Box extends Spatial {
                 v[0].x, v[0].y, v[0].z, v[5].x, v[5].y, v[5].z, v[4].x, v[4].y, v[4].z, v[1].x, v[1].y, v[1].z  // bottom
         };
 
-         */
 
-        //boxMesh.setVertices(Floats.asList(vertices_f));
-        boxMesh.setVertices(Floats.asList(VERTICES));
+        //boxMesh.setVertices(Floats.asList(VERTICES));
+        boxMesh.setVertices(Floats.asList(vertices));
 
         boxMesh.setIndices(Ints.asList(INDICES));
 

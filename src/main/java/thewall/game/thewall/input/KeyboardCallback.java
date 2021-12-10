@@ -3,11 +3,11 @@ package thewall.game.thewall.input;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import thewall.engine.twilight.input.keyboard.KeyboardKeys;
-import thewall.engine.twilight.input.keyboard.TKeyboardCallback;
+import thewall.engine.twilight.input.keyboard.KeyListener;
 import thewall.engine.twilight.input.mouse.Mouse;
 import thewall.game.thewall.Game;
 
-public class KeyboardCallback implements TKeyboardCallback {
+public class KeyboardCallback implements KeyListener {
     @Override
     public void invoke(@NotNull KeyboardKeys key, int scancode, int action, int mods) {
         switch (key){

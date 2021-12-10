@@ -1,4 +1,4 @@
-package thewall.engine.twilight.entity;
+package thewall.engine.twilight.spatials;
 
 import org.joml.Vector3f;
 import thewall.engine.twilight.models.TexturedModel;

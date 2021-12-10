@@ -191,5 +191,5 @@ export interface Game {
     tasks : Tasks;
     settings : Settings;
     math : Math;
-    window : Window;
+    display : Window;
 }

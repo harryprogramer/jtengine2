@@ -1,8 +1,6 @@
-package thewall.engine.twilight.entity;
+package thewall.engine.twilight.spatials;
 
-import lombok.Setter;
 import org.joml.Vector3f;
-import lombok.Getter;
 import thewall.engine.twilight.utils.Validation;
 
 /**

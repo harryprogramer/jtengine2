@@ -1,8 +1,8 @@
 package thewall.engine.sdk.leveleditor.dashboard;
 
-import thewall.engine.twilight.utils.Colour;
+import thewall.engine.twilight.material.Colour;
 
-public interface DashboardSession {
+public interface ConsoleSession {
     String readLine();
 
     String readLine(long timeout);
