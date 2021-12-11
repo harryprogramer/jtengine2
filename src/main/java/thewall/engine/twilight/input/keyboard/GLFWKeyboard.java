@@ -2,11 +2,11 @@ package thewall.engine.twilight.input.keyboard;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import thewall.engine.twilight.system.lwjgl.LegacyLwjglContext;
+import thewall.engine.twilight.system.context.lwjgl.LegacyLwjglContext;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static thewall.engine.twilight.system.lwjgl.GLFWInputUtils.enumToKey;
-import static thewall.engine.twilight.system.lwjgl.GLFWInputUtils.keyToEnum;
+import static thewall.engine.twilight.system.context.lwjgl.GLFWInputUtils.enumToKey;
+import static thewall.engine.twilight.system.context.lwjgl.GLFWInputUtils.keyToEnum;
 
 public class GLFWKeyboard implements Keyboard{
     private final static Logger logger = LogManager.getLogger(GLFWKeyboard.class);

@@ -1,11 +1,10 @@
 package thewall.engine.twilight.input.gamepad;
 
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFWJoystickCallbackI;
 import thewall.engine.twilight.events.input.gamepad.GamepadConnectedEvent;
 import thewall.engine.twilight.events.input.gamepad.GamepadDisconnectedEvent;
-import thewall.engine.twilight.system.lwjgl.LegacyLwjglContext;
+import thewall.engine.twilight.system.context.lwjgl.LegacyLwjglContext;
 
 import java.util.ArrayList;
 import java.util.List;

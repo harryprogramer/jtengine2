@@ -767,7 +767,7 @@ public final class Vector3f implements Cloneable, java.io.Serializable {
 //        return divide(1);
         float length = x * x + y * y + z * z;
         if (length != 1f && length != 0f) {
-            length = 1.0f / FastMath.sqrt(length);
+            length = 1.0f / Maths.sqrt(length);
             return new Vector3f(x * length, y * length, z * length);
         }
         return clone();
@@ -785,7 +785,7 @@ public final class Vector3f implements Cloneable, java.io.Serializable {
         // is commonly used.
         float length = x * x + y * y + z * z;
         if (length != 1f && length != 0f) {
-            length = 1.0f / FastMath.sqrt(length);
+            length = 1.0f / Maths.sqrt(length);
             x *= length;
             y *= length;
             z *= length;
@@ -842,7 +842,7 @@ public final class Vector3f implements Cloneable, java.io.Serializable {
      */
     public float angleBetween(Vector3f otherVector) {
         float dotProduct = dot(otherVector);
-        float angle = FastMath.acos(dotProduct);
+        float angle = Maths.acos(dotProduct);
         return angle;
     }
 
@@ -912,9 +912,9 @@ public final class Vector3f implements Cloneable, java.io.Serializable {
                                                Vector3f w) {
         float fInvLength;
 
-        if (FastMath.abs(w.x) >= FastMath.abs(w.y)) {
+        if (Maths.abs(w.x) >= Maths.abs(w.y)) {
             // w.x or w.z is the largest magnitude component, swap them
-            fInvLength = FastMath.invSqrt(w.x * w.x + w.z * w.z);
+            fInvLength = Maths.invSqrt(w.x * w.x + w.z * w.z);
             u.x = -w.z * fInvLength;
             u.y = 0.0f;
             u.z = +w.x * fInvLength;
@@ -923,7 +923,7 @@ public final class Vector3f implements Cloneable, java.io.Serializable {
             v.z = -w.y * u.x;
         } else {
             // w.y or w.z is the largest magnitude component, swap them
-            fInvLength = FastMath.invSqrt(w.y * w.y + w.z * w.z);
+            fInvLength = Maths.invSqrt(w.y * w.y + w.z * w.z);
             u.x = 0.0f;
             u.y = +w.z * fInvLength;
             u.z = -w.y * fInvLength;

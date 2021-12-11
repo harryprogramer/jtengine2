@@ -123,7 +123,7 @@ public abstract class Spatial {
      * Get scale of this spatial
      * @return spatial size
      */
-    public float getScale(){
+    public float getSize(){
         return scale;
     }
 

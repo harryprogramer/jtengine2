@@ -11,7 +11,10 @@ import thewall.engine.sdk.leveleditor.input.KeyboardInputCallback;
 import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.spatials.Light;
 import thewall.engine.twilight.system.AppSettings;
+import thewall.engine.twilight.system.NativeContext;
+import thewall.engine.twilight.system.context.lwjgl.LegacyLwjglContext;
 
+@NativeContext(context = LegacyLwjglContext.class)
 public class Editor extends LegacyApp {
     private final SpatialService spatialService = new SpatialService();
     private final AWTConsole console;
@@ -48,7 +51,7 @@ public class Editor extends LegacyApp {
         Vector3f camera = getViewPort().getCamera().getTransformation();
         getDisplay().setTitle(String.format("JTEEditor Preview 1.41 | FPS: %d | X: %.0f | Y: %.0f | Z: %.0f | LOOKING AT: %f",
                 getFPS(), camera.x, camera.y, camera.z,
-                getViewPort().getCamera().getRotation().x));
+                getViewPort().getCamera().getRotation().y));
 
     }
 

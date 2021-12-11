@@ -11,7 +11,7 @@ import thewall.engine.twilight.input.keyboard.Keyboard;
 import thewall.engine.twilight.input.keyboard.GLFWKeyboard;
 import thewall.engine.twilight.input.mouse.Mouse;
 import thewall.engine.twilight.input.mouse.GLFWMouse;
-import thewall.engine.twilight.system.lwjgl.LegacyLwjglContext;
+import thewall.engine.twilight.system.context.lwjgl.LegacyLwjglContext;
 
 import static org.lwjgl.glfw.GLFW.*;
 

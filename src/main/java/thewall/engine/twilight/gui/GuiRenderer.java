@@ -24,17 +24,17 @@ public class GuiRenderer {
         this.shader = new GuiShader(null);
     }
 
-    public void render(@NotNull List<GuiTexture> guis){
+    public void render(@NotNull List<GUIComponent> guis){
         shader.start();
         //GL30.glBindVertexArray(quad.getVaoID()); FIXME
         GL20.glEnableVertexAttribArray(0);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        for(GuiTexture texture : guis){
+        for(GUIComponent texture : guis){
             GL13.glActiveTexture(GL13.GL_TEXTURE0);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTexture());
-            Matrix4f matrix = Maths.createTransformationMatrix(texture.getPosition(), texture.getScale());
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getMaterial().getID());
+            Matrix4f matrix = Maths.createTransformationMatrix(texture.getTransformation(), texture.getScale());
             shader.loadTransformation(matrix);
             //GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount()); FIXME
         }

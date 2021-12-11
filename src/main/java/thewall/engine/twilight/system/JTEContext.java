@@ -1,5 +1,6 @@
 package thewall.engine.twilight.system;
 
+import thewall.engine.twilight.assets.AssetManager;
 import thewall.engine.twilight.audio.SoundMaster;
 import thewall.engine.twilight.display.Display;
 import thewall.engine.twilight.events.endpoints.EndpointHandler;
@@ -8,6 +9,8 @@ import thewall.engine.twilight.input.Input;
 import thewall.engine.twilight.renderer.Renderer;
 
 public interface JTEContext {
+    AssetManager getAssetsManager();
+
     EndpointHandler getEndpointHandler();
 
     SoundMaster getSoundMaster();

@@ -36,6 +36,15 @@ public class WatchdogMonitor implements WatchdogTimeMonitor{
             while (!keepAlive){
                 if(System.currentTimeMillis() - startTime > timeout){
                     logger.error("Watchdog hasn't receive keep-alive command in time, closing");
+                    if(watchedThread != null){
+                        StackTraceElement[] stackTraceElements = watchedThread.getStackTrace();
+                        if(stackTraceElements.length != 0) {
+                            logger.error("Stacktrace of thread [" + watchedThread + "]");
+                            for (StackTraceElement trace : stackTraceElements) {
+                                logger.warn(trace);
+                            }
+                        }
+                    }
                     System.exit(408);
                 }
             }

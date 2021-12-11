@@ -1,11 +1,13 @@
 package thewall.engine.twilight;
 
+import thewall.engine.twilight.assets.AssetManager;
 import thewall.engine.twilight.audio.SoundMaster;
 import thewall.engine.twilight.display.Display;
 import thewall.engine.twilight.events.EventManager;
 import thewall.engine.twilight.hardware.Hardware;
 import thewall.engine.twilight.input.Input;
 import thewall.engine.twilight.system.AppSettings;
+import thewall.engine.twilight.viewport.ViewPort;
 
 public interface Application {
     void onInit();
@@ -19,6 +21,8 @@ public interface Application {
     void setDisplay(Display display);
 
     void setEventManager(EventManager eventManager);
+
+    void setAssetsManager(AssetManager manager);
 
     int getFrameLimit();
 

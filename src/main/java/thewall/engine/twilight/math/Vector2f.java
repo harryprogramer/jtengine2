@@ -292,7 +292,7 @@ public final class Vector2f implements Cloneable, java.io.Serializable {
      * @return the length or magnitude of the vector.
      */
     public float length() {
-        return FastMath.sqrt(lengthSquared());
+        return Maths.sqrt(lengthSquared());
     }
 
     /**
@@ -340,7 +340,7 @@ public final class Vector2f implements Cloneable, java.io.Serializable {
      * @return the distance between the two vectors.
      */
     public float distance(Vector2f v) {
-        return FastMath.sqrt(distanceSquared(v));
+        return Maths.sqrt(distanceSquared(v));
     }
 
     /**
@@ -581,7 +581,7 @@ public final class Vector2f implements Cloneable, java.io.Serializable {
      */
     public float smallestAngleBetween(Vector2f otherVector) {
         float dotProduct = dot(otherVector);
-        float angle = FastMath.acos(dotProduct);
+        float angle = Maths.acos(dotProduct);
         return angle;
     }
 
@@ -596,8 +596,8 @@ public final class Vector2f implements Cloneable, java.io.Serializable {
      * @return the angle in radians.
      */
     public float angleBetween(Vector2f otherVector) {
-        float angle = FastMath.atan2(otherVector.y, otherVector.x)
-                - FastMath.atan2(y, x);
+        float angle = Maths.atan2(otherVector.y, otherVector.x)
+                - Maths.atan2(y, x);
         return angle;
     }
 
@@ -649,7 +649,7 @@ public final class Vector2f implements Cloneable, java.io.Serializable {
      * @return the angle in radians. [-pi, pi)
      */
     public float getAngle() {
-        return FastMath.atan2(y, x);
+        return Maths.atan2(y, x);
     }
 
     /**
@@ -801,8 +801,8 @@ public final class Vector2f implements Cloneable, java.io.Serializable {
         if (cw) {
             angle = -angle;
         }
-        float newX = FastMath.cos(angle) * x - FastMath.sin(angle) * y;
-        float newY = FastMath.sin(angle) * x + FastMath.cos(angle) * y;
+        float newX = Maths.cos(angle) * x - Maths.sin(angle) * y;
+        float newY = Maths.sin(angle) * x + Maths.cos(angle) * y;
         x = newX;
         y = newY;
     }

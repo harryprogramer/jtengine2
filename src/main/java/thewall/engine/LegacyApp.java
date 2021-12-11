@@ -9,8 +9,9 @@ import org.fusesource.jansi.AnsiConsole;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import thewall.engine.twilight.Application;
-import thewall.engine.twilight.Node;
-import thewall.engine.twilight.ViewPort;
+import thewall.engine.twilight.viewport.Node;
+import thewall.engine.twilight.viewport.ViewPort;
+import thewall.engine.twilight.assets.AssetManager;
 import thewall.engine.twilight.audio.SoundMaster;
 import thewall.engine.twilight.debugger.TEngineDebugger;
 import thewall.engine.twilight.debugger.console.DebugConsole;
@@ -40,6 +41,7 @@ public abstract class LegacyApp implements Application {
     private final Hardware hardware = JTESystem.createBestHardware();
     private static final AtomicBoolean isInit = new AtomicBoolean(false);
     public final Node rootNode = new Node();
+    private AssetManager assetManager;
     private EventManager eventManager;
     public final ViewPort guiViewPort;
     public final ViewPort viewPort;
@@ -67,6 +69,15 @@ public abstract class LegacyApp implements Application {
     public void setSettings(AppSettings settings){
         checkNull(settings);
         this.appSettings = settings;
+    }
+
+    @Override
+    public void setAssetsManager(AssetManager manager) {
+        this.assetManager = manager;
+    }
+
+    public AssetManager getAssetsManager() {
+        return assetManager;
     }
 
     @Override

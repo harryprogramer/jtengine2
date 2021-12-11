@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import thewall.engine.twilight.Node;
-import thewall.engine.twilight.RenderQueue;
-import thewall.engine.twilight.ViewPort;
+import thewall.engine.twilight.viewport.Node;
+import thewall.engine.twilight.viewport.RenderQueue;
+import thewall.engine.twilight.viewport.ViewPort;
 import thewall.engine.twilight.display.Display;
 import thewall.engine.twilight.events.endpoints.EndpointHandler;
 import thewall.engine.twilight.spatials.Camera;
@@ -154,7 +154,7 @@ public class GLRenderer implements Renderer {
         gl.glBindTexture(GL_TEXTURE_2D, material.getID());
 
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(spatial.getTransformation(),
-                spatial.getRotation(), spatial.getScale());
+                spatial.getRotation(), spatial.getSize());
         shader.loadTransformationMatrix(transformationMatrix);
         shader.loadOffset(new Vector2f(material.getTextureXOffset(), material.getTextureYOffset()));
     }
@@ -295,7 +295,7 @@ public class GLRenderer implements Renderer {
     }
 
     @Override
-    public void render(@NotNull ViewPort viewPort) {
+    public void render(@NotNull ViewPort viewPort, ViewPort gui) {
         prepare();
 
         Camera camera = viewPort.getCamera();
@@ -357,7 +357,7 @@ public class GLRenderer implements Renderer {
 
     private void prepareInstance(@NotNull Spatial entity){
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getTransformation(),
-                entity.getRotation(), entity.getScale());
+                entity.getRotation(), entity.getSize());
         shader.loadTransformationMatrix(transformationMatrix);
         shader.loadOffset(new Vector2f(entity.getMaterial().getTextureXOffset(), entity.getMaterial().getTextureYOffset()));
     }

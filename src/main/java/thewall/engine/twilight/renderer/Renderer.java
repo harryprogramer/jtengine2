@@ -1,19 +1,23 @@
 package thewall.engine.twilight.renderer;
 
 import org.joml.Matrix4f;
-import thewall.engine.twilight.RenderQueue;
-import thewall.engine.twilight.ViewPort;
+import thewall.engine.twilight.viewport.RenderQueue;
+import thewall.engine.twilight.viewport.ViewPort;
 import thewall.engine.twilight.renderer.opengl.GLRenderer;
 import thewall.engine.twilight.material.Colour;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
+/**
+ * Basis of the deepest level of this engine. This interface is mainly used to render the objects, gui and more.
+ * @author many
+ */
 public interface Renderer {
     /**
      * Init the renderer
      *
-     * @param viewPort current viewport
+     * @param viewPort initial viewport
      */
     void init(ViewPort viewPort);
 
@@ -54,10 +58,11 @@ public interface Renderer {
 
     /**
      *
-     * This function renders a previously prepared queue for display using {@link thewall.engine.twilight.ViewPort}.
+     * This function renders a previously prepared queue for display using {@link ViewPort}.
      * @param viewPort current viewport
+     * @param guiViewPort viewport of gui
      */
-    void render(ViewPort viewPort);
+    void render(ViewPort viewPort, ViewPort guiViewPort);
 
     /**
      * Clean up the all loaded objects and clean the renderer

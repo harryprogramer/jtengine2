@@ -31,7 +31,7 @@ public final class StaticShader extends ShaderProgram {
     private int locationRandom;
 
     public StaticShader(GL gl){
-        super("Lighting.frag", "Lighting.vert", gl);
+        super("Light/Lighting.frag", "Light/Lighting.vert", gl);
     }
 
     @Override

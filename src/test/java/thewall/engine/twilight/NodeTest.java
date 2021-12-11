@@ -3,7 +3,7 @@ package thewall.engine.twilight;
 import org.junit.jupiter.api.Test;
 import thewall.engine.twilight.spatials.Box;
 import thewall.engine.twilight.spatials.Spatial;
-import org.joml.Vector3f;
+import thewall.engine.twilight.viewport.Node;
 
 class NodeTest {
     void change(Spatial node){

@@ -1,16 +1,14 @@
 package thewall.engine.twilight.system;
 
-import com.oracle.svm.core.os.IsDefined;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import thewall.engine.twilight.hardware.Hardware;
 import thewall.engine.twilight.hardware.hna.RealtimeHNAccess;
-import thewall.engine.twilight.system.lwjgl.LegacyLwjglContext;
-import thewall.engine.twilight.system.lwjgl.linux.LinuxJTEContext;
-import thewall.engine.twilight.system.lwjgl.macos.MacOSJTEContext;
-import thewall.engine.twilight.system.lwjgl.windows.WindowsJTEContext;
+import thewall.engine.twilight.system.context.lwjgl.linux.LinuxJTEContext;
+import thewall.engine.twilight.system.context.lwjgl.macos.MacOSJTEContext;
+import thewall.engine.twilight.system.context.lwjgl.windows.WindowsJTEContext;
 
 /**
  * Static access class for system for Java Twilight Engine

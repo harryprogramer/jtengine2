@@ -3,21 +3,25 @@ package thewall.engine.twilight.runtime.app;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import thewall.engine.twilight.Application;
-import thewall.engine.twilight.RenderQueue;
-import thewall.engine.twilight.ViewPort;
+import thewall.engine.twilight.viewport.RenderQueue;
+import thewall.engine.twilight.viewport.ViewPort;
 import thewall.engine.twilight.debugger.console.DebugConsole;
 import thewall.engine.twilight.events.endpoints.EndpointHandler;
 import thewall.engine.twilight.gui.imgui.ImmediateModeGUI;
+import thewall.engine.twilight.hardware.Hardware;
 import thewall.engine.twilight.hardware.SoundCard;
 import thewall.engine.twilight.renderer.Renderer;
 import thewall.engine.twilight.renderer.SyncTimer;
 import thewall.engine.twilight.runtime.AbstractRuntime;
+import thewall.engine.twilight.system.AppSettings;
 import thewall.engine.twilight.system.JTEContext;
 import thewall.engine.twilight.system.JTESystem;
 import thewall.engine.twilight.material.Colour;
+import thewall.engine.twilight.system.NativeContext;
 import thewall.engine.twilight.utils.Validation;
 import thewall.engine.twilight.utils.WatchdogMonitor;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +49,15 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
 
     public JTEEnvironment() {
         super("JTE Environment");
+    }
+
+    private void createBestContext(AppSettings settings, Hardware hardware){
+        try {
+            this.context = JTESystem.findBestContext(settings, hardware);
+        } catch (Throwable e) {
+            logger.fatal("Fatal error while creating context for app, aborting");
+            throw e;
+        }
     }
 
     @Override
@@ -78,11 +91,32 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
 
         logger.info("Finding best context for runtime");
 
-        try {
-            this.context = JTESystem.findBestContext(program.getSettings(), program.getHardware());
-        }catch (Throwable e){
-            logger.fatal("Fatal error while creating context for app, aborting");
-            throw e;
+        Class<?> clazz = program.getClass();
+        if(clazz.isAnnotationPresent(NativeContext.class)){
+            NativeContext nativeContext = clazz.getAnnotation(NativeContext.class);
+            Class<? extends JTEContext> contextClazz = nativeContext.context();
+            try {
+                Constructor<? extends JTEContext> constructor = null;
+
+                try{
+                    constructor = contextClazz.getDeclaredConstructor(AppSettings.class);
+                    this.context = constructor.newInstance(program.getSettings());
+                }finally {
+                    if(constructor == null){
+                        try{
+                            this.context = contextClazz.getDeclaredConstructor().newInstance();
+                        }catch (Throwable t){
+                            logger.error(String.format("Cannot create native context [%s]", contextClazz.getName()), t);
+                            createBestContext(program.getSettings(), program.getHardware());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                logger.error(String.format("Cannot create native context [%s]", contextClazz.getName()), e);
+                createBestContext(program.getSettings(), program.getHardware());
+            }
+        }else {
+            createBestContext(program.getSettings(), program.getHardware());
         }
 
         context.init();
@@ -172,6 +206,7 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
                 app.update();
 
                 ViewPort worldViewport = app.getViewPort();
+                ViewPort guiViewport = app.getGUIViewPort();
                 RenderQueue renderQueue = worldViewport.getRenderQueue();
 
                 renderer.prepareRenderQueue(renderQueue);
@@ -179,7 +214,7 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
                 if(isImGUI) { // TODO: move to renderer
                     endpointHandler.callEndpoint(ImmediateModeGUI.GUI_ENDPOINT);
                 }
-                renderer.render(worldViewport);
+                renderer.render(worldViewport, guiViewport);
 
                 watchdog.keepAlive();
 
