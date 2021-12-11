@@ -13,9 +13,9 @@ public class ViewPort2D {
     private Colour backgroundColour = Colour.AQUA;
 
     private static int VIEWPORT_NAME_INDEX = 0;
+    private Camera camera = new Camera();
     private List<Light> lights;
     private String name;
-    private Camera camera;
 
     public ViewPort2D(String name){
         Validation.checkNull(name);

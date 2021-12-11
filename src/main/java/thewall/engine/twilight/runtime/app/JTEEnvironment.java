@@ -2,10 +2,11 @@ package thewall.engine.twilight.runtime.app;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector2f;
 import thewall.engine.twilight.Application;
-import thewall.engine.twilight.viewport.RenderQueue;
-import thewall.engine.twilight.viewport.RenderQueue2D;
-import thewall.engine.twilight.viewport.ViewPort;
+import thewall.engine.twilight.gui.GuiImage;
+import thewall.engine.twilight.texture.Texture;
+import thewall.engine.twilight.viewport.*;
 import thewall.engine.twilight.debugger.console.DebugConsole;
 import thewall.engine.twilight.events.endpoints.EndpointHandler;
 import thewall.engine.twilight.gui.imgui.ImmediateModeGUI;
@@ -21,7 +22,6 @@ import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.system.NativeContext;
 import thewall.engine.twilight.utils.Validation;
 import thewall.engine.twilight.utils.WatchdogMonitor;
-import thewall.engine.twilight.viewport.ViewPort2D;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -138,9 +138,11 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
 
         initAppCapacities();
 
-        app.onInit();
-
         renderer.init(app.getViewPort());
+
+        displayIntro();
+
+        app.onInit();
 
         endpointHandler = context.getEndpointHandler();
 
@@ -153,7 +155,35 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
 
         isImGUI = endpointHandler.getRoutes(ImmediateModeGUI.GUI_ENDPOINT) != null;
 
+
+        renderer.setBackground(Colour.AQUA);
+        renderer.showSkybox();
+
         loop();
+    }
+
+    private void displayIntro(){
+        app.getGUIViewPort().getRenderQueue().clear();
+
+        long startTime = System.currentTimeMillis();
+        Texture texture = context.getAssetsManager().loadTexture("nvidia-logo.png");
+        GuiImage image = new GuiImage(texture, new Vector2f(0, 0), 0.85f, 0.85f);
+        Node2D node2D = new Node2D();
+        node2D.attachChild(image);
+        app.getGUIViewPort().attachScene(node2D);
+        renderer.hideSkybox();
+        renderer.setBackground(Colour.WHITE);
+        renderer.prepareRenderQueue(app.getViewPort().getRenderQueue(), app.getGUIViewPort().getRenderQueue());
+        while (true){
+            long endTime = System.currentTimeMillis();
+            if(endTime - startTime > 1500){
+                break;
+            }
+            context.update();
+            renderer.render(app.getViewPort(), app.getGUIViewPort());
+        }
+
+        app.getGUIViewPort().getRenderQueue().clear();
     }
 
     private void initAppCapacities(){

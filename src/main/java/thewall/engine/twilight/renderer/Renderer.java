@@ -44,6 +44,10 @@ public interface Renderer {
      */
     Matrix4f getProjectionMatrix();
 
+    void hideSkybox();
+
+    void showSkybox();
+
     /**
      * Change projection matrix
      * @param matrix matrix to change

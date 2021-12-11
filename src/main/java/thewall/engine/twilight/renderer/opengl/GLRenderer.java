@@ -58,6 +58,8 @@ public class GLRenderer implements Renderer {
     private Map<Material, List<Spatial2D>> queue2D = new HashMap<>();
     private Matrix4f viewMatrix;
 
+    private boolean isSkybox = false;
+
     private SkyboxRender skyboxRender;
 
     private StaticShader shader;
@@ -305,6 +307,16 @@ public class GLRenderer implements Renderer {
     }
 
     @Override
+    public void hideSkybox() {
+        this.isSkybox = false;
+    }
+
+    @Override
+    public void showSkybox() {
+        this.isSkybox = true;
+    }
+
+    @Override
     public void changeProjectionMatrix(Matrix4f matrix) {
         Validation.checkNull(matrix);
         this.viewMatrix = matrix;
@@ -432,7 +444,9 @@ public class GLRenderer implements Renderer {
         terrainRenderer.render(terrains);
         terrainShader.stop();
          */
-        skyboxRender.render(viewPort.getCamera());
+        if(isSkybox) {
+            skyboxRender.render(viewPort.getCamera());
+        }
         render2D(viewPort2D);
 
         gl.glFlush();

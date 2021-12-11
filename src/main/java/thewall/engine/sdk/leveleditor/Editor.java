@@ -39,9 +39,9 @@ public class Editor extends LegacyApp {
         getDisplay().setVSync(false);
         getViewPort().addLight(new Light(new Vector3f(0, 5000, 0), Colour.WHITE, new Vector3f(0.000001f, 0.000001f, 0.000001f)));
 
-        Texture guiTexture = getAssetsManager().loadTexture("pistole.png");
-        GuiImage image = new GuiImage(guiTexture, new Vector2f(0.5f, 0.5f), 0.25f, 0.25f);
-        guiNode.attachChild(image);
+        //Texture guiTexture = getAssetsManager().loadTexture("pistole.png");
+        //GuiImage image = new GuiImage(guiTexture, new Vector2f(0.5f, 0.5f), 0.25f, 0.25f);
+        //guiNode.attachChild(image);
     }
 
     private long previousTime = System.currentTimeMillis();

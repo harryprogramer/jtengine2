@@ -13,9 +13,9 @@ public final class ViewPort {
     private Colour backgroundColour = Colour.AQUA;
 
     private static int VIEWPORT_NAME_INDEX = 0;
+    private Camera camera = new Camera();
     private List<Light> lights;
     private String name;
-    private Camera camera;
 
     public ViewPort(String name){
         Validation.checkNull(name);
