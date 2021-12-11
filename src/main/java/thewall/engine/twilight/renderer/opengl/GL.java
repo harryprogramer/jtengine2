@@ -1353,4 +1353,14 @@ public interface GL {
     boolean isGL3Support();
 
     boolean isGL4Support();
+
+    /**
+     * Specifies the weighting factors used by the blend equation, for both RGB and alpha functions and for all draw buffers.
+     *
+     * @param glSrcAlpha the source weighting factor. One of:<br><table><tr><td>{@link GL11C#GL_ZERO ZERO}</td><td>{@link GL11C#GL_ONE ONE}</td><td>{@link GL11C#GL_SRC_COLOR SRC_COLOR}</td><td>{@link GL11C#GL_ONE_MINUS_SRC_COLOR ONE_MINUS_SRC_COLOR}</td><td>{@link GL11C#GL_DST_COLOR DST_COLOR}</td></tr><tr><td>{@link GL11C#GL_ONE_MINUS_DST_COLOR ONE_MINUS_DST_COLOR}</td><td>{@link GL11C#GL_SRC_ALPHA SRC_ALPHA}</td><td>{@link GL11C#GL_ONE_MINUS_SRC_ALPHA ONE_MINUS_SRC_ALPHA}</td><td>{@link GL11C#GL_DST_ALPHA DST_ALPHA}</td><td>{@link GL11C#GL_ONE_MINUS_DST_ALPHA ONE_MINUS_DST_ALPHA}</td></tr><tr><td>{@link GL14#GL_CONSTANT_COLOR CONSTANT_COLOR}</td><td>{@link GL14#GL_ONE_MINUS_CONSTANT_COLOR ONE_MINUS_CONSTANT_COLOR}</td><td>{@link GL14#GL_CONSTANT_ALPHA CONSTANT_ALPHA}</td><td>{@link GL14#GL_ONE_MINUS_CONSTANT_ALPHA ONE_MINUS_CONSTANT_ALPHA}</td><td>{@link GL11C#GL_SRC_ALPHA_SATURATE SRC_ALPHA_SATURATE}</td></tr><tr><td>{@link GL33#GL_SRC1_COLOR SRC1_COLOR}</td><td>{@link GL33#GL_ONE_MINUS_SRC1_COLOR ONE_MINUS_SRC1_COLOR}</td><td>{@link GL15#GL_SRC1_ALPHA SRC1_ALPHA}</td><td>{@link GL33#GL_ONE_MINUS_SRC1_ALPHA ONE_MINUS_SRC1_ALPHA}</td></tr></table>
+     * @param glOneMinusSrcAlpha the destination weighting factor
+     *
+     * @see <a target="_blank" href="http://docs.gl/gl4/glBlendFunc">Reference Page</a>
+     */
+    void glBlendFunc(int glSrcAlpha, int glOneMinusSrcAlpha);
 }

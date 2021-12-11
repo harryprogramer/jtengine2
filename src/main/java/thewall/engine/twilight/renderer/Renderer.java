@@ -2,9 +2,11 @@ package thewall.engine.twilight.renderer;
 
 import org.joml.Matrix4f;
 import thewall.engine.twilight.viewport.RenderQueue;
+import thewall.engine.twilight.viewport.RenderQueue2D;
 import thewall.engine.twilight.viewport.ViewPort;
 import thewall.engine.twilight.renderer.opengl.GLRenderer;
 import thewall.engine.twilight.material.Colour;
+import thewall.engine.twilight.viewport.ViewPort2D;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
@@ -54,15 +56,15 @@ public interface Renderer {
      * For example, the queue handled by {@link GLRenderer} prepares objects and generates a VAO for them.
      * @param renderQueue render queue to prepare
      */
-    void prepareRenderQueue(RenderQueue renderQueue);
+    void prepareRenderQueue(RenderQueue renderQueue, RenderQueue2D renderQueue2D);
 
     /**
      *
      * This function renders a previously prepared queue for display using {@link ViewPort}.
      * @param viewPort current viewport
-     * @param guiViewPort viewport of gui
+     * @param viewport2D viewport of 2d
      */
-    void render(ViewPort viewPort, ViewPort guiViewPort);
+    void render(ViewPort viewPort, ViewPort2D viewport2D);
 
     /**
      * Clean up the all loaded objects and clean the renderer

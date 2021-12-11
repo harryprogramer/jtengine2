@@ -1,7 +1,6 @@
 package thewall.engine.twilight.spatials;
 
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.material.Material;
 import thewall.engine.twilight.models.Mesh;
@@ -10,11 +9,25 @@ import thewall.engine.twilight.utils.Validation;
 public abstract class Spatial2D {
     private static int SPATIAL_INDEX = 0;
     private final Vector2f transformation = new Vector2f(0, 0);
+    private final Vector2f scale = new Vector2f(1, 1);
     private final Vector2f rotation = new Vector2f();
     private Material material;
-    private float scale = 1;
+    private float size = 1;
     private String name;
     private Mesh mesh;
+
+
+    public Vector2f getScale(){
+        return scale;
+    }
+
+    public void setScale(Vector2f scale){
+        if(scale == null){
+            throw new NullPointerException("Scale is null");
+        }
+
+        this.scale.set(scale);
+    }
 
     /**
      * Spatial2D
@@ -113,7 +126,7 @@ public abstract class Spatial2D {
      * @param scale spatial scale
      */
     public void setSize(float scale){
-        this.scale = scale;
+        this.size = scale;
     }
 
     /**
@@ -121,7 +134,7 @@ public abstract class Spatial2D {
      * @return spatial size
      */
     public float getSize(){
-        return scale;
+        return size;
     }
 
     /**
@@ -160,7 +173,7 @@ public abstract class Spatial2D {
         return "Spatial{" +
                 "transformation=" + transformation +
                 ", rotation=" + rotation +
-                ", scale=" + scale +
+                ", scale=" + size +
                 ", name='" + name + '\'' +
                 '}';
     }

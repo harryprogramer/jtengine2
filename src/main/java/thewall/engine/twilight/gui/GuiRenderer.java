@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import thewall.engine.twilight.models.Loader;
-import thewall.engine.twilight.shaders.GuiShader;
+import thewall.engine.twilight.shaders.GUIShader;
 import thewall.engine.twilight.math.Maths;
 
 import java.util.List;
@@ -16,12 +16,12 @@ import java.util.List;
 public class GuiRenderer {
 
     private /*FIXME*/ Object quad;
-    private GuiShader shader;
+    private GUIShader shader;
 
     public GuiRenderer(@NotNull Loader loader){
         float[] positions = {-1, 1, -1, -1, 1, 1, 1 ,-1};
-        // FIXME this.quad = loader.loadToVAO(positions);
-        this.shader = new GuiShader(null);
+        loader.loadToVAO(positions);
+        this.shader = new GUIShader(null, null);
     }
 
     public void render(@NotNull List<GUIComponent> guis){

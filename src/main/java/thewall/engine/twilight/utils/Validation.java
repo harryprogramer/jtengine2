@@ -109,9 +109,9 @@ public class Validation {
         return obj;
     }
 
-    public static <T> T checkNull(T obj, String name){
-        if(isNull(obj, name)){
-            throw new NullPointerException(name +  " cannot be null");
+    public static <T> T checkNull(T obj, String msg){
+        if(isNull(obj, msg)){
+            throw new NullPointerException(msg);
         }
 
         return obj;

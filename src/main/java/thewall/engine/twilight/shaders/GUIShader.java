@@ -2,16 +2,19 @@ package thewall.engine.twilight.shaders;
 
 import org.joml.Matrix4f;
 import thewall.engine.twilight.renderer.opengl.GL;
+import thewall.engine.twilight.renderer.opengl.vao.VAOManager;
 
-public final class GuiShader extends ShaderProgram{
+public final class GUIShader extends ShaderProgram{
 
     private static final String VERTEX_FILE = "gui/Gui.vert";
     private static final String FRAGMENT_FILE = "gui/Gui.frag";
 
+    private final int vao;
     private int location_transformationMatrix;
 
-    public GuiShader(GL gl) {
+    public GUIShader(GL gl, VAOManager manager) {
         super(VERTEX_FILE, FRAGMENT_FILE, gl);
+        this.vao = manager.loadToVAO(new float[]{-1, 1, -1, -1, 1, 1, 1, -1}, 2);
     }
 
     public void loadTransformation(Matrix4f matrix){

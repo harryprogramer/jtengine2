@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import thewall.engine.twilight.Application;
 import thewall.engine.twilight.viewport.RenderQueue;
+import thewall.engine.twilight.viewport.RenderQueue2D;
 import thewall.engine.twilight.viewport.ViewPort;
 import thewall.engine.twilight.debugger.console.DebugConsole;
 import thewall.engine.twilight.events.endpoints.EndpointHandler;
@@ -20,6 +21,7 @@ import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.system.NativeContext;
 import thewall.engine.twilight.utils.Validation;
 import thewall.engine.twilight.utils.WatchdogMonitor;
+import thewall.engine.twilight.viewport.ViewPort2D;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -159,6 +161,7 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
         this.app.setInput(context.getInput());
         this.app.setSound(context.getSoundMaster());
         this.app.setDisplay(context.getDisplay());
+        this.app.setAssetsManager(context.getAssetsManager());
         this.renderer = context.getRenderer();
     }
     @Override
@@ -206,15 +209,16 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
                 app.update();
 
                 ViewPort worldViewport = app.getViewPort();
-                ViewPort guiViewport = app.getGUIViewPort();
+                ViewPort2D viewport2D = app.getGUIViewPort();
                 RenderQueue renderQueue = worldViewport.getRenderQueue();
+                RenderQueue2D queue2D = viewport2D.getRenderQueue();
 
-                renderer.prepareRenderQueue(renderQueue);
+                renderer.prepareRenderQueue(renderQueue, queue2D);
 
                 if(isImGUI) { // TODO: move to renderer
                     endpointHandler.callEndpoint(ImmediateModeGUI.GUI_ENDPOINT);
                 }
-                renderer.render(worldViewport, guiViewport);
+                renderer.render(worldViewport, viewport2D);
 
                 watchdog.keepAlive();
 

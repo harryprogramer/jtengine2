@@ -339,4 +339,9 @@ public final class LwjglGL implements GL, GL2, GL3, GL4 {
     public void glDrawArrays(int mode, int first, int count) {
         GL11.glDrawArrays(mode, first, count);
     }
+
+    @Override
+    public void glBlendFunc(int glSrcAlpha, int glOneMinusSrcAlpha) {
+        GL11.glBlendFunc(glSrcAlpha, glOneMinusSrcAlpha);
+    }
 }

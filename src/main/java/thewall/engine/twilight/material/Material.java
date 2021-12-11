@@ -99,6 +99,7 @@ public class Material {
         this.multiTextureRows = texture.getTextureAtlasSize();
         this.reflectivity = texture.getReflectivity();
         this.textureIndex = texture.getTextureAtlasIndex();
+        this.materialFormat = texture.getPixelFormat();
         /*
         try {
             ByteBuffer byteBuffer = loadTexture(new FileInputStream(filename), PixelFormat.RGBA);

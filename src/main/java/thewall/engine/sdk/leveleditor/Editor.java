@@ -1,6 +1,7 @@
 package thewall.engine.sdk.leveleditor;
 
 
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import thewall.engine.LegacyApp;
 import thewall.engine.sdk.leveleditor.dashboard.AWTConsole;
@@ -8,11 +9,13 @@ import thewall.engine.sdk.leveleditor.dashboard.EditorCamera;
 import thewall.engine.sdk.leveleditor.dashboard.SpatialService;
 import thewall.engine.sdk.leveleditor.dashboard.commands.*;
 import thewall.engine.sdk.leveleditor.input.KeyboardInputCallback;
+import thewall.engine.twilight.gui.GuiImage;
 import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.spatials.Light;
 import thewall.engine.twilight.system.AppSettings;
 import thewall.engine.twilight.system.NativeContext;
 import thewall.engine.twilight.system.context.lwjgl.LegacyLwjglContext;
+import thewall.engine.twilight.texture.Texture;
 
 @NativeContext(context = LegacyLwjglContext.class)
 public class Editor extends LegacyApp {
@@ -35,6 +38,10 @@ public class Editor extends LegacyApp {
         setFrameLimit(190);
         getDisplay().setVSync(false);
         getViewPort().addLight(new Light(new Vector3f(0, 5000, 0), Colour.WHITE, new Vector3f(0.000001f, 0.000001f, 0.000001f)));
+
+        Texture guiTexture = getAssetsManager().loadTexture("pistole.png");
+        GuiImage image = new GuiImage(guiTexture, new Vector2f(0.5f, 0.5f), 0.25f, 0.25f);
+        guiNode.attachChild(image);
     }
 
     private long previousTime = System.currentTimeMillis();

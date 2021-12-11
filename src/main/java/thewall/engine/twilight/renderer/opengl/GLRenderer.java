@@ -1,14 +1,17 @@
 package thewall.engine.twilight.renderer.opengl;
 
+import com.google.common.primitives.Floats;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import thewall.engine.twilight.viewport.Node;
-import thewall.engine.twilight.viewport.RenderQueue;
-import thewall.engine.twilight.viewport.ViewPort;
+import thewall.engine.twilight.errors.OpenGLException;
+import thewall.engine.twilight.models.Mesh;
+import thewall.engine.twilight.shaders.GUIShader;
+import thewall.engine.twilight.spatials.Spatial2D;
+import thewall.engine.twilight.viewport.*;
 import thewall.engine.twilight.display.Display;
 import thewall.engine.twilight.events.endpoints.EndpointHandler;
 import thewall.engine.twilight.spatials.Camera;
@@ -33,10 +36,7 @@ import thewall.engine.twilight.utils.Validation;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
@@ -55,11 +55,13 @@ public class GLRenderer implements Renderer {
     private final static Logger logger = LogManager.getLogger(GLRenderer.class);
     //private RenderQueue currentQueue = new RenderQueue();
     private Map<Material, List<Spatial>> queue = new HashMap<>();
+    private Map<Material, List<Spatial2D>> queue2D = new HashMap<>();
     private Matrix4f viewMatrix;
 
     private SkyboxRender skyboxRender;
 
     private StaticShader shader;
+    private GUIShader guiShader;
 
     private final GL gl;
     private final GL gl2;
@@ -69,6 +71,8 @@ public class GLRenderer implements Renderer {
     private final GLTextureManager textureManager;
 
     private final List<Class<?>> deprecatedList = new ArrayList<>();
+
+    private Mesh quadVAO = null;
 
     private TerrainRenderer terrainRenderer;
     private TerrainShader terrainShader;
@@ -185,6 +189,7 @@ public class GLRenderer implements Renderer {
 
         this.skyboxRender = new SkyboxRender(textureManager, viewMatrix, gl, vaoManager);
         this.terrainShader = new TerrainShader(gl);
+        this.guiShader = new GUIShader(gl, vaoManager);
         this.terrainRenderer = new TerrainRenderer(terrainShader, viewMatrix);
 
         TerrainTexture backgroundTexture = new TerrainTexture(textureManager.loadTexture("grass3", PixelFormat.RGBA));
@@ -196,37 +201,59 @@ public class GLRenderer implements Renderer {
         Terrain terrain = new Terrain(0, 0, vaoManager, texturePack, blendMap, "heightMap");
         terrains.add(terrain);
 
+        int id = vaoManager.loadToVAO(new float[]{-1, 1, -1, -1, 1, 1, 1 ,-1}, 2);
+        if(id == 0 || id == -1){
+            throw new OpenGLException("Generated VAO for quad is 0 or -1");
+        }
+        Mesh mesh = new Mesh();
+        mesh.setID(id);
+        this.quadVAO = mesh;
+
         this.shader.start();
         this.shader.loadTransformationMatrix(viewMatrix);
         this.shader.stop();
     }
 
-    @Override
-    public void setBackground(Colour colour) {
-        Validation.checkNull(colour);
-        this.backgroundColour = colour;
+    private void prepareQueue2D(RenderQueue2D queue2D){
+        for (int i = 0; i < queue2D.size(); i++) {
+            List<Spatial2D> spatialList = queue2D.get(i).getChildren();
+            for (Spatial2D spatial : spatialList) {
+                if (spatial.getMesh() == null) {
+                    throw new NullPointerException("Mesh is not set");
+                }
+                if (spatial.getMaterial() == null) {
+                    throw new NullPointerException("Material is not set");
+                }
+
+                if (spatial.getMesh().getID() == -1) {
+                    spatial.getMesh().setID(vaoManager.loadToVAO(Floats.toArray(spatial.getMesh().getVertices()), 2));
+                }
+
+                if (spatial.getMaterial().getID() == -1) {
+                    Material material = spatial.getMaterial();
+                    if (material.getMaterialBuffer() == null || material.getMaterialBuffer().capacity() == 0) {
+                        throw new IllegalStateException("Material has null or zero texture buffer");
+                    }
+                    if (material.getMaterialWidth() == 0 || material.getMaterialHeight() == 0) {
+                        throw new TextureDecoderException("Invalid material texture width or height");
+                    }
+                    int id = textureManager.loadTexture(material.getMaterialBuffer(), material.getMaterialWidth(), material.getMaterialHeight(), material.getMaterialFormat());
+                    spatial.getMaterial().setID(id);
+                }
+
+            }
+        }
+        for(int i = 0; i < queue2D.size(); i++){
+            Node2D node = queue2D.get(i);
+            for(Spatial2D spatial : node.getChildren()) {
+                addToQueue2D(spatial);
+            }
+        }
     }
 
-    @Override
-    public void setViewPort(int x, int y, int width, int height) {
-        gl.glViewport(x, y, width, height);
-    }
-
-    @Override
-    public Matrix4f getProjectionMatrix() {
-        return viewMatrix;
-    }
-
-    @Override
-    public void changeProjectionMatrix(Matrix4f matrix) {
-        Validation.checkNull(matrix);
-        this.viewMatrix = matrix;
-    }
-
-    @Override
-    public void prepareRenderQueue(RenderQueue renderQueue) {
-        for (int i = 0; i < renderQueue.size(); i++) {
-            List<Spatial> spatialList = renderQueue.get(i).getChildren();
+    private void prepareQueue3D(RenderQueue queue){
+        for (int i = 0; i < queue.size(); i++) {
+            List<Spatial> spatialList = queue.get(i).getChildren();
             for (Spatial spatial : spatialList) {
                 if (spatial.getMesh() == null) {
                     throw new NullPointerException("Mesh is not set");
@@ -253,15 +280,56 @@ public class GLRenderer implements Renderer {
 
             }
         }
-        for(int i = 0; i < renderQueue.size(); i++){
-            Node node = renderQueue.get(i);
+        for(int i = 0; i < queue.size(); i++){
+            Node node = queue.get(i);
             for(Spatial spatial : node.getChildren()) {
-                addToQueue(spatial);
+                addToQueue3D(spatial);
             }
         }
     }
 
-    private void addToQueue(@NotNull Spatial entity){
+    @Override
+    public void setBackground(Colour colour) {
+        Validation.checkNull(colour);
+        this.backgroundColour = colour;
+    }
+
+    @Override
+    public void setViewPort(int x, int y, int width, int height) {
+        gl.glViewport(x, y, width, height);
+    }
+
+    @Override
+    public Matrix4f getProjectionMatrix() {
+        return viewMatrix;
+    }
+
+    @Override
+    public void changeProjectionMatrix(Matrix4f matrix) {
+        Validation.checkNull(matrix);
+        this.viewMatrix = matrix;
+    }
+
+    @Override
+    public void prepareRenderQueue(RenderQueue renderQueue, RenderQueue2D renderQueue2D) {
+        prepareQueue2D(renderQueue2D);
+        prepareQueue3D(renderQueue);
+    }
+
+    private void addToQueue2D(@NotNull Spatial2D entity){
+        checkForDeprecation(entity.getClass());
+        Material entityModel = entity.getMaterial();
+        List<Spatial2D> batch = queue2D.get(entityModel);
+        if(batch != null){
+            batch.add(entity);
+        }else {
+            List<Spatial2D> newBatch = new ArrayList<>();
+            newBatch.add(entity);
+            queue2D.put(entityModel, newBatch);
+        }
+    }
+
+    private void addToQueue3D(@NotNull Spatial entity){
         checkForDeprecation(entity.getClass());
         Material entityModel = entity.getMaterial();
         List<Spatial> batch = queue.get(entityModel);
@@ -294,8 +362,49 @@ public class GLRenderer implements Renderer {
         deprecatedList.add(entity);
     }
 
+    public void render2D(@NotNull ViewPort2D viewport){
+        guiShader.start();
+        gl3.glBindVertexArray(quadVAO.getID());
+        gl2.glEnableVertexAttribArray(0);
+        gl.glEnable(GL_BLEND);
+        gl.glDisable(GL_DEPTH_TEST);
+
+        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        RenderQueue2D queue2D = viewport.getRenderQueue();
+
+        for (Node2D node2D : queue2D) {
+            List<Spatial2D> guis = node2D.getChildren();
+            for (Spatial2D gui : guis) {
+                gl.glActiveTexture(GL_TEXTURE0);
+                gl.glBindTexture(GL_TEXTURE_2D, gui.getMaterial().getID());
+                Matrix4f matrix = Maths.createTransformationMatrix(gui.getTransformation(), gui.getScale());
+                shader.loadTransformationMatrix(matrix);
+                gl.glDrawArrays(GL_TRIANGLE_STRIP, 0, quadVAO.getID());
+            }
+        }
+        gl.glDisable(GL_BLEND);
+        gl.glEnable(GL_DEPTH_TEST);
+        gl2.glDisableVertexAttribArray(0);
+        gl2.glBindVertexArray(0);
+        guiShader.stop();
+    }
+
+    private void render3D(){
+        for(Material model : queue.keySet()){
+            List<Spatial> batch = queue.get(model);
+            for(Spatial entity : batch){
+                prepareTexturedModel(model, entity);
+                prepareInstance(entity);
+                gl.glDrawElements(GL_TRIANGLES, entity.getMesh().getCoordinatesSize(), GL_UNSIGNED_INT, 0);
+            }
+
+            unbindTexturedModel();
+        }
+    }
+
     @Override
-    public void render(@NotNull ViewPort viewPort, ViewPort gui) {
+    public void render(@NotNull ViewPort viewPort, ViewPort2D viewPort2D) {
         prepare();
 
         Camera camera = viewPort.getCamera();
@@ -313,17 +422,7 @@ public class GLRenderer implements Renderer {
         shader.loadSkyColor(backgroundColour);
         shader.loadLights(lights);
         shader.loadViewMatrix(camera);
-        for(Material model : queue.keySet()){
-            List<Spatial> batch = queue.get(model);
-            for(Spatial entity : batch){
-                prepareTexturedModel(model, entity);
-                prepareInstance(entity);
-                gl.glDrawElements(GL_TRIANGLES, entity.getMesh().getCoordinatesSize(), GL_UNSIGNED_INT, 0);
-            }
-
-            unbindTexturedModel();
-        }
-
+        render3D();
         shader.stop();
         /*
         terrainShader.start();
@@ -334,9 +433,11 @@ public class GLRenderer implements Renderer {
         terrainShader.stop();
          */
         skyboxRender.render(viewPort.getCamera());
+        render2D(viewPort2D);
 
         gl.glFlush();
 
+        queue2D.clear();
         queue.clear();
     }
 

@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import thewall.engine.twilight.Application;
 import thewall.engine.twilight.viewport.Node;
+import thewall.engine.twilight.viewport.Node2D;
 import thewall.engine.twilight.viewport.ViewPort;
 import thewall.engine.twilight.assets.AssetManager;
 import thewall.engine.twilight.audio.SoundMaster;
@@ -27,6 +28,7 @@ import thewall.engine.twilight.runtime.TwilightRuntimeService;
 import thewall.engine.twilight.runtime.app.JTEEnvironment;
 import thewall.engine.twilight.system.AppSettings;
 import thewall.engine.twilight.system.JTESystem;
+import thewall.engine.twilight.viewport.ViewPort2D;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,10 +42,11 @@ public abstract class LegacyApp implements Application {
     private final static Logger logger = LogManager.getLogger(LegacyApp.class);
     private final Hardware hardware = JTESystem.createBestHardware();
     private static final AtomicBoolean isInit = new AtomicBoolean(false);
+    public final Node2D guiNode = new Node2D();
     public final Node rootNode = new Node();
     private AssetManager assetManager;
     private EventManager eventManager;
-    public final ViewPort guiViewPort;
+    public final ViewPort2D guiViewPort;
     public final ViewPort viewPort;
     private int fps = 0;
 
@@ -57,7 +60,7 @@ public abstract class LegacyApp implements Application {
 
     public LegacyApp(){
         this.viewPort = new ViewPort();
-        this.guiViewPort = new ViewPort();
+        this.guiViewPort = new ViewPort2D();
         this.appSettings = new AppSettings();
     }
 
@@ -107,7 +110,8 @@ public abstract class LegacyApp implements Application {
     public void onInit() {
         viewPort.attachScene(rootNode);
         viewPort.setCamera(new Camera());
-
+        guiViewPort.attachScene(guiNode);
+        guiViewPort.setCamera(new Camera());
         init();
     }
 
@@ -161,7 +165,7 @@ public abstract class LegacyApp implements Application {
     }
 
     @Override
-    public ViewPort getGUIViewPort() {
+    public ViewPort2D getGUIViewPort() {
         return guiViewPort;
     }
 

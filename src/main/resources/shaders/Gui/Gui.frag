@@ -1,5 +1,4 @@
-#version 140                                                                                                                        #version 140
-
+#version 400 core
 in vec2 textureCoords;
 
 out vec4 out_Color;

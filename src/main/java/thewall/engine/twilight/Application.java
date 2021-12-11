@@ -8,6 +8,7 @@ import thewall.engine.twilight.hardware.Hardware;
 import thewall.engine.twilight.input.Input;
 import thewall.engine.twilight.system.AppSettings;
 import thewall.engine.twilight.viewport.ViewPort;
+import thewall.engine.twilight.viewport.ViewPort2D;
 
 public interface Application {
     void onInit();
@@ -32,7 +33,7 @@ public interface Application {
 
     AppSettings getSettings();
 
-    ViewPort getGUIViewPort();
+    ViewPort2D getGUIViewPort();
 
     ViewPort getViewPort();
 

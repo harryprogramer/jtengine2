@@ -50,7 +50,9 @@ public final class JTEGLTextureManager implements GLTextureManager {
         }
     }
 
-    private int generateTexture(ByteBuffer buffer, int width, int height , @NotNull PixelFormat format, Map<GLTextureParameter, GLTextureFilter> parameters){
+    private int generateTexture(ByteBuffer buffer, int width, int height , PixelFormat format, Map<GLTextureParameter, GLTextureFilter> parameters){
+        Validation.checkNull(format, "PixelFormat is null");
+        Validation.checkNull("Texture parameters is null");
         int id = gl.glGenTextures();
 
         textures.add(id);
