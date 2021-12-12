@@ -4,10 +4,10 @@ import org.joml.Matrix4f;
 import thewall.engine.twilight.renderer.opengl.GL;
 import thewall.engine.twilight.renderer.opengl.vao.VAOManager;
 
-public final class GUIShader extends ShaderProgram{
+public final class GUIShader extends GLShaderProgram {
 
-    private static final String VERTEX_FILE = "gui/Gui.vert";
-    private static final String FRAGMENT_FILE = "gui/Gui.frag";
+    private static final String VERTEX_FILE = "opengl/Gui/Gui.vert";
+    private static final String FRAGMENT_FILE = "opengl/Gui/Gui.frag";
 
     private final int vao;
     private int location_transformationMatrix;

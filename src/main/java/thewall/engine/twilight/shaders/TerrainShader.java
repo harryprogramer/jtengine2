@@ -10,7 +10,7 @@ import thewall.engine.twilight.renderer.opengl.GL;
 
 import java.util.List;
 
-public final class TerrainShader extends ShaderProgram{
+public final class TerrainShader extends GLShaderProgram {
     private static final int MAX_LIGHTS = 4;
 
     private int locationTransformationMatrix;
@@ -29,7 +29,7 @@ public final class TerrainShader extends ShaderProgram{
     private int locationBlendMap;
 
     public TerrainShader(GL gl){
-        super("terrain/TerrainLighting.vert", "terrain/TerrainLighting.frag", gl);
+        super("opengl/Terrain/TerrainLighting.vert", "opengl/Terrain/TerrainLighting.frag", gl);
     }
 
     @Override

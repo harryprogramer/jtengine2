@@ -1,7 +1,6 @@
 package thewall.engine.sdk.leveleditor;
 
 
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import thewall.engine.LegacyApp;
 import thewall.engine.sdk.leveleditor.dashboard.AWTConsole;
@@ -9,13 +8,11 @@ import thewall.engine.sdk.leveleditor.dashboard.EditorCamera;
 import thewall.engine.sdk.leveleditor.dashboard.SpatialService;
 import thewall.engine.sdk.leveleditor.dashboard.commands.*;
 import thewall.engine.sdk.leveleditor.input.KeyboardInputCallback;
-import thewall.engine.twilight.gui.GuiImage;
 import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.spatials.Light;
 import thewall.engine.twilight.system.AppSettings;
 import thewall.engine.twilight.system.NativeContext;
-import thewall.engine.twilight.system.context.lwjgl.LegacyLwjglContext;
-import thewall.engine.twilight.texture.Texture;
+import thewall.engine.twilight.system.context.opengl.lwjgl.LegacyLwjglContext;
 
 @NativeContext(context = LegacyLwjglContext.class)
 public class Editor extends LegacyApp {

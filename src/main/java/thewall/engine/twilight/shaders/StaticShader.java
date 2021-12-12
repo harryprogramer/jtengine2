@@ -13,7 +13,7 @@ import thewall.engine.twilight.material.Colour;
 
 import java.util.List;
 
-public final class StaticShader extends ShaderProgram {
+public final class StaticShader extends GLShaderProgram implements Shader {
     private static final short MAX_LIGHTS = 4;
 
     private int locationTransformationMatrix;
@@ -31,7 +31,7 @@ public final class StaticShader extends ShaderProgram {
     private int locationRandom;
 
     public StaticShader(GL gl){
-        super("Light/Lighting.frag", "Light/Lighting.vert", gl);
+        super("opengl/Light/Lighting.frag", "opengl/Light/Lighting.vert", gl);
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.joml.Vector2i;
 import thewall.engine.twilight.errors.OpenGLException;
 import thewall.engine.twilight.models.Mesh;
 import thewall.engine.twilight.shaders.GUIShader;
+import thewall.engine.twilight.shaders.UnshadedShader;
 import thewall.engine.twilight.spatials.Spatial2D;
 import thewall.engine.twilight.viewport.*;
 import thewall.engine.twilight.display.Display;
@@ -63,6 +64,7 @@ public class GLRenderer implements Renderer {
     private SkyboxRender skyboxRender;
 
     private StaticShader shader;
+    private UnshadedShader unshaded;
     private GUIShader guiShader;
 
     private final GL gl;
@@ -185,11 +187,8 @@ public class GLRenderer implements Renderer {
         createProjectionMatrix(windowSize.x, windowSize.y, viewPort);
         setViewPort(0, 0, windowSize.x, windowSize.y);
 
-        shader.start();
-        shader.loadProjectionMatrix(viewMatrix);
-        shader.stop();
-
         this.skyboxRender = new SkyboxRender(textureManager, viewMatrix, gl, vaoManager);
+        this.unshaded = new UnshadedShader(gl);
         this.terrainShader = new TerrainShader(gl);
         this.guiShader = new GUIShader(gl, vaoManager);
         this.terrainRenderer = new TerrainRenderer(terrainShader, viewMatrix);
@@ -210,6 +209,10 @@ public class GLRenderer implements Renderer {
         Mesh mesh = new Mesh();
         mesh.setID(id);
         this.quadVAO = mesh;
+
+        this.unshaded.start();
+        this.unshaded.loadProjectionMatrix(viewMatrix);
+        this.unshaded.stop();
 
         this.shader.start();
         this.shader.loadTransformationMatrix(viewMatrix);
@@ -391,7 +394,7 @@ public class GLRenderer implements Renderer {
                 gl.glActiveTexture(GL_TEXTURE0);
                 gl.glBindTexture(GL_TEXTURE_2D, gui.getMaterial().getID());
                 Matrix4f matrix = Maths.createTransformationMatrix(gui.getTransformation(), gui.getScale());
-                shader.loadTransformationMatrix(matrix);
+                guiShader.loadTransformation(matrix);
                 gl.glDrawArrays(GL_TRIANGLE_STRIP, 0, quadVAO.getID());
             }
         }
@@ -430,20 +433,24 @@ public class GLRenderer implements Renderer {
             throw new NullPointerException("Lights is null");
         }
 
+
+        /*
         shader.start();
         shader.loadSkyColor(backgroundColour);
         shader.loadLights(lights);
         shader.loadViewMatrix(camera);
         render3D();
         shader.stop();
-        /*
-        terrainShader.start();
-        terrainShader.loadSkyColor(backgroundColour.getRed(), backgroundColour.getGreen(), backgroundColour.getBlue());
-        terrainShader.loadLights(lights);
-        terrainShader.loadViewMatrix(camera);
-        terrainRenderer.render(terrains);
-        terrainShader.stop();
+
          */
+
+
+
+        unshaded.start();
+        unshaded.loadViewMatrix(camera);
+        render3D();
+        unshaded.stop();
+
         if(isSkybox) {
             skyboxRender.render(viewPort.getCamera());
         }
@@ -460,12 +467,12 @@ public class GLRenderer implements Renderer {
         gl2.glEnableVertexAttribArray(0);
         gl2.glEnableVertexAttribArray(1);
         gl2.glEnableVertexAttribArray(2);
-        shader.loadNumberOfRows(material.getMultiTextureRows());
+        //shader.loadNumberOfRows(material.getMultiTextureRows());
         if(material.isTransparency()){
             disableCulling();
         }
-        shader.loadFakeLighting(material.isFakeLighting());
-        shader.loadShineVariables(material.getShineDamper(), material.getReflectivity());
+        //shader.loadFakeLighting(material.isFakeLighting());
+        //shader.loadShineVariables(material.getShineDamper(), material.getReflectivity());
         gl.glActiveTexture(gl.GL_TEXTURE0);
         gl.glBindTexture(GL_TEXTURE_2D, material.getID());
     }
@@ -473,13 +480,14 @@ public class GLRenderer implements Renderer {
     private void prepareInstance(@NotNull Spatial entity){
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getTransformation(),
                 entity.getRotation(), entity.getSize());
-        shader.loadTransformationMatrix(transformationMatrix);
-        shader.loadOffset(new Vector2f(entity.getMaterial().getTextureXOffset(), entity.getMaterial().getTextureYOffset()));
+        unshaded.loadTransformationMatrix(transformationMatrix);
+        //shader.loadOffset(new Vector2f(entity.getMaterial().getTextureXOffset(), entity.getMaterial().getTextureYOffset()));
     }
 
     @Override
     public void cleanUp() {
         logger.info("Cleaning VAO list");
+
         this.vaoManager.cleanUp();
         logger.info("Cleaning textures");
         this.textureManager.cleanUp();

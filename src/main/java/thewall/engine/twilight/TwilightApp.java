@@ -47,7 +47,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static thewall.engine.twilight.system.context.lwjgl.GLFWInputUtils.keyToEnum;
+import static thewall.engine.twilight.system.context.opengl.lwjgl.GLFWInputUtils.keyToEnum;
 
 /**
  * Base class for engine app

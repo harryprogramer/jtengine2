@@ -3,7 +3,7 @@ package thewall.engine.twilight.input.mouse;
 
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
-import thewall.engine.twilight.system.context.lwjgl.LegacyLwjglContext;
+import thewall.engine.twilight.system.context.opengl.lwjgl.LegacyLwjglContext;
 
 import static org.lwjgl.glfw.GLFW.*;
 import java.nio.DoubleBuffer;
