@@ -9,6 +9,8 @@ import org.fusesource.jansi.AnsiConsole;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import thewall.engine.twilight.Application;
+import thewall.engine.twilight.shaders.ShaderHandle;
+import thewall.engine.twilight.shaders.gl.UnshadedShader;
 import thewall.engine.twilight.viewport.Node;
 import thewall.engine.twilight.viewport.Node2D;
 import thewall.engine.twilight.viewport.ViewPort;
@@ -42,6 +44,7 @@ public abstract class LegacyApp implements Application {
     private final static Logger logger = LogManager.getLogger(LegacyApp.class);
     private final Hardware hardware = JTESystem.createBestHardware();
     private static final AtomicBoolean isInit = new AtomicBoolean(false);
+    private ShaderHandle shader = new UnshadedShader();
     public final Node2D guiNode = new Node2D();
     public final Node rootNode = new Node();
     private AssetManager assetManager;
@@ -113,6 +116,18 @@ public abstract class LegacyApp implements Application {
         guiViewPort.attachScene(guiNode);
         guiViewPort.setCamera(new Camera());
         init();
+    }
+
+    public synchronized void setShader(ShaderHandle shader) {
+        if(shader == null){
+            throw new NullPointerException("Shader is null");
+        }
+        this.shader = shader;
+    }
+
+    @Override
+    public ShaderHandle getShader() {
+        return shader;
     }
 
     @Override

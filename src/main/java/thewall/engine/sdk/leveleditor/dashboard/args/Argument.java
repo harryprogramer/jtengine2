@@ -15,4 +15,5 @@ public abstract class Argument {
     }
 
     public abstract void handle(LineArgument arg, ConsoleSession session);
+
 }

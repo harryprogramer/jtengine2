@@ -9,8 +9,8 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import thewall.engine.twilight.errors.OpenGLException;
 import thewall.engine.twilight.models.Mesh;
-import thewall.engine.twilight.shaders.GUIShader;
-import thewall.engine.twilight.shaders.UnshadedShader;
+import thewall.engine.twilight.shaders.ShaderHandle;
+import thewall.engine.twilight.shaders.gl.*;
 import thewall.engine.twilight.spatials.Spatial2D;
 import thewall.engine.twilight.viewport.*;
 import thewall.engine.twilight.display.Display;
@@ -24,8 +24,6 @@ import thewall.engine.twilight.math.Maths;
 import thewall.engine.twilight.renderer.Renderer;
 import thewall.engine.twilight.renderer.TerrainRenderer;
 import thewall.engine.twilight.renderer.opengl.vao.VAOManager;
-import thewall.engine.twilight.shaders.StaticShader;
-import thewall.engine.twilight.shaders.TerrainShader;
 import thewall.engine.twilight.skybox.SkyboxRender;
 import thewall.engine.twilight.terrain.Terrain;
 import thewall.engine.twilight.texture.PixelFormat;
@@ -51,7 +49,7 @@ import static thewall.engine.twilight.renderer.opengl.GL3.*;
  * <p></p>
  * <img width="2000" src="https://www.history.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_1200/MTY4OTA4MzI0ODc4NjkwMDAw/christmas-tree-gettyimages-1072744106.jpg" />
  */
-public class GLRenderer implements Renderer {
+public final class GLRenderer implements Renderer {
     private Colour backgroundColour = Colour.BLACK;
     private final static Logger logger = LogManager.getLogger(GLRenderer.class);
     //private RenderQueue currentQueue = new RenderQueue();
@@ -63,8 +61,7 @@ public class GLRenderer implements Renderer {
 
     private SkyboxRender skyboxRender;
 
-    private StaticShader shader;
-    private UnshadedShader unshaded;
+    private GLShaderProgram shader;
     private GUIShader guiShader;
 
     private final GL gl;
@@ -147,26 +144,6 @@ public class GLRenderer implements Renderer {
         gl3.glBindVertexArray(0);
     }
 
-    public void prepareSpatial(@NotNull Spatial spatial, @NotNull Material material){
-        gl3.glBindVertexArray(spatial.getMesh().getID());
-        gl2.glEnableVertexAttribArray(0);
-        gl2.glEnableVertexAttribArray(1);
-        gl2.glEnableVertexAttribArray(2);
-        shader.loadNumberOfRows(material.getMultiTextureRows());
-        if(material.isTransparency()){
-           disableCulling();
-        }
-        shader.loadFakeLighting(material.isFakeLighting());
-        shader.loadShineVariables(material.getShineDamper(), material.getReflectivity());
-        gl.glActiveTexture(GL_TEXTURE0);
-        gl.glBindTexture(GL_TEXTURE_2D, material.getID());
-
-        Matrix4f transformationMatrix = Maths.createTransformationMatrix(spatial.getTransformation(),
-                spatial.getRotation(), spatial.getSize());
-        shader.loadTransformationMatrix(transformationMatrix);
-        shader.loadOffset(new Vector2f(material.getTextureXOffset(), material.getTextureYOffset()));
-    }
-
     public void enableCulling(){
         gl.glEnable(GL_CULL_FACE);
         gl.glCullFace(GL_BACK);
@@ -176,10 +153,29 @@ public class GLRenderer implements Renderer {
         gl.glDisable(GL_CULL_FACE);
     }
 
+    private void initShader(@NotNull ShaderHandle program){
+        Validation.checkNull(program);
+        if(!(program instanceof GLShaderProgram)){
+            throw new OpenGLException("Not valid OpenGL valid shader [" + program.getClass().getName() + "]");
+        }
+
+        initShader((GLShaderProgram) program);
+    }
+
+    private void initShader(@NotNull GLShaderProgram program){
+        Validation.checkNull(program);
+        if(!program.isInitialized()) {
+            program.setGL(gl);
+            program.init();
+        }
+    }
+
     @Override
     public void init(ViewPort viewPort) {
-        this.shader = new StaticShader(gl);
+        setSpatialShader(new PreviewLightShader());
+        logger.info("Using shader [" + this.shader.getClass().getName() + "]");
 
+        gl.glEnable(GL_DEPTH_TEST);
         gl.glEnable(GL_CULL_FACE);
         gl.glCullFace(GL_BACK);
 
@@ -187,10 +183,12 @@ public class GLRenderer implements Renderer {
         createProjectionMatrix(windowSize.x, windowSize.y, viewPort);
         setViewPort(0, 0, windowSize.x, windowSize.y);
 
+
         this.skyboxRender = new SkyboxRender(textureManager, viewMatrix, gl, vaoManager);
-        this.unshaded = new UnshadedShader(gl);
-        this.terrainShader = new TerrainShader(gl);
-        this.guiShader = new GUIShader(gl, vaoManager);
+        this.terrainShader = new TerrainShader();
+        initShader(terrainShader);
+        this.guiShader = new GUIShader(vaoManager);
+        initShader(guiShader);
         this.terrainRenderer = new TerrainRenderer(terrainShader, viewMatrix);
 
         TerrainTexture backgroundTexture = new TerrainTexture(textureManager.loadTexture("grass3", PixelFormat.RGBA));
@@ -203,19 +201,17 @@ public class GLRenderer implements Renderer {
         terrains.add(terrain);
 
         int id = vaoManager.loadToVAO(new float[]{-1, 1, -1, -1, 1, 1, 1 ,-1}, 2);
+
         if(id == 0 || id == -1){
             throw new OpenGLException("Generated VAO for quad is 0 or -1");
         }
+
         Mesh mesh = new Mesh();
         mesh.setID(id);
         this.quadVAO = mesh;
 
-        this.unshaded.start();
-        this.unshaded.loadProjectionMatrix(viewMatrix);
-        this.unshaded.stop();
-
         this.shader.start();
-        this.shader.loadTransformationMatrix(viewMatrix);
+        this.shader.loadProjectionMatrix(viewMatrix);
         this.shader.stop();
     }
 
@@ -405,8 +401,25 @@ public class GLRenderer implements Renderer {
         guiShader.stop();
     }
 
-    private void render3D(){
+    private void loadUniformToShader(ShaderHandle shader, List<Light> lights, Camera camera){
+        shader.loadSkyColor(backgroundColour);
+        shader.loadLights(lights);
+        shader.loadViewMatrix(camera);
+    }
+
+    private void render3D(ViewPort viewPort){
+        //logger.info(viewPort.getRenderQueue().size() != 0 ? viewPort.getRenderQueue().size() + " " + viewPort.getRenderQueue().get(0) : "niema jeszczczenaijsdnasd");
         for(Material model : queue.keySet()){
+            ShaderHandle shader = model.getShader();
+            List<Light> lights = viewPort.getLights();
+            Camera camera = viewPort.getCamera();
+            if(shader != null){
+                this.shader.stop();
+                initShader(shader);
+                shader.start();
+                loadUniformToShader(shader, lights, camera);
+            }
+
             List<Spatial> batch = queue.get(model);
             for(Spatial entity : batch){
                 prepareTexturedModel(model, entity);
@@ -415,6 +428,11 @@ public class GLRenderer implements Renderer {
             }
 
             unbindTexturedModel();
+            if(shader != null){
+                shader.stop();
+                this.shader.start();
+                loadUniformToShader(this.shader, lights, camera);
+            }
         }
     }
 
@@ -433,23 +451,16 @@ public class GLRenderer implements Renderer {
             throw new NullPointerException("Lights is null");
         }
 
+        if(shader == null){
+            throw new NullPointerException("Shader is null");
+        }
 
-        /*
         shader.start();
         shader.loadSkyColor(backgroundColour);
         shader.loadLights(lights);
         shader.loadViewMatrix(camera);
-        render3D();
+        render3D(viewPort);
         shader.stop();
-
-         */
-
-
-
-        unshaded.start();
-        unshaded.loadViewMatrix(camera);
-        render3D();
-        unshaded.stop();
 
         if(isSkybox) {
             skyboxRender.render(viewPort.getCamera());
@@ -463,25 +474,57 @@ public class GLRenderer implements Renderer {
     }
 
     private void prepareTexturedModel(@NotNull Material material, Spatial spatial){
-        gl3.glBindVertexArray(spatial.getMesh().getID());
+        int id = spatial.getMesh().getID();
+        int materialID = material.getID();
+
+        if(materialID == 0 || materialID == -1){
+            materialID =  textureManager.loadTexture(material.getMaterialBuffer(), material.getMaterialWidth(), material.getMaterialHeight() ,material.getMaterialFormat());
+            //throw new OpenGLException("Material is not bind or ID is null_ptr");
+        }
+
+        if(id == 0 || id == -1){
+            throw new OpenGLException("Spatial VAO ID is null_ptr");
+        }
+        gl3.glBindVertexArray(id);
         gl2.glEnableVertexAttribArray(0);
         gl2.glEnableVertexAttribArray(1);
         gl2.glEnableVertexAttribArray(2);
-        //shader.loadNumberOfRows(material.getMultiTextureRows());
+        shader.loadNumberOfRows(material.getMultiTextureRows());
         if(material.isTransparency()){
             disableCulling();
         }
-        //shader.loadFakeLighting(material.isFakeLighting());
-        //shader.loadShineVariables(material.getShineDamper(), material.getReflectivity());
+        shader.loadFakeLighting(material.isFakeLighting());
+        shader.loadShineVariables(material.getShineDamper(), material.getReflectivity());
         gl.glActiveTexture(gl.GL_TEXTURE0);
-        gl.glBindTexture(GL_TEXTURE_2D, material.getID());
+        gl.glBindTexture(GL_TEXTURE_2D, materialID);
     }
 
     private void prepareInstance(@NotNull Spatial entity){
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getTransformation(),
                 entity.getRotation(), entity.getSize());
-        unshaded.loadTransformationMatrix(transformationMatrix);
-        //shader.loadOffset(new Vector2f(entity.getMaterial().getTextureXOffset(), entity.getMaterial().getTextureYOffset()));
+        shader.loadTransformationMatrix(transformationMatrix);
+        shader.loadOffset(new Vector2f(entity.getMaterial().getTextureXOffset(), entity.getMaterial().getTextureYOffset()));
+    }
+
+    @Override
+    public void setSpatialShader(ShaderHandle shader) {
+        if(!(shader instanceof GLShaderProgram)){
+            throw new OpenGLException("Not OpenGL valid shader [" + shader.getClass().getName() + "]");
+        }
+
+        if(shader == this.shader){
+            return; // if this shader is already set, skip this function
+        }
+        logger.info("Loading shader [" + shader.getClass().getName() + "]");
+
+        this.shader = (GLShaderProgram) shader;
+        this.shader.setGL(gl);
+        this.shader.init();
+    }
+
+    @Override
+    public void setTerrainShader(ShaderHandle shader) {
+
     }
 
     @Override
@@ -510,6 +553,6 @@ public class GLRenderer implements Renderer {
 
     @Override
     public String getName() {
-        return "OpenGL " + gl.glGetString(gl.GL_VERSION);
+        return "OpenGL Renderer" + gl.glGetString(gl.GL_VERSION);
     }
 }

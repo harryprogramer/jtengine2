@@ -14,8 +14,8 @@ import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.errors.NotImplementedException;
 import thewall.engine.twilight.models.Loader;
 import thewall.engine.twilight.models.TexturedModel;
-import thewall.engine.twilight.shaders.StaticShader;
-import thewall.engine.twilight.shaders.TerrainShader;
+import thewall.engine.twilight.shaders.gl.StaticShader;
+import thewall.engine.twilight.shaders.gl.TerrainShader;
 import thewall.engine.twilight.skybox.SkyboxRender;
 import thewall.engine.twilight.terrain.Terrain;
 
@@ -42,7 +42,7 @@ public class MasterRenderer {
     private volatile Matrix4f projectionMatrix;
     private final GLFWDisplayManager glfwDisplayManager;
     private final TerrainRenderer terrainRenderer;
-    private final TerrainShader terrainShader = new TerrainShader(null);
+    private final TerrainShader terrainShader = new TerrainShader();
     private final SkyboxRender skyboxShader;
 
     private final List<Terrain> terrains = new ArrayList<>();
@@ -63,7 +63,7 @@ public class MasterRenderer {
         return projectionMatrix;
     }
 
-    private final StaticShader shader = new StaticShader(null);
+    private final StaticShader shader = new StaticShader();
 
     private final Map<TexturedModel, List<Spatial>> entities = new HashMap<>();
 

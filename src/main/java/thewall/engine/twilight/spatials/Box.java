@@ -7,11 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import thewall.engine.twilight.models.Mesh;
-import thewall.engine.twilight.utils.Validation;
 
 import java.util.ArrayList;
-
-import static thewall.engine.twilight.math.VectorMath.*;
 
 public class Box extends Spatial {
     private final static Logger logger = LogManager.getLogger(Box.class);
@@ -158,7 +155,7 @@ public class Box extends Spatial {
         for (float boxTextureCoordinate : TEXTURE_COORDS) {
             textureCoords.add(boxTextureCoordinate);
         }
-        boxMesh.setTextureCoordinates(textureCoords);
+        boxMesh.setTexture(textureCoords);
 
         /* normals geometry */
         ArrayList<Float> normalsVertex = new ArrayList<>();

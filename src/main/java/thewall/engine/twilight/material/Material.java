@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
+import thewall.engine.twilight.shaders.ShaderHandle;
 import thewall.engine.twilight.texture.PixelFormat;
 import thewall.engine.twilight.texture.Texture;
 import thewall.engine.twilight.utils.Validation;
@@ -20,6 +21,7 @@ public class Material {
     private final String name;
     private boolean transparency = true,  isFakeLighting = false;
     private int textureIndex = 1;
+    private ShaderHandle shader = null;
 
     private int multiTextureRows = 1;
 
@@ -28,46 +30,46 @@ public class Material {
     public Material(String name){
         Validation.checkNull(name);
         this.name = name;
+        index++;
+    }
+
+    public Material(ShaderHandle shader){
+        this();
+        this.shader = shader;
+    }
+
+    public Material(String name, ShaderHandle shader){
+        this(name);
+        this.shader = shader;
     }
 
     public Material(){
         this.name = "Material-" + ++index;
     }
 
-    /*
-    public ByteBuffer loadTexture(InputStream filename, PixelFormat format) throws IOException {
-        PNGDecoder pngDecoder;
-        try{
-            pngDecoder = new PNGDecoder(filename);
-        }catch (IOException e){
-            throw new TextureDecoderException(e);
-        }
-
-        // stworz bufor z 4 wartosciami o matrycy x na y gdzie x to wysokosc a y szerokosc
-        ByteBuffer buffer = BufferUtils.createByteBuffer(format.getSize() * pngDecoder.getWidth() * pngDecoder.getHeight());
-
-        PNGDecoder.Format pngFormat;
-        switch (format){
-            case RGBA -> pngFormat = PNGDecoder.Format.RGBA;
-            case RGB -> pngFormat = PNGDecoder.Format.RGB;
-            default -> throw new TextureDecoderException("Invaild or unsupported image format [" + format.name() + "]");
-        }
-
-        pngDecoder.decode(buffer, 4 * pngDecoder.getWidth(), pngFormat);
-
-        buffer.flip();
-
-        this.x = pngDecoder.getWidth();
-        this.y = pngDecoder.getHeight();
-
-        this.materialFormat = format;
-
-        return buffer;
+    /**
+     * If custom shader is set to this material, this function will return it.
+     * If no shader is set, return value is null.
+     * @return shader
+     */
+    public ShaderHandle getShader() {
+        return shader;
     }
 
+    /**
+     * Set custom shader to this material.
+     * If custom shader is set, renderer should be skip his default shader and load custom material shader.
+     * @param shader shader
      */
+    public void setShader(ShaderHandle shader){
+        Validation.checkNull("Shader", shader);
+        this.shader = shader;
+    }
 
-
+    /**
+     * Bind {@link Colour} to material.
+     * @param colour color
+     */
     public void setColour(@NotNull Colour colour){
         ByteBuffer buffer = BufferUtils.createByteBuffer(PixelFormat.RGBA.getSize());
         buffer.put((byte) colour.getRed());
@@ -82,12 +84,22 @@ public class Material {
         this.y = 1;
     }
 
+    /**
+     * Load color to material and return it.
+     * @param colour color
+     * @deprecated
+     * @return color
+     */
     @Deprecated
     public Material loadColour(@NotNull Colour colour){
         setColour(colour);
         return this;
     }
 
+    /**
+     * Bind texture to this material
+     * @param texture texture
+     */
     public void setTexture(Texture texture){
         Validation.checkNull(texture);
         this.materialBuffer = texture.getTextureBuffer();
@@ -100,30 +112,29 @@ public class Material {
         this.reflectivity = texture.getReflectivity();
         this.textureIndex = texture.getTextureAtlasIndex();
         this.materialFormat = texture.getPixelFormat();
-        /*
-        try {
-            ByteBuffer byteBuffer = loadTexture(new FileInputStream(filename), PixelFormat.RGBA);
-            if(byteBuffer.capacity() == 0){
-                throw new StackOverflowError("buffer is zero");
-            }
-            this.materialBuffer = byteBuffer;
-
-
-        } catch (Exception e) {
-            throw new TextureDecoderException(e);
-        }
-
-         */
+        this.id = -1;
     }
 
+    /**
+     * Set is material transparency
+     * @param transparency is transparency
+     */
     public void setTransparency(boolean transparency){
         this.transparency = transparency;
     }
 
+    /**
+     * Is material transparency
+     * @return transparency
+     */
     public boolean isTransparency(){
         return transparency;
     }
 
+    /**
+     * Set native material object id
+     * @param id object id
+     */
     public void setID(int id){
         if(id == -1 || id == 0){
             throw new IllegalStateException("Invalid texture (material) ID.");
@@ -131,51 +142,104 @@ public class Material {
         this.id = id;
     }
 
+    /**
+     * Get native material object id
+     * @return id
+     */
     public int getID() {
         return id;
     }
 
+    /**
+     * Get material buffer
+     * @return buffer
+     */
     public ByteBuffer getMaterialBuffer(){
         return materialBuffer;
     }
 
+    /**
+     * Get material width
+     * @return width
+     */
     public int getMaterialWidth(){
         return x;
     }
 
+    /**
+     * Get material height.
+     * If static color is loaded, material height has set 1 height.
+     * If texture is loaded, material height is set to texture height;
+     * @return height
+     */
     public int getMaterialHeight(){
         return y;
     }
 
+    /**
+     * Get material pixel format.
+     * If static color is loaded, format is set to {@link PixelFormat#RGBA}
+     * @see #getMaterialBuffer()
+     * @return material buffer format
+     */
     public PixelFormat getMaterialFormat(){
         return materialFormat;
     }
 
+    /**
+     * Get material shine damper value.
+     * @return shine damper
+     */
     public float getShineDamper(){
         return shineDamper;
     }
 
+    /**
+     * Get material reflectivity
+     * @return reflectivity
+     */
     public float getReflectivity(){
         return reflectivity;
     }
 
+    /**
+     * Is material use fake lighting
+     * @return fake lighting
+     */
     public boolean isFakeLighting(){
         return isFakeLighting;
     }
 
+    /**
+     * Get indexs of multitexture rows if texture is set.
+     * Default value is 0.
+     * @return multitexture rows
+     */
     public int getMultiTextureRows(){
         return multiTextureRows;
     }
 
+    /**
+     * Get name of material
+     * @return name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get texture X offset
+     * @return offset
+     */
     public float getTextureXOffset(){
         int column = textureIndex % multiTextureRows;
         return (float) column / (float) multiTextureRows;
     }
 
+    /**
+     * Get texture Y offset
+     * @return offset
+     */
     public float getTextureYOffset(){
         int row = textureIndex / multiTextureRows;
         return (float) row / (float) multiTextureRows;

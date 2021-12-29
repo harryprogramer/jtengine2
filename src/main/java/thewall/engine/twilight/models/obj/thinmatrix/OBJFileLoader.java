@@ -3,6 +3,8 @@ package thewall.engine.twilight.models.obj.thinmatrix;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import thewall.engine.twilight.errors.AssetsNotFoundException;
+import thewall.engine.twilight.models.Mesh;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -23,13 +25,14 @@ public class OBJFileLoader {
      *
      * @return {@link ModelData}
      * */
+    @Deprecated
     public static @NotNull ModelData loadOBJ(String objFileName) {
         FileReader isr = null;
         File objFile = new File("./res/models/" + objFileName + ".obj");
         try {
             isr = new FileReader(objFile);
         } catch (FileNotFoundException e) {
-            System.err.println("File not found in res; don't use any extention");
+            throw new AssetsNotFoundException(e);
         }
         assert isr != null;
         BufferedReader reader = new BufferedReader(isr);
@@ -87,6 +90,79 @@ public class OBJFileLoader {
         int[] indicesArray = convertIndicesListToArray(indices);
         return new ModelData(verticesArray, texturesArray, normalsArray, indicesArray,
                 furthest);
+    }
+
+    public static @NotNull Mesh loadOBJMesh(String objFileName) {
+        FileReader isr = null;
+        File objFile = new File("./res/models/" + objFileName + ".obj");
+        try {
+            isr = new FileReader(objFile);
+        } catch (FileNotFoundException e) {
+            throw new AssetsNotFoundException(e);
+        }
+        assert isr != null;
+        BufferedReader reader = new BufferedReader(isr);
+        String line;
+        List<Vertex> vertices = new ArrayList<>();
+        List<Vector2f> textures = new ArrayList<>();
+        List<Vector3f> normals = new ArrayList<>();
+        List<Integer> indices = new ArrayList<>();
+        try {
+            while (true) {
+                line = reader.readLine();
+                if (line.startsWith("v ")) {
+                    String[] currentLine = line.split(" ");
+                    Vector3f vertex = new Vector3f(Float.parseFloat(currentLine[1]),
+                            Float.parseFloat(currentLine[2]),
+                            Float.parseFloat(currentLine[3]));
+                    Vertex newVertex = new Vertex(vertices.size(), vertex);
+                    vertices.add(newVertex);
+
+                } else if (line.startsWith("vt ")) {
+                    String[] currentLine = line.split(" ");
+                    Vector2f texture = new Vector2f(Float.parseFloat(currentLine[1]),
+                            Float.parseFloat(currentLine[2]));
+                    textures.add(texture);
+                } else if (line.startsWith("vn ")) {
+                    String[] currentLine = line.split(" ");
+                    Vector3f normal = new Vector3f(Float.parseFloat(currentLine[1]),
+                            Float.parseFloat(currentLine[2]),
+                            Float.parseFloat(currentLine[3]));
+                    normals.add(normal);
+                } else if (line.startsWith("f ")) {
+                    break;
+                }
+            }
+            while (line != null && line.startsWith("f ")) {
+                String[] currentLine = line.split(" ");
+                String[] vertex1 = currentLine[1].split("/");
+                String[] vertex2 = currentLine[2].split("/");
+                String[] vertex3 = currentLine[3].split("/");
+                processVertex(vertex1, vertices, indices);
+                processVertex(vertex2, vertices, indices);
+                processVertex(vertex3, vertices, indices);
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch (IOException e) {
+            System.err.println("Error reading the file");
+        }
+        removeUnusedVertices(vertices);
+
+        float[] verticesArray = new float[vertices.size() * 3];
+        float[] texturesArray = new float[vertices.size() * 2];
+        float[] normalsArray = new float[vertices.size() * 3];
+        float furthest = convertDataToArrays(vertices, textures, normals, verticesArray,
+                texturesArray, normalsArray);
+        int[] indicesArray = convertIndicesListToArray(indices);
+
+        Mesh mesh = new Mesh();
+        mesh.setVertices(verticesArray);
+        mesh.setTexture(texturesArray);
+        mesh.setNormals(normalsArray);
+        mesh.setIndices(indicesArray);
+
+        return mesh;
     }
 
     private static void processVertex(String @NotNull [] vertex, @NotNull List<Vertex> vertices, List<Integer> indices) {

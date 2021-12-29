@@ -167,8 +167,12 @@ public class AWTConsole extends JFrame implements EditorDashboard, ConsoleSessio
             }
             argsHandlerService.parseText(text.substring(index + 1), this);
         }catch (Exception e){
-            logger.warn("Occurred problem while processing command [" + e.getMessage() + "]");
-            logger.debug("", e);
+            logger.warn("External command exception [" + e.getMessage() + "]", e);
+            JOptionPane.showMessageDialog(this,
+                    "Error excepted while trying execute command: [" + text.trim()  + "]\nExternal command exception [" + e.getMessage() + "]\n",
+                    "JTEEditor Console Warning",
+                    JOptionPane.ERROR_MESSAGE);
+            writeLine("External command exception [" + e.getMessage() + "]", Colour.RED);
         }
     }
 

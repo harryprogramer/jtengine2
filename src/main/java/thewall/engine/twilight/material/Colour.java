@@ -12,7 +12,7 @@ public class Colour {
     /**
      * White colour
      */
-    public final static Colour WHITE = new Colour(255, 255, 255);
+    public final static Colour WHITE = new Colour(242, 235, 235);
 
     /**
      * Black colour

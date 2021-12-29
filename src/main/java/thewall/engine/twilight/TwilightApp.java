@@ -23,7 +23,6 @@ import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.errors.InitializationException;
 import thewall.engine.twilight.events.EventManager;
 import thewall.engine.twilight.events.JTEEventManager;
-import thewall.engine.twilight.gui.GuiRenderer;
 import thewall.engine.twilight.gui.imgui.ImGUIGuard;
 import thewall.engine.twilight.gui.imgui.ImGuiDesigner;
 import thewall.engine.twilight.gui.imgui.ImmediateModeGUI;
@@ -97,10 +96,6 @@ public abstract class TwilightApp extends GLFWDisplay {
 
     @Getter
     private final Loader loader = new Loader();
-
-    @Getter
-    @Setter
-    private GuiRenderer guiRenderer;
 
     @Getter
     @Setter

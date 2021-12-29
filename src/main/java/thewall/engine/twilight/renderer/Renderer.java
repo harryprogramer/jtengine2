@@ -1,6 +1,9 @@
 package thewall.engine.twilight.renderer;
 
 import org.joml.Matrix4f;
+import thewall.engine.twilight.shaders.ShaderHandle;
+import thewall.engine.twilight.shaders.gl.TerrainShader;
+import thewall.engine.twilight.shaders.gl.UnshadedShader;
 import thewall.engine.twilight.viewport.RenderQueue;
 import thewall.engine.twilight.viewport.RenderQueue2D;
 import thewall.engine.twilight.viewport.ViewPort;
@@ -69,6 +72,20 @@ public interface Renderer {
      * @param viewport2D viewport of 2d
      */
     void render(ViewPort viewPort, ViewPort2D viewport2D);
+
+    /**
+     * Set global renderer shader.
+     * If no shader is set, renderer should be use a {@link UnshadedShader}
+     * @param shader spatial shader
+     */
+    void setSpatialShader(ShaderHandle shader);
+
+    /**
+     * Set global renderer shader.
+     * If no shader is set, renderer should be use a {@link TerrainShader}
+     * @param shader terrain shader
+     */
+    void setTerrainShader(ShaderHandle shader);
 
     /**
      * Clean up the all loaded objects and clean the renderer

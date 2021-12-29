@@ -6,21 +6,25 @@ import thewall.engine.sdk.leveleditor.dashboard.ConsoleSession;
 import thewall.engine.sdk.leveleditor.dashboard.SpatialService;
 import thewall.engine.sdk.leveleditor.dashboard.args.Argument;
 import thewall.engine.sdk.leveleditor.dashboard.args.parser.LineArgument;
+import thewall.engine.twilight.assets.AssetManager;
 import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.material.Material;
 import thewall.engine.twilight.material.Colour;
+import thewall.engine.twilight.texture.Texture;
 
 public class MaterialArgument extends Argument {
     private final static Logger logger = LogManager.getLogger(MaterialArgument.class);
+    private final AssetManager assetManager;
     private final SpatialService service;
 
-    public MaterialArgument(SpatialService service){
+    public MaterialArgument(SpatialService service, AssetManager assetManager){
         this.service = service;
+        this.assetManager = assetManager;
     }
     @Override
     public void handle(LineArgument arg, ConsoleSession session) {
         String[] args = arg.getArguments();
-        int spatialID = 0;
+        int spatialID;
         try {
             spatialID = Integer.parseInt(args[0]);
         }catch (Exception e){
@@ -31,6 +35,10 @@ public class MaterialArgument extends Argument {
 
         Spatial spatial = service.getSpatial(spatialID);
         if(args[1].equalsIgnoreCase("color")) {
+            if(arg.getArgumentsSize() != 5){
+                session.writeLine("Syntax error, Excepted 4 arguments (material_type, red, green, blue)", Colour.RED);
+                return;
+            }
             try {
                 int r = Integer.parseInt(args[2]), g = Integer.parseInt(args[3]), b = Integer.parseInt(args[4]);
                 Colour colour = new Colour(r, g, b);
@@ -40,6 +48,16 @@ public class MaterialArgument extends Argument {
                 session.writeLine("Syntax error, internal exception: " + e.getMessage(), Colour.RED);
                 logger.warn("Syntax error for [" + arg.getName() + "], internal exception: "+ e.getMessage());
             }
+        }else if(args[1].equalsIgnoreCase("texture")){
+            if(arg.getArgumentsSize() != 3){
+                session.writeLine("Syntax error, Excepted 2 arguments (material_type, filename)", Colour.RED);
+                return;
+            }
+            Texture texture = assetManager.loadTexture(args[2]);
+            Material material = new Material();
+            material.setTexture(texture);
+            spatial.setMaterial(material);
+            session.writeLine("Texture changed.", Colour.GREEN);
         }else {
             session.writeLine("Syntax error, no material type provided", Colour.RED);
             logger.warn("Syntax error for [" + arg.getName() + "], no material type provided");

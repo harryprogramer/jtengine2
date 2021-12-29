@@ -12,7 +12,7 @@ public class TEngineThreadFactory implements ThreadFactory {
 
     private TEngineThreadFactory(){
         if(instance != null){
-            throw new IllegalStateException("This class can be have only one instane");
+            throw new IllegalStateException("This class can be have only one instance");
         }
     }
 

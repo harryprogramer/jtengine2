@@ -1,5 +1,7 @@
 package thewall.engine.twilight.models;
 
+import com.google.common.primitives.Floats;
+import com.google.common.primitives.Ints;
 import lombok.Getter;
 import thewall.engine.twilight.utils.Validation;
 
@@ -19,57 +21,107 @@ public class Mesh {
 
     private int coordinatesSize = 3;
 
-    private final List<Float> vertices;
+    private float[] vertices = new float[0];
 
-    private final List<Integer> indices;
+    private int[] indices = new int[0];
 
-    private final List<Float> normals;
+    private float[] normals = new float[0];
 
-    private final List<Float> textureCoordinate;
+    private float[] textureCoordinate = new float[0];
+
+    private final ArrayList<Float> verticesList = new ArrayList<>();
+
+    private final ArrayList<Integer> indicesList = new ArrayList<>();
+
+    private final ArrayList<Float> normalsList = new ArrayList<>();
+
+    private final ArrayList<Float> textureCoordinateList = new ArrayList<>();
 
     private String name = "Mesh-" + counter.getAndIncrement();
 
-
-    public Mesh(){
-        this.vertices = new ArrayList<>();
-        this.indices = new ArrayList<>();
-        this.normals = new ArrayList<>();
-        this.textureCoordinate = new ArrayList<>();
-    }
+    public Mesh(){}
 
     @SuppressWarnings("unchecked")
     public Mesh(List<Float> vertices, List<Integer> indices, List<Float> normals, List<Float> textureCoordinates){
         checkNull(vertices, indices, normals, textureCoordinates);
+
+        this.verticesList.clear();
+        this.verticesList.addAll(vertices);
+
+        this.indicesList.clear();
+        this.indicesList.addAll(indices);
+
+        this.normalsList.clear();
+        this.normalsList.addAll(normals);
+
+        this.textureCoordinateList.clear();
+        this.textureCoordinateList.addAll(textureCoordinates);
+
+        this.coordinatesSize = indices.size();
+    }
+
+    public Mesh(float[] vertices, int[] indices, float[] normals, float[] textureCoordinates){
+        checkNull("Mesh", vertices, indices, normals, textureCoordinates);
+
         this.vertices = vertices;
         this.indices = indices;
         this.normals = normals;
         this.textureCoordinate = textureCoordinates;
-        this.coordinatesSize = indices.size();
+
+        this.coordinatesSize = indices.length;
+    }
+
+    private void convertListMesh(List<Float> vertices, List<Integer> indices, List<Float> normals, List<Float> textureCoordinates){
+        this.vertices = Floats.toArray(vertices);
+        this.indices = Ints.toArray(indices);
+        this.normals = Floats.toArray(normals);
+        this.textureCoordinate = Floats.toArray(textureCoordinates);
+    }
+
+    public void setVertices(float[] vertices){
+        checkNull(vertices, "Vertices");
+        this.vertices = vertices;
+    }
+
+    public void setIndices(int[] indices){
+        checkNull(indices, "Indices");
+        this.indices = indices;
+        this.coordinatesSize = indices.length;
+    }
+
+    public void setNormals(float[] normals){
+        checkNull(normals, "Normals");
+        this.normals = normals;
+    }
+
+    public void setTexture(float[] coordinates){
+        checkNull(coordinates, "Texture coordinates");
+        this.textureCoordinate = coordinates;
     }
 
     public void setVertices(List<Float> vertices){
         checkNull(vertices, "Vertices");
-        this.vertices.clear();
-        this.vertices.addAll(vertices);
+        this.verticesList.clear();
+        this.verticesList.addAll(vertices);
     }
 
     public void setIndices(List<Integer> indices){
         checkNull(indices, "Indices");
-        this.indices.clear();
-        this.indices.addAll(indices);
+        this.indicesList.clear();
+        this.indicesList.addAll(indices);
         this.coordinatesSize = indices.size();
     }
 
     public void setNormals(List<Float> normals){
         checkNull(normals, "Normals");
-        this.normals.clear();
-        this.normals.addAll(normals);
+        this.normalsList.clear();
+        this.normalsList.addAll(normals);
     }
 
-    public void setTextureCoordinates(List<Float> coordinates){
+    public void setTexture(List<Float> coordinates){
         checkNull(coordinates, "Texture coordinates");
-        this.textureCoordinate.clear();
-        this.textureCoordinate.addAll(coordinates);
+        this.textureCoordinateList.clear();
+        this.textureCoordinateList.addAll(coordinates);
     }
 
     public void setCoordinatesSize(int coordinatesSize) {
@@ -93,34 +145,112 @@ public class Mesh {
     }
 
     public boolean isVerticesZero(){
-        return vertices.size() == 0;
+        return vertices.length == 0;
     }
 
     public boolean isIndicesZero(){
-        return indices.size() == 0;
+        return indices.length == 0;
     }
 
     public boolean isNormalsZero(){
-        return normals.size() == 0;
+        return normals.length == 0;
     }
 
     public boolean isTextureCoordinatesZero(){
-        return textureCoordinate.size() == 0;
+        return textureCoordinate.length == 0;
     }
 
     public List<Float> getVertices(){
-        return vertices;
+        if(verticesList.size() == 0){
+            if(vertices.length == 0){
+                return verticesList;
+            }
+            verticesList.addAll(Floats.asList(vertices));
+        }
+        return verticesList;
     }
 
     public List<Integer> getIndices(){
-        return indices;
+        if(indicesList.size() == 0){
+            if(indices.length == 0){
+                return indicesList;
+            }
+
+            indicesList.addAll(Ints.asList(indices));
+        }
+
+        return indicesList;
     }
 
     public List<Float> getNormals(){
-        return normals;
+        if(normalsList.size() == 0){
+            if(normals.length == 0){
+                return normalsList;
+            }
+
+            normalsList.addAll(Floats.asList(normals));
+        }
+
+        return normalsList;
     }
 
     public List<Float> getTextureCoordinates(){
+        if(textureCoordinateList.size() == 0){
+            if(textureCoordinate.length == 0){
+                return textureCoordinateList;
+            }
+
+            textureCoordinateList.addAll(Floats.asList(textureCoordinate));
+        }
+
+        return textureCoordinateList;
+    }
+
+    public float[] getVerticesArray(){
+        if(vertices.length == 0){
+            if(verticesList.size() == 0){
+                return vertices;
+            }
+
+            vertices = Floats.toArray(verticesList);
+        }
+
+        return vertices;
+    }
+
+    public int[] getIndicesArray(){
+        if(indices.length == 0){
+            if(indicesList.size() == 0){
+                return indices;
+            }
+
+            indices = Ints.toArray(indicesList);
+        }
+
+        return indices;
+    }
+
+    public float[] getNormalsArray(){
+        if(normals.length == 0){
+            if(normalsList.size() == 0){
+                return normals;
+            }
+
+            normals = Floats.toArray(normalsList);
+        }
+
+        return normals;
+    }
+
+    public float[] getTextureArray(){
+        if(textureCoordinate.length == 0){
+            if(textureCoordinateList.size() == 0){
+                return textureCoordinate;
+            }
+
+            textureCoordinate = Floats.toArray(textureCoordinateList);
+        }
+
         return textureCoordinate;
     }
 

@@ -9,7 +9,7 @@ import thewall.engine.twilight.renderer.opengl.GL;
 import thewall.engine.twilight.renderer.opengl.GL2;
 import thewall.engine.twilight.renderer.opengl.GL3;
 import thewall.engine.twilight.renderer.opengl.vao.VAOManager;
-import thewall.engine.twilight.shaders.SkyboxShader;
+import thewall.engine.twilight.shaders.gl.SkyboxShader;
 import thewall.engine.twilight.texture.opengl.GLTextureManager;
 import thewall.engine.twilight.utils.Validation;
 
@@ -97,7 +97,9 @@ public final class SkyboxRender {
         this.cube = vaoManager.loadToVAO(VERTICES, 3);
         this.texture = loader.load3DTexture(TEXTURE_FILES);
         this.vertex_count = VERTICES.length / 3;
-        this.shader = new SkyboxShader(gl);
+        this.shader = new SkyboxShader();
+        this.shader.setGL(gl);
+        this.shader.init();
         shader.start();
         shader.loadProjectionMatrix(projectionMatrix);
         shader.stop();

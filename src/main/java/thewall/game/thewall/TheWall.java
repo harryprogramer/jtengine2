@@ -10,7 +10,7 @@ import org.joml.Vector3f;
 import thewall.engine.twilight.TwilightApp;
 import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.spatials.*;
-import thewall.engine.twilight.gui.GuiImage;
+import thewall.engine.twilight.gui.GUIImage;
 import thewall.engine.twilight.gui.imgui.ImGuiDesigner;
 import thewall.engine.twilight.gui.imgui.OnImmediateGUI;
 import thewall.engine.twilight.models.TexturedModel;
@@ -72,7 +72,7 @@ public class TheWall extends TwilightApp {
 
     private List<Spatial> worldEntities = new ArrayList<>();
 
-    private final List<GuiImage> guis = new ArrayList<>();
+    private final List<GUIImage> guis = new ArrayList<>();
 
     public TheWall() {
         setName("The Wall");

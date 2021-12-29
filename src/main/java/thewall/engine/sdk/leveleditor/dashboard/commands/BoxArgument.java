@@ -3,6 +3,7 @@ package thewall.engine.sdk.leveleditor.dashboard.commands;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import thewall.engine.sdk.leveleditor.Editor;
 import thewall.engine.sdk.leveleditor.dashboard.ConsoleSession;
@@ -58,7 +59,8 @@ public class BoxArgument extends Argument {
             box.setTransformation(vector3f);
             int id = service.addSpatial(box);
             editor.rootNode.attachChild(box);
-            session.writeLine("Box created with id [" + id + "]", Colour.GREEN);
+            Vector3f pos = box.getTransformation();
+            session.writeLine(String.format("Box created with id [%d] at X: %.2f, Y: %.2f, Z: %.2f", id, pos.x, pos.y, pos.z), Colour.GREEN);
         }
     }
 

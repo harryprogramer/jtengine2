@@ -5,6 +5,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Text;
 import thewall.engine.twilight.errors.TextureDecoderException;
+import thewall.engine.twilight.material.Colour;
+import thewall.engine.twilight.material.Material;
+import thewall.engine.twilight.models.Mesh;
+import thewall.engine.twilight.models.obj.pgts.OBJObjectUtils;
+import thewall.engine.twilight.models.obj.thinmatrix.OBJFileLoader;
+import thewall.engine.twilight.models.obj.thinmatrix.OBJLoader;
 import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.texture.PixelFormat;
 import thewall.engine.twilight.texture.Texture;
@@ -29,6 +35,15 @@ public class DesktopAssetManager implements AssetManager {
         buffer.flip();
 
         return buffer;
+    }
+
+    private static class Model extends Spatial {
+        public Model(Mesh mesh){
+            Material material = new Material();
+            material.setColour(Colour.WHITE);
+            setMesh(mesh);
+            setMaterial(material);
+        }
     }
 
     @Override
@@ -91,6 +106,7 @@ public class DesktopAssetManager implements AssetManager {
 
     @Override
     public Spatial loadModel(String filename) {
-        return null;
+        Mesh mesh = OBJFileLoader.loadOBJMesh(filename);
+        return new Model(mesh);
     }
 }

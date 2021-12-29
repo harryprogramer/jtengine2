@@ -6,6 +6,7 @@ import thewall.engine.twilight.display.Display;
 import thewall.engine.twilight.events.EventManager;
 import thewall.engine.twilight.hardware.Hardware;
 import thewall.engine.twilight.input.Input;
+import thewall.engine.twilight.shaders.ShaderHandle;
 import thewall.engine.twilight.system.AppSettings;
 import thewall.engine.twilight.viewport.ViewPort;
 import thewall.engine.twilight.viewport.ViewPort2D;
@@ -38,5 +39,7 @@ public interface Application {
     ViewPort getViewPort();
 
     Hardware getHardware();
+
+    ShaderHandle getShader();
 
 }

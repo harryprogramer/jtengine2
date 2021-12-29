@@ -9,7 +9,12 @@ import thewall.engine.sdk.leveleditor.dashboard.SpatialService;
 import thewall.engine.sdk.leveleditor.dashboard.commands.*;
 import thewall.engine.sdk.leveleditor.input.KeyboardInputCallback;
 import thewall.engine.twilight.material.Colour;
+import thewall.engine.twilight.shaders.gl.PreviewLightShader;
+import thewall.engine.twilight.shaders.gl.StaticShader;
+import thewall.engine.twilight.shaders.gl.UnshadedShader;
+import thewall.engine.twilight.spatials.Box;
 import thewall.engine.twilight.spatials.Light;
+import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.system.AppSettings;
 import thewall.engine.twilight.system.NativeContext;
 import thewall.engine.twilight.system.context.opengl.lwjgl.LegacyLwjglContext;
@@ -28,6 +33,8 @@ public class Editor extends LegacyApp {
 
     @Override
     protected void init() {
+        initArgs();
+
         camera = new EditorCamera(this);
         getInput().getKeyboard().setKeyboardCallback(new KeyboardInputCallback(this));
         getInput().getMouse().setCursorPosition(0, 0);
@@ -35,10 +42,14 @@ public class Editor extends LegacyApp {
         setFrameLimit(190);
         getDisplay().setVSync(false);
         getViewPort().addLight(new Light(new Vector3f(0, 5000, 0), Colour.WHITE, new Vector3f(0.000001f, 0.000001f, 0.000001f)));
+        //setShader(new PreviewLightShader());
+        Spatial spatial = new Box(2, 2, 2);
+        //spatial.getMaterial().setShader(new StaticShader());
+        spatial.setScale(25);
+        spatial.getMaterial().setTexture(getAssetsManager().loadTexture("pob_vafor_em_epica.png"));
+        spatial.getMaterial().setColour(Colour.RED);
+        //rootNode.attachChild(spatial);
 
-        //Texture guiTexture = getAssetsManager().loadTexture("pistole.png");
-        //GuiImage image = new GuiImage(guiTexture, new Vector2f(0.5f, 0.5f), 0.25f, 0.25f);
-        //guiNode.attachChild(image);
     }
 
     private long previousTime = System.currentTimeMillis();
@@ -53,7 +64,7 @@ public class Editor extends LegacyApp {
         }
 
         Vector3f camera = getViewPort().getCamera().getTransformation();
-        getDisplay().setTitle(String.format("JTEEditor Preview 1.41 | FPS: %d | X: %.0f | Y: %.0f | Z: %.0f | LOOKING AT: %f",
+        getDisplay().setTitle(String.format("JTEEditor Preview 1.2 | FPS: %d | X: %.0f | Y: %.0f | Z: %.0f | LOOKING AT: %f",
                 getFPS(), camera.x, camera.y, camera.z,
                 getViewPort().getCamera().getRotation().y));
 
@@ -71,17 +82,19 @@ public class Editor extends LegacyApp {
     private void initArgs(){
         TeleportArgument moveArgument = new TeleportArgument(this);
         console.registerArg("box", new BoxArgument(this, spatialService));
-        console.registerArg("material", new MaterialArgument(spatialService));
+        console.registerArg("material", new MaterialArgument(spatialService, getAssetsManager()));
         console.registerArg("destroy", new DestroyArgument(this, spatialService));
         console.registerArg("move", new MoveArgument(this, spatialService));
+        console.registerArg("shader", new ShaderArgument(this));
+        console.registerArg("scale", new ScaleArgument(spatialService));
         console.registerArg("tp", moveArgument);
         console.registerArg("teleport", moveArgument);
+        console.registerArg("lmdl", new ModelCommand(this, spatialService, getAssetsManager()));
     }
 
 
     public static void main(String[] args) {
         Editor editor = new Editor();
-        editor.initArgs();
         AppSettings appSettings = new AppSettings();
         appSettings.setTitle("JTEEditor Preview 1.41");
         editor.setSettings(appSettings);

@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Vector2f;
 import thewall.engine.twilight.Application;
-import thewall.engine.twilight.gui.GuiImage;
+import thewall.engine.twilight.gui.GUIImage;
+import thewall.engine.twilight.shaders.ShaderHandle;
 import thewall.engine.twilight.texture.Texture;
 import thewall.engine.twilight.viewport.*;
 import thewall.engine.twilight.debugger.console.DebugConsole;
@@ -167,12 +168,12 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
 
         long startTime = System.currentTimeMillis();
         Texture texture = context.getAssetsManager().loadTexture("nvidia-logo.png");
-        GuiImage image = new GuiImage(texture, new Vector2f(0, 0), 0.85f, 0.85f);
+        GUIImage image = new GUIImage(texture, new Vector2f(0, 0), 0.85f, 0.85f);
         Node2D node2D = new Node2D();
         node2D.attachChild(image);
         app.getGUIViewPort().attachScene(node2D);
         renderer.hideSkybox();
-        renderer.setBackground(Colour.WHITE);
+        renderer.setBackground(new Colour(255, 255, 255));
         renderer.prepareRenderQueue(app.getViewPort().getRenderQueue(), app.getGUIViewPort().getRenderQueue());
         while (true){
             long endTime = System.currentTimeMillis();
@@ -242,7 +243,10 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
                 ViewPort2D viewport2D = app.getGUIViewPort();
                 RenderQueue renderQueue = worldViewport.getRenderQueue();
                 RenderQueue2D queue2D = viewport2D.getRenderQueue();
-
+                ShaderHandle shaderHandle = app.getShader();
+                if(shaderHandle != null) {
+                    //renderer.setSpatialShader(shaderHandle);
+                }
                 renderer.prepareRenderQueue(renderQueue, queue2D);
 
                 if(isImGUI) { // TODO: move to renderer

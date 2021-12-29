@@ -1,5 +1,6 @@
 package thewall.engine.sdk.leveleditor.dashboard;
 
+import org.jetbrains.annotations.Contract;
 import thewall.engine.twilight.spatials.Spatial;
 
 import java.util.HashMap;
@@ -9,6 +10,12 @@ public class SpatialService {
     private static int INDEXID = 0;
     private final Map<Integer, Spatial> partials = new HashMap<>();
 
+    /**
+     * Load spatial to service
+     * @param spatial spatial
+     * @return spatial id
+     */
+    @Contract(pure = true)
     public int addSpatial(Spatial spatial){
         int id = ++INDEXID;
         partials.put(id, spatial);
