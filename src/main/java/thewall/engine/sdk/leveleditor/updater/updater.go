@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -35,9 +36,9 @@ type UpdateChanges struct {
 }
 
 func isUpdateNeeded() (bool, string) {
-	jsonFile, err := os.Open("update/update.json")
+	jsonFile, err := os.Open("update\\update.json")
 	if err != nil {
-		fmt.Printf("Cannot open update feedback, %s\n", err)
+		log.Printf("[Update Service] Cannot open update feedback, %s\n", err)
 		return false, ""
 	}
 
@@ -45,7 +46,7 @@ func isUpdateNeeded() (bool, string) {
 
 	byteValue, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
-		fmt.Printf("Cannot read update feedback %s\n", err)
+		log.Printf("[Update Service] Cannot read update feedback %s\n", err)
 		return false, ""
 	}
 
@@ -53,7 +54,7 @@ func isUpdateNeeded() (bool, string) {
 
 	err = json.Unmarshal(byteValue, &update)
 	if err != nil {
-		fmt.Printf("Cannot unmarshall update feedback, %s\n", err.Error())
+		log.Printf("[Update Service] Cannot unmarshall update feedback, %s\n", err.Error())
 		return false, ""
 	}
 
@@ -76,65 +77,85 @@ func listAllFiles(path string) []string {
 }
 
 func update(updatePath string) {
-	changes := parseChanges(fmt.Sprintf("%s/changes.json", updatePath))
+	changes := parseChanges(fmt.Sprintf("%s\\changes.json", updatePath))
 
 	if len(changes.AddChanges) != 0 {
 		for i, s := range changes.AddChanges {
-			fmt.Printf("Creating file [%s] to [%s], %d left\n", s.SourcePath, s.Path, i)
+			log.Printf("[Update Service] Creating file [%s] to [%s], %d left\n", s.SourcePath, s.Path, i)
 			err := os.Rename(fmt.Sprintf("%s/%s", updatePath, s.SourcePath), fmt.Sprintf("%s/%s", updatePath, s.Path))
 			if err != nil {
-				fmt.Printf("Cannot move file [%s] to [%s], %s\n", s.SourcePath, s.Path, err)
+				log.Printf("[Update Service] Cannot move file [%s] to [%s], %s\n", s.SourcePath, s.Path, err)
 			}
 		}
 	}
 
 	if len(changes.RemoveChanges) != 0 {
 		for i, s := range changes.RemoveChanges {
-			fmt.Printf("Deleting file [%s], %d left\n", s.Path, i)
+			log.Printf("[Update Service] Deleting file [%s], %d left\n", s.Path, i)
 			err := os.Remove(s.Path)
 			if err != nil {
-				fmt.Printf("Cannot remove file [%s], [%s]\n", s.Path, err)
+				log.Printf("[Update Service] Cannot remove file [%s], [%s]\n", s.Path, err)
 			}
 		}
 	}
 
 	if len(changes.ReplaceChanges) != 0 {
 		for i, s := range changes.ReplaceChanges {
-			fmt.Printf("Copying file from [%s] to [%s], %d left\n", s.SourcePath, s.Path, i)
-			err := os.Remove(s.Path)
-			if err != nil {
-				fmt.Printf("Cannot copy file from [%s] to [%s], %s\n", s.SourcePath, s.Path, err)
-				continue
-			}
-			moveErr := os.Rename(s.SourcePath, s.Path)
+			log.Printf("[Update Service] Copying file from [%s] to [%s], %d left\n", s.SourcePath, s.Path, i)
+			_ = os.Remove(s.Path)
+			moveErr := os.Rename(fmt.Sprintf("%s/%s", updatePath, s.SourcePath), s.Path)
 			if moveErr != nil {
-				fmt.Printf("Cannot copy file from [%s] to [%s], %s\n", s.SourcePath, s.Path, moveErr)
+				log.Printf("[Update Service] Cannot copy file from [%s] to [%s], %s\n", s.SourcePath, s.Path, moveErr)
 			}
 		}
 	}
+	log.Println("[Update Service] Cleaning up...")
 
-	fmt.Printf("Update done!\n")
+	fo, _ := os.Create("output.txt")
+
+	defer func() {
+		if err := fo.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	_, err := fo.WriteString("{\"path\":\"\",\"update\":false}")
+	if err != nil {
+		panic(err)
+	}
+
+	_ = fo.Close()
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.RemoveAll(updatePath)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("[Update Service] Update done!\n")
 	os.Exit(0)
 }
 
 func parseChanges(path string) UpdateChanges {
 	jsonFile, err := os.Open(path)
 	if err != nil {
-		fmt.Printf("Cannot open update feedback, %s\n", err)
+		log.Printf("[Update Service] Cannot open update feedback, %s\n", err)
 	}
 
 	defer jsonFile.Close()
 
 	byteValue, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
-		fmt.Printf("Cannot read update feedback %s\n", err)
+		log.Printf("[Update Service] Cannot read update feedback %s\n", err)
 	}
 
 	var update UpdateChanges
 
 	err = json.Unmarshal(byteValue, &update)
 	if err != nil {
-		fmt.Printf("Cannot unmarshall update changes feedback, %s\n", err.Error())
+		log.Printf("[Update Service] Cannot unmarshall update changes feedback, %s\n", err.Error())
 	}
 
 	return update
@@ -145,13 +166,13 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("Cannot get CWD, %s\n", err.Error()))
 	}
-	fmt.Printf("Starting %s, [%s]\n", VERSION, path)
+	log.Printf("[Update Service] Starting %s, [%s]\n", VERSION, path)
 
 	isUpdate, path := isUpdateNeeded()
 
 	if isUpdate {
 		update(path)
 	} else {
-		fmt.Println("Version is up to date!")
+		log.Println("[Update Service] Version is up to date!")
 	}
 }

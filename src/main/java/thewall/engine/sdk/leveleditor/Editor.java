@@ -29,7 +29,7 @@ public class Editor extends LegacyApp {
     private final SpatialService spatialService = new SpatialService();
     private final UpdateManager updateManager = new HTTPUpdate(this);
     private final static String VERSION = "JTEEditor 1.2";
-    private final static int VERSION_NUMBER = 110;
+    private final static int VERSION_NUMBER = 121;
     private final AWTConsole console;
     private EditorCamera camera;
 
@@ -57,7 +57,6 @@ public class Editor extends LegacyApp {
         spatial.getMaterial().setTexture(getAssetsManager().loadTexture("pob_vafor_em_epica.png"));
         spatial.getMaterial().setColour(Colour.RED);
         //rootNode.attachChild(spatial);
-
     }
 
     private long previousTime = System.currentTimeMillis();
@@ -117,12 +116,12 @@ public class Editor extends LegacyApp {
                 logger.info("New update failed [{}]", data.getName());
                 editor.updateManager.updateVersion(data.getVersion());
                 logger.info("Restarting editor...");
-                System.exit(0);
+                System.exit(15);
             }else {
                 logger.info("Good news! Editor is up to date [" + Editor.getVersion() + "]");
             }
         } catch (ConnectionRefusedException | UpdateException e) {
-            logger.warn("Cannot check for new version", e);
+            logger.warn("Cannot check updates", e);
         }
         AppSettings appSettings = new AppSettings();
         appSettings.setTitle("JTEEditor Preview 1.41");

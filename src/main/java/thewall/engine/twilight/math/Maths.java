@@ -5,7 +5,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.jetbrains.annotations.NotNull;
-import scala.collection.immutable.Vector2;
 import thewall.engine.twilight.spatials.Camera;
 
 import java.util.Random;

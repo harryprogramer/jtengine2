@@ -5,4 +5,8 @@ public class UpdateException extends Exception {
     public UpdateException(String e){
         super(e);
     }
+
+    public UpdateException(Throwable t){
+        super(t);
+    }
 }

@@ -2,10 +2,17 @@ package thewall.engine.sdk.leveleditor.net;
 
 import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.apache.hc.core5.http.message.BasicHttpRequest;
+import org.apache.hc.core5.http.nio.support.BasicRequestProducer;
+import org.apache.hc.core5.http.support.BasicRequestBuilder;
+import org.apache.hc.core5.reactor.IOReactorConfig;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +28,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class HTTPUpdate implements UpdateManager {
     private final static int SERVER_NOT_FOUND_ERROR =       0xF001;
@@ -31,7 +40,8 @@ public class HTTPUpdate implements UpdateManager {
     private final static int UPDATE_UNZIP_FAULT =           0xF006;
     private final static int UPDATE_FEEDBACK_FAULT =        0xF007;
     private final static int GENERAL_IO_FAULT =             0xF008;
-    private final static String VERSION_ENDPOINT = "http://127.0.0.1/jte/editor";
+    private final static String VERSION_ENDPOINT_HOST = "gateway.lagpixel.pl";
+    private final static String VERSION_ENDPOINT = String.format("http://%s/jte/editor", VERSION_ENDPOINT_HOST);
     private final static Logger logger = LogManager.getLogger(HTTPUpdate.class);
     private final Editor editor;
 
@@ -80,8 +90,6 @@ public class HTTPUpdate implements UpdateManager {
     }
 
     public String downloadVersion(String version) throws ConnectionRefusedException, UpdateException {
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpResponse response;
         if(!Files.isDirectory(Path.of("update"))){
             try {
                 Files.createDirectory(Path.of("update"));
@@ -90,37 +98,42 @@ public class HTTPUpdate implements UpdateManager {
                 throw new UpdateException(String.format("Error: %x", UPDATE_FOLDER_PREPARE_FAULT));
             }
         }
-        try {
-            logger.info("Resolving and searching version [" + version + "]");
-            response = httpClient.execute(new HttpGet(VERSION_ENDPOINT + "/download/" + version));
-            } catch (IOException e) {
-                throw new ConnectionRefusedException(e.getMessage());
-            }
 
-            if(response.getStatusLine().getStatusCode() == 404){
-                logger.error("Cannot find update for version [" + version + "] on server [" + VERSION_ENDPOINT + "]");
-                throw new UpdateException(String.format("Error: 0x%x", SERVER_NOT_FOUND_ERROR));
-            }
-            logger.info(String.format("Downloading updates [%s]...", FileUtils.byteCountToDisplaySize(response.getEntity().getContentLength())));
-            Optional<String> optional = resolveFileName(response);
-            String filename = optional.orElse("update");
-            try {
-                BufferedInputStream bis = new BufferedInputStream(response.getEntity().getContent());
-                BufferedOutputStream bos = new BufferedOutputStream(FileUtils.openOutputStream(new File("update\\" + version + "\\" + filename), false));
-                try {
-                    int inByte;
-                    while ((inByte = bis.read()) != -1) bos.write(inByte);
-                    bis.close();
-                    bos.close();
-                } catch (Exception e) {
-                    logger.error("Error while trying to download update", e);
-                    throw new UpdateException(e.getMessage());
-                }
-            }catch (Exception e){
-                logger.error("Update IO, error while trying download updates", e);
-                throw new UpdateException(String.format("Error: %x", GENERAL_IO_FAULT));
-            }
-            return "update\\" + version + "\\" + filename;
+        final IOReactorConfig ioReactorConfig = IOReactorConfig.custom()
+                .setSoTimeout(Timeout.ofSeconds(5))
+                .build();
+
+        final CloseableHttpAsyncClient client = HttpAsyncClients.custom()
+                .setIOReactorConfig(ioReactorConfig)
+                .build();
+
+        client.start();
+
+        final org.apache.hc.core5.http.HttpHost target = new org.apache.hc.core5.http.HttpHost(VERSION_ENDPOINT_HOST);
+        final BasicHttpRequest request = BasicRequestBuilder.get()
+                .setHttpHost(target)
+                .setPath("/jte/editor/download/" + version)
+                .build();
+
+        final Future<UpdateResponseConsumer.HttpResult> future;
+
+        try {
+            future = client.execute(new BasicRequestProducer(request, null), new UpdateResponseConsumer("update\\" + version), null);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        UpdateResponseConsumer.HttpResult updateResult;
+
+        try {
+            updateResult = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            logger.error("Cannot complete update download task", e);
+            throw new UpdateException(e);
+        }
+
+        return updateResult.getUpdatePath();
     }
 
     @Override
@@ -137,7 +150,7 @@ public class HTTPUpdate implements UpdateManager {
             }
         }
         try {
-            HttpClient httpClient = new DefaultHttpClient();
+            HttpClient httpClient = HttpClients.createDefault();
             logger.debug("Sending GET request to endpoint [" + VERSION_ENDPOINT + "]");
             HttpGet request = new HttpGet(VERSION_ENDPOINT + "/api/latest-version");
             HttpResponse response = httpClient.execute(request);
