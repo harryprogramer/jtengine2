@@ -1,6 +1,8 @@
 package thewall.engine.sdk.leveleditor;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joml.Vector3f;
 import thewall.engine.LegacyApp;
 import thewall.engine.sdk.leveleditor.dashboard.AWTConsole;
@@ -8,10 +10,12 @@ import thewall.engine.sdk.leveleditor.dashboard.EditorCamera;
 import thewall.engine.sdk.leveleditor.dashboard.SpatialService;
 import thewall.engine.sdk.leveleditor.dashboard.commands.*;
 import thewall.engine.sdk.leveleditor.input.KeyboardInputCallback;
+import thewall.engine.sdk.leveleditor.net.HTTPUpdate;
+import thewall.engine.sdk.leveleditor.net.UpdateData;
+import thewall.engine.sdk.leveleditor.net.UpdateException;
+import thewall.engine.sdk.leveleditor.net.UpdateManager;
 import thewall.engine.twilight.material.Colour;
-import thewall.engine.twilight.shaders.gl.PreviewLightShader;
-import thewall.engine.twilight.shaders.gl.StaticShader;
-import thewall.engine.twilight.shaders.gl.UnshadedShader;
+import thewall.engine.twilight.networking.ConnectionRefusedException;
 import thewall.engine.twilight.spatials.Box;
 import thewall.engine.twilight.spatials.Light;
 import thewall.engine.twilight.spatials.Spatial;
@@ -21,7 +25,11 @@ import thewall.engine.twilight.system.context.opengl.lwjgl.LegacyLwjglContext;
 
 @NativeContext(context = LegacyLwjglContext.class)
 public class Editor extends LegacyApp {
+    private final static Logger logger = LogManager.getLogger(Editor.class);
     private final SpatialService spatialService = new SpatialService();
+    private final UpdateManager updateManager = new HTTPUpdate(this);
+    private final static String VERSION = "JTEEditor 1.2";
+    private final static int VERSION_NUMBER = 110;
     private final AWTConsole console;
     private EditorCamera camera;
 
@@ -92,9 +100,30 @@ public class Editor extends LegacyApp {
         console.registerArg("lmdl", new ModelCommand(this, spatialService, getAssetsManager()));
     }
 
+    public static String getVersion(){
+        return VERSION;
+    }
+
+    public static int getVersionNumber() {
+        return VERSION_NUMBER;
+    }
 
     public static void main(String[] args) {
         Editor editor = new Editor();
+        UpdateData data;
+        try {
+            data = editor.updateManager.checkLatestVersion();
+            if(data.getVersionNumber() > Editor.getVersionNumber()){
+                logger.info("New update failed [{}]", data.getName());
+                editor.updateManager.updateVersion(data.getVersion());
+                logger.info("Restarting editor...");
+                System.exit(0);
+            }else {
+                logger.info("Good news! Editor is up to date [" + Editor.getVersion() + "]");
+            }
+        } catch (ConnectionRefusedException | UpdateException e) {
+            logger.warn("Cannot check for new version", e);
+        }
         AppSettings appSettings = new AppSettings();
         appSettings.setTitle("JTEEditor Preview 1.41");
         editor.setSettings(appSettings);

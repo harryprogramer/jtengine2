@@ -41,5 +41,4 @@ public interface Application {
     Hardware getHardware();
 
     ShaderHandle getShader();
-
 }

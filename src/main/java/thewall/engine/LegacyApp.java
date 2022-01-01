@@ -53,6 +53,10 @@ public abstract class LegacyApp implements Application {
     public final ViewPort viewPort;
     private int fps = 0;
 
+    static {
+        initialize();
+    }
+
     @Setter private int frameLimit = 60;
     @Getter private Display display;
 
@@ -272,7 +276,7 @@ public abstract class LegacyApp implements Application {
         return JTESystem.name;
     }
 
-    public void start(){
+    private static void initialize(){
         if(!isInit.get()){
             logger.info("Initializing Twilight " + JTESystem.name);
             logger.debug("Warming up JVM...");
@@ -313,17 +317,6 @@ public abstract class LegacyApp implements Application {
                 logger.error("GLFW Error [" + error1 + "]: " + description);
             });
 
-            boolean isSupported = false;
-            for(PlatformEnum platform : supportedPlatform){
-                if(platform ==  hardware.getPlatform()){
-                    isSupported = true;
-                    break;
-                }
-            }
-
-            if(!isSupported){
-                logger.fatal("Unsupported platform [" + hardware.getPlatform().getName() + "]", new InitializationException("Engine", "Unsp"));
-            }
 
             logger.debug("Setting stream proxy JTE debug console");
             TEngineDebugger.setPrintProxyDebugger(DebugConsole.getConsole());
@@ -341,6 +334,21 @@ public abstract class LegacyApp implements Application {
             }
 
             isInit.set(true);
+        }
+
+    }
+
+    public void start(){
+        boolean isSupported = false;
+        for(PlatformEnum platform : supportedPlatform){
+            if(platform ==  hardware.getPlatform()){
+                isSupported = true;
+                break;
+            }
+        }
+
+        if(!isSupported){
+            logger.fatal("Unsupported platform [" + hardware.getPlatform().getName() + "]", new InitializationException("Engine", "Unsp"));
         }
 
         startApp();

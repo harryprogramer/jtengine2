@@ -10,7 +10,7 @@
             -->
         </Console>
         <RollingFile name="RollingFile"
-                     filePattern="logs/%d{yyyy-MM-dd}/%d{HH.mm.ss}-thewall-%i.log" immediateFlush="false">
+                     filePattern="logs/%d{yyyy-MM-dd}/%d{HH.mm.ss}-thewall-%i.log" immediateFlush="true">
             <PatternLayout pattern="[%c] [%d{HH:mm:ss}] %t/%-5level] - %msg%n"/>
             <Policies>
                <TimeBasedTriggeringPolicy interval="86400"/>

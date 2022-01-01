@@ -553,6 +553,6 @@ public final class GLRenderer implements Renderer {
 
     @Override
     public String getName() {
-        return "OpenGL Renderer" + gl.glGetString(gl.GL_VERSION);
+        return "OpenGL Renderer " + gl.glGetString(gl.GL_VERSION);
     }
 }
