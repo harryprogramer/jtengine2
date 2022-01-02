@@ -9,6 +9,8 @@ import thewall.engine.sdk.leveleditor.dashboard.AWTConsole;
 import thewall.engine.sdk.leveleditor.dashboard.EditorCamera;
 import thewall.engine.sdk.leveleditor.dashboard.SpatialService;
 import thewall.engine.sdk.leveleditor.dashboard.commands.*;
+import thewall.engine.sdk.leveleditor.dashboard.commands.models.CreateModelArgument;
+import thewall.engine.sdk.leveleditor.dashboard.commands.models.SaveModelArgument;
 import thewall.engine.sdk.leveleditor.input.KeyboardInputCallback;
 import thewall.engine.sdk.leveleditor.net.HTTPUpdate;
 import thewall.engine.sdk.leveleditor.net.UpdateData;
@@ -22,6 +24,7 @@ import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.system.AppSettings;
 import thewall.engine.twilight.system.NativeContext;
 import thewall.engine.twilight.system.context.opengl.lwjgl.LegacyLwjglContext;
+import thewall.engine.twilight.viewport.Node;
 
 @NativeContext(context = LegacyLwjglContext.class)
 public class Editor extends LegacyApp {
@@ -29,9 +32,11 @@ public class Editor extends LegacyApp {
     private final SpatialService spatialService = new SpatialService();
     private final UpdateManager updateManager = new HTTPUpdate(this);
     private final static String VERSION = "JTEEditor 1.2";
-    private final static int VERSION_NUMBER = 121;
+    private final static int VERSION_NUMBER = 132;
     private final AWTConsole console;
+    private Node currentScene;
     private EditorCamera camera;
+    private Light light;
 
     private boolean isCamera = true;
 
@@ -44,25 +49,45 @@ public class Editor extends LegacyApp {
         initArgs();
 
         camera = new EditorCamera(this);
+        light = new Light(camera.getTransformation(), Colour.WHITE, new Vector3f(0.1f, 0.1f, 0.1f));
+        viewPort.addLight(light);
         getInput().getKeyboard().setKeyboardCallback(new KeyboardInputCallback(this));
         getInput().getMouse().setCursorPosition(0, 0);
         getInput().getMouse().disableCursor();
         setFrameLimit(190);
         getDisplay().setVSync(false);
-        getViewPort().addLight(new Light(new Vector3f(0, 5000, 0), Colour.WHITE, new Vector3f(0.000001f, 0.000001f, 0.000001f)));
+        //getViewPort().addLight(new Light(new Vector3f(0, 5000, 0), Colour.WHITE, new Vector3f(0.000001f, 0.000001f, 0.000001f)));
         //setShader(new PreviewLightShader());
         Spatial spatial = new Box(2, 2, 2);
         //spatial.getMaterial().setShader(new StaticShader());
         spatial.setScale(25);
         spatial.getMaterial().setTexture(getAssetsManager().loadTexture("pob_vafor_em_epica.png"));
         spatial.getMaterial().setColour(Colour.RED);
+        this.viewPort.detachScene(rootNode);
+
         //rootNode.attachChild(spatial);
+    }
+
+    public void setScene(Node node){
+        this.viewPort.detachScene(currentScene);
+        if(node != null) {
+            this.viewPort.attachScene(node);
+            this.currentScene = node;
+        }else {
+            this.viewPort.attachScene(new Node());
+            this.currentScene = null;
+        }
+    }
+
+    public Node getScene(){
+        return currentScene;
     }
 
     private long previousTime = System.currentTimeMillis();
     @Override
     protected void onUpdate() {
         if(isCamera) {
+            viewPort.getLight(0).getPosition().set(viewPort.getCamera().getTransformation());
             camera.update();
         }
         long endTime = System.currentTimeMillis();
@@ -97,6 +122,9 @@ public class Editor extends LegacyApp {
         console.registerArg("tp", moveArgument);
         console.registerArg("teleport", moveArgument);
         console.registerArg("lmdl", new ModelCommand(this, spatialService, getAssetsManager()));
+        console.registerArg("newmdl", new CreateModelArgument(this));
+        console.registerArg("save", new SaveModelArgument(this));
+        console.registerArg("bt", new BrightnessArgument(this));
     }
 
     public static String getVersion(){
@@ -113,7 +141,7 @@ public class Editor extends LegacyApp {
         try {
             data = editor.updateManager.checkLatestVersion();
             if(data.getVersionNumber() > Editor.getVersionNumber()){
-                logger.info("New update failed [{}]", data.getName());
+                logger.info("New update found [{}]", data.getName());
                 editor.updateManager.updateVersion(data.getVersion());
                 logger.info("Restarting editor...");
                 System.exit(15);

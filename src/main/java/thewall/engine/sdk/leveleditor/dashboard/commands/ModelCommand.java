@@ -30,6 +30,11 @@ public class ModelCommand extends Argument {
             return;
         }
 
+        if(editor.getScene() == null){
+            session.writeLine("Scene was not created. Use newmdl to create new model or newterrain to create terrain scene.", Colour.YELLOW);
+            return;
+        }
+
         String filename = arg.getArguments()[0];
         Spatial spatial;
 
@@ -41,7 +46,7 @@ public class ModelCommand extends Argument {
         }
 
         int id = spatialService.addSpatial(spatial);
-        editor.rootNode.attachChild(spatial);
+        editor.getScene().attachChild(spatial);
         session.writeLine("Loaded model with ID: [" + id + "]" , Colour.GREEN);
         logger.info("Loaded model [" + filename + "] to ID: [" + id + "]");
     }

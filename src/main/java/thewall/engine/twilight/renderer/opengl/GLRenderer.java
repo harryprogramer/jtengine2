@@ -172,7 +172,7 @@ public final class GLRenderer implements Renderer {
 
     @Override
     public void init(ViewPort viewPort) {
-        setSpatialShader(new PreviewLightShader());
+        setSpatialShader(new StaticShader());
         logger.info("Using shader [" + this.shader.getClass().getName() + "]");
 
         gl.glEnable(GL_DEPTH_TEST);

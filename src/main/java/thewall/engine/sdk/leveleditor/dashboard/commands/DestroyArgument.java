@@ -23,6 +23,11 @@ public class DestroyArgument extends Argument {
     @Override
     public void handle(LineArgument arg, ConsoleSession session) {
         int id;
+        if(editor.getScene() == null){
+            session.writeLine("Scene was not created. Use newmdl to create new model or newterrain to create terrain scene.", Colour.YELLOW);
+            return;
+        }
+
         try {
             id = Integer.parseInt(arg.getArguments()[0]);
         }catch (Exception e){
@@ -37,7 +42,12 @@ public class DestroyArgument extends Argument {
             logger.warn("Unresolved spatial [" + id + "]");
             return;
         }
-        editor.rootNode.detachChild(spatial);
+        try {
+            editor.getScene().detachChild(spatial);
+        }catch (Exception e){
+            session.writeLine("This spatial does not exist on this scene", Colour.YELLOW);
+            return;
+        }
         spatialService.removeSpatial(id);
         session.writeLine("Spatial [" + id + "] destroyed.", Colour.GREEN);
     }

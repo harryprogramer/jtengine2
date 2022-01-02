@@ -28,7 +28,7 @@ public class MaterialArgument extends Argument {
         try {
             spatialID = Integer.parseInt(args[0]);
         }catch (Exception e){
-            session.writeLine("Syntax error, internal exception: " + e.getMessage());
+            session.writeLine("Syntax error, At first argument was excepted material type. [" + e.getMessage() + "]");
             logger.warn("Syntax error for [" + arg.getName() + "], internal exception: "+ e.getMessage());
             return;
         }

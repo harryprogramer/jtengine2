@@ -58,7 +58,11 @@ public class BoxArgument extends Argument {
             box.setMaterial(material);
             box.setTransformation(vector3f);
             int id = service.addSpatial(box);
-            editor.rootNode.attachChild(box);
+            if(editor.getScene() == null){
+                session.writeLine("Scene was not created. Use newmdl to create new model or newterrain to create terrain scene.", Colour.YELLOW);
+                return;
+            }
+            editor.getScene().attachChild(box);
             Vector3f pos = box.getTransformation();
             session.writeLine(String.format("Box created with id [%d] at X: %.2f, Y: %.2f, Z: %.2f", id, pos.x, pos.y, pos.z), Colour.GREEN);
         }

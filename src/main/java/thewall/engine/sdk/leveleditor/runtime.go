@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"golang.org/x/sys/windows"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
+	"syscall"
 )
 
 type RuntimeConfig struct {
@@ -27,6 +30,33 @@ func Start(args ...string) (p *os.Process, err error) {
 		}
 	}
 	return nil, err
+}
+
+func runMeElevated() {
+	verb := "runas"
+	exe, _ := os.Executable()
+	cwd, _ := os.Getwd()
+	args := strings.Join(os.Args[1:], " ")
+
+	verbPtr, _ := syscall.UTF16PtrFromString(verb)
+	exePtr, _ := syscall.UTF16PtrFromString(exe)
+	cwdPtr, _ := syscall.UTF16PtrFromString(cwd)
+	argPtr, _ := syscall.UTF16PtrFromString(args)
+
+	var showCmd int32 = 1 //SW_NORMAL
+
+	err := windows.ShellExecute(0, verbPtr, exePtr, argPtr, cwdPtr, showCmd)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func amAdmin() bool {
+	_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
+	if err != nil {
+		return false
+	}
+	return true
 }
 
 func WalkMatch(root, pattern string) ([]string, error) {
@@ -65,7 +95,19 @@ func startEditor() {
 		if err != nil {
 			_, _ = f.WriteString(fmt.Sprintf("{\"executable\": \"%s\", \"binaries\": \"bin\"})", "editor.jar"))
 		} else {
-			_, _ = f.WriteString(fmt.Sprintf("{\"executable\": \"%s\", \"binaries\": \"bin\"})", files[0]))
+			_, _ = f.WriteString(fmt.Sprintf("{\"executable\": \"%s\", \"binaries\": \"bin\"}", files[0]))
+		}
+	}
+
+	log.Println("[Launcher Runtime] Checking updates...")
+
+	procUpdate, errUpdate := Start("update.exe")
+	if errUpdate != nil {
+		log.Fatalf("[Launcher Runtime] Cannot check updates %s", errUpdate)
+	} else {
+		updateResult, _ := procUpdate.Wait()
+		if updateResult.ExitCode() != 0 {
+			log.Printf("[Launcher Runtime] Update check failed, returned code [%d]\n", updateResult.ExitCode())
 		}
 	}
 
@@ -80,7 +122,6 @@ func startEditor() {
 	}
 
 	var config RuntimeConfig
-
 	err = json.Unmarshal(byteValue, &config)
 	if err != nil {
 		log.Printf("[Launcher Runtime] Cannot unmarshall runtime config, %s\n", err.Error())
@@ -92,18 +133,6 @@ func startEditor() {
 	}
 
 	log.Printf("[Launcher Runtime] Editor file: [%s]\n", config.Executable)
-
-	log.Println("[Launcher Runtime] Checking updates...")
-
-	procUpdate, errUpdate := Start("update.exe")
-	if errUpdate != nil {
-		log.Fatalf("[Launcher Runtime] Cannot check updates %s", errUpdate)
-	} else {
-		updateResult, _ := procUpdate.Wait()
-		if updateResult.ExitCode() != 0 {
-			log.Printf("[Launcher Runtime] Update check failed, returned code [%d]\n", updateResult.ExitCode())
-		}
-	}
 
 	log.Println("[Launcher Runtime] Starting Editor...")
 
@@ -128,5 +157,10 @@ func startEditor() {
 }
 
 func main() {
-	startEditor()
+	if !amAdmin() {
+		runMeElevated()
+		defer os.Exit(0)
+	} else {
+		startEditor()
+	}
 }

@@ -101,8 +101,11 @@ func update(updatePath string) {
 
 	if len(changes.ReplaceChanges) != 0 {
 		for i, s := range changes.ReplaceChanges {
-			log.Printf("[Update Service] Copying file from [%s] to [%s], %d left\n", s.SourcePath, s.Path, i)
-			_ = os.Remove(s.Path)
+			log.Printf("[Update Service] Copying file from [%s] to [%s], %d left\n", fmt.Sprintf("%s/%s", updatePath, s.SourcePath), s.Path, i)
+			err := os.Remove(s.Path)
+			if err != nil {
+				log.Printf("Cannot delete old file [%s], [%s]\n", s.Path, err)
+			}
 			moveErr := os.Rename(fmt.Sprintf("%s/%s", updatePath, s.SourcePath), s.Path)
 			if moveErr != nil {
 				log.Printf("[Update Service] Cannot copy file from [%s] to [%s], %s\n", s.SourcePath, s.Path, moveErr)

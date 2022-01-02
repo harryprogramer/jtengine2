@@ -55,9 +55,7 @@ public class MoveArgument extends Argument {
 
             }
 
-            default -> {
-                echo("Syntax error, unknown vector position at arg [1]", session);
-            }
+            default -> echo("Syntax error, unknown vector position at arg [1]", session);
         }
     }
 

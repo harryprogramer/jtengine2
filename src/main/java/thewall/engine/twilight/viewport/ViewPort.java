@@ -11,7 +11,6 @@ import java.util.List;
 public final class ViewPort {
     private final RenderQueue renderQueue = new RenderQueue();
     private Colour backgroundColour = Colour.AQUA;
-
     private static int VIEWPORT_NAME_INDEX = 0;
     private Camera camera = new Camera();
     private List<Light> lights;
@@ -31,6 +30,10 @@ public final class ViewPort {
         renderQueue.add(node);
     }
 
+    public void detachScene(Node node){
+        renderQueue.remove(node);
+    }
+
     public void setCamera(Camera camera){
         Validation.checkNull(camera);
         this.camera = camera;
@@ -43,6 +46,15 @@ public final class ViewPort {
     public List<Light> getLights(){
         return lights;
     }
+
+    public void deleteLight(int index){
+        lights.remove(index);
+    }
+
+    public void deleteLight(Light light){
+        lights.remove(light);
+    }
+
 
     public Light getLight(int index){
         if(index > lights.size()){
