@@ -31,8 +31,8 @@ public class Editor extends LegacyApp {
     private final static Logger logger = LogManager.getLogger(Editor.class);
     private final SpatialService spatialService = new SpatialService();
     private final UpdateManager updateManager = new HTTPUpdate(this);
-    private final static String VERSION = "JTEEditor 1.2";
-    private final static int VERSION_NUMBER = 132;
+    private final static String VERSION = "JTEEditor 1.3.4";
+    private final static int VERSION_NUMBER = 134;
     private final AWTConsole console;
     private Node currentScene;
     private EditorCamera camera;
@@ -127,7 +127,7 @@ public class Editor extends LegacyApp {
         console.registerArg("bt", new BrightnessArgument(this));
     }
 
-    public static String getVersion(){
+    public static String getEditorVersion(){
         return VERSION;
     }
 
@@ -146,7 +146,7 @@ public class Editor extends LegacyApp {
                 logger.info("Restarting editor...");
                 System.exit(15);
             }else {
-                logger.info("Good news! Editor is up to date [" + Editor.getVersion() + "]");
+                logger.info("Good news! Editor is up to date [" + Editor.getEditorVersion() + "]");
             }
         } catch (ConnectionRefusedException | UpdateException e) {
             logger.warn("Cannot check updates", e);

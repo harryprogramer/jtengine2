@@ -6,7 +6,9 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.jetbrains.annotations.NotNull;
 import thewall.engine.twilight.spatials.Camera;
+import thewall.engine.twilight.viewport.ViewPort;
 
+import java.util.Objects;
 import java.util.Random;
 
 public class Maths {
@@ -500,7 +502,7 @@ public class Maths {
         thewall.engine.twilight.math.Vector3f v1 = p0.clone(), v2 = new thewall.engine.twilight.math.Vector3f();
         while (t <= 1.0f) {
             interpolateBezier(t, p0, p1, p2, p3, v2);
-            result += v1.subtractLocal(v2).length();
+            result += Objects.requireNonNull(v1.subtractLocal(v2)).length();
             v1.set(v2);
             t += delta;
         }
@@ -1061,7 +1063,7 @@ public class Maths {
      * @return clamped input
      */
     public static float clamp(float input, float min, float max) {
-        return (input < min) ? min : (input > max) ? max : input;
+        return (input < min) ? min : Math.min(input, max);
     }
 
     /**
@@ -1104,21 +1106,16 @@ public class Maths {
      * @return floating point value of the half.
      */
     public static float convertHalfToFloat(short half) {
-        switch ((int) half) {
-            case 0x0000:
-                return 0f;
-            case 0x8000:
-                return -0f;
-            case 0x7c00:
-                return Float.POSITIVE_INFINITY;
-            case 0xfc00:
-                return Float.NEGATIVE_INFINITY;
+        return switch ((int) half) {
+            case 0x0000 -> 0f;
+            case 0x8000 -> -0f;
+            case 0x7c00 -> Float.POSITIVE_INFINITY;
+            case 0xfc00 -> Float.NEGATIVE_INFINITY;
             // TODO: Support for NaN?
-            default:
-                return Float.intBitsToFloat(((half & 0x8000) << 16)
-                        | (((half & 0x7c00) + 0x1C000) << 13)
-                        | ((half & 0x03FF) << 13));
-        }
+            default -> Float.intBitsToFloat(((half & 0x8000) << 16)
+                    | (((half & 0x7c00) + 0x1C000) << 13)
+                    | ((half & 0x03FF) << 13));
+        };
     }
 
     /**
@@ -1177,6 +1174,32 @@ public class Maths {
     @Contract(value = "_ -> new", pure = true)
     public static @NotNull Vector3f vector2Dto3D(thewall.engine.twilight.math.@NotNull Vector2f vector2f){
         return new Vector3f(vector2f.x, vector2f.y, 0);
+    }
+
+    public static @NotNull Matrix4f createProjectionMatrix(@NotNull ViewPort viewPort, int width, int height){
+        return createProjectionMatrix(width, height, viewPort.getCamera().getFOV(), viewPort.getCamera().getFarPlane(), viewPort.getCamera().getNearPlane());
+    }
+
+    public static @NotNull Matrix4f createProjectionMatrix(int width, int height, short fov, float farPlane, float nearPlane){
+        if(width == 0 || height == 0){
+            throw new IllegalStateException("Width or height of screen is 0.");
+        }
+
+        Matrix4f matrix4f = new Matrix4f();
+
+        float aspectRatio = (float) width / (float) height;
+        float y_scale = (float) ((1f / Math.tan(Math.toRadians(fov / 2f))) * aspectRatio);
+        float x_scale = y_scale / aspectRatio;
+        float frustum_length = farPlane - nearPlane;
+
+        matrix4f.m00(x_scale);
+        matrix4f.m11(y_scale);
+        matrix4f.m22(-((farPlane + nearPlane) / frustum_length));
+        matrix4f.m23(-1);
+        matrix4f.m32(-((2 * nearPlane * farPlane) / frustum_length));
+        matrix4f.m33(0);
+
+        return matrix4f;
     }
 
     public static int getAbsoluteAngle(int angle){

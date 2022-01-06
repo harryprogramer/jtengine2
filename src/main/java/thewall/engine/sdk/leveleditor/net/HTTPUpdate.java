@@ -138,7 +138,7 @@ public class HTTPUpdate implements UpdateManager {
 
     @Override
     public UpdateData checkLatestVersion() throws ConnectionRefusedException, UpdateException {
-        logger.info("Checking update for version [" + Editor.getVersion() + "]");
+        logger.info("Checking update for version [" + Editor.getEditorVersion() + "]");
         HttpEntity entity;
         int serverVerNumber, build;
         if(!Files.isDirectory(Path.of("update"))){

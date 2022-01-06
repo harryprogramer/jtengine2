@@ -15,7 +15,8 @@ import thewall.engine.twilight.system.context.opengl.lwjgl.windows.WindowsJTECon
  * This class can create and find e.g. context or managers
  */
 public final class JTESystem {
-    public final static String name = "Twilight 1.2";
+    public final static String VERSION = "1.2.9";
+    public final static String NAME = "Twilight " + VERSION;
 
     private final static Logger logger = LogManager.getLogger(JTESystem.class);
     private static volatile Class<? extends JTEContext> nativeContext = null;

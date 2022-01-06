@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import thewall.engine.twilight.Area;
 import thewall.engine.twilight.errors.OpenGLException;
 import thewall.engine.twilight.models.Mesh;
 import thewall.engine.twilight.shaders.ShaderHandle;
@@ -44,10 +45,7 @@ import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static thewall.engine.twilight.renderer.opengl.GL3.*;
 
 /**
- * bede sie z tym meczyc do nowego roku
- * wiec wstawiam choinke bo lepiej wczesniej niz pozniej
- * <p></p>
- * <img width="2000" src="https://www.history.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_1200/MTY4OTA4MzI0ODc4NjkwMDAw/christmas-tree-gettyimages-1072744106.jpg" />
+    OpenGL renderer for JTEngine
  */
 public final class GLRenderer implements Renderer {
     private Colour backgroundColour = Colour.BLACK;
@@ -55,6 +53,7 @@ public final class GLRenderer implements Renderer {
     //private RenderQueue currentQueue = new RenderQueue();
     private Map<Material, List<Spatial>> queue = new HashMap<>();
     private Map<Material, List<Spatial2D>> queue2D = new HashMap<>();
+    private volatile ViewPort latestViewport;
     private Matrix4f viewMatrix;
 
     private boolean isSkybox = false;
@@ -119,21 +118,9 @@ public final class GLRenderer implements Renderer {
         float nearPlane = viewPort.getCamera().getNearPlane();
         float farPlane = viewPort.getCamera().getFarPlane();
         float fov = viewPort.getCamera().getFOV();
-        logger.debug(String.format("Creating projection matrix with [FOV: %s | NEARPLANE:  %s | FARPLANE: %s]", fov, nearPlane, farPlane));
+        logger.debug(String.format("Creating projection matrix with [FOV: %s | NEARPLANE:  %s | FARPLANE: %s, SCREEN: %dx%d]", fov, nearPlane, farPlane, width, height));
 
-        float aspectRatio = (float) width / (float) height;
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(fov / 2f))) * aspectRatio);
-        float x_scale = y_scale / aspectRatio;
-        float frustum_length = farPlane - nearPlane;
-
-        viewMatrix = new Matrix4f();
-
-        viewMatrix.m00(x_scale);
-        viewMatrix.m11(y_scale);
-        viewMatrix.m22(-((farPlane + nearPlane) / frustum_length));
-        viewMatrix.m23(-1);
-        viewMatrix.m32(-((2 * nearPlane * farPlane) / frustum_length));
-        viewMatrix.m33(0);
+        viewMatrix = Maths.createProjectionMatrix(viewPort, width, height);
     }
 
     private void unbindTexturedModel(){
@@ -179,10 +166,17 @@ public final class GLRenderer implements Renderer {
         gl.glEnable(GL_CULL_FACE);
         gl.glCullFace(GL_BACK);
 
-        Vector2i windowSize = display.getSize();
-        createProjectionMatrix(windowSize.x, windowSize.y, viewPort);
-        setViewPort(0, 0, windowSize.x, windowSize.y);
+        Area windowSize = display.getLocation();
+        createProjectionMatrix(windowSize.getWidth(), windowSize.getHeight(), viewPort);
+        setViewPort(0, 0, windowSize.getWidth(), windowSize.getHeight());
 
+        display.sizeChangedListener((x, y) -> {
+            createProjectionMatrix(x, y, this.latestViewport);
+            setViewPort(0, 0, x, y);
+            if(this.skyboxRender != null){
+                skyboxRender.updateMatrix(viewMatrix);
+            }
+        });
 
         this.skyboxRender = new SkyboxRender(textureManager, viewMatrix, gl, vaoManager);
         this.terrainShader = new TerrainShader();
@@ -439,6 +433,8 @@ public final class GLRenderer implements Renderer {
     @Override
     public void render(@NotNull ViewPort viewPort, ViewPort2D viewPort2D) {
         prepare();
+
+        this.latestViewport = viewPort;
 
         Camera camera = viewPort.getCamera();
         List<Light> lights = viewPort.getLights();

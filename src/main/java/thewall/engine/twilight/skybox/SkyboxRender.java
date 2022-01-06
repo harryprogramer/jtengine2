@@ -76,7 +76,7 @@ public final class SkyboxRender {
 
     public SkyboxRender(@NotNull GLTextureManager loader, Matrix4f projectionMatrix, GL gl, @NotNull VAOManager vaoManager){
         Validation.checkNull(gl);
-        this.gl = gl != null ? (GL) gl : null;
+        this.gl = gl;
         this.gl2 = gl instanceof GL2 ? (GL2) gl : null;
         this.gl3 = gl instanceof GL3 ? (GL3) gl : null;
 
@@ -105,11 +105,6 @@ public final class SkyboxRender {
         shader.stop();
     }
 
-    @Contract("_, _ -> fail")
-    public SkyboxRender(@NotNull Loader loader, Matrix4f projectionMatrix){
-        throw new UnsupportedOperationException(loader.getClass().getName() + " is no longer supported");
-    }
-
     public void render(Camera camera){
         shader.start();
         shader.loadViewMatrix(camera);
@@ -120,6 +115,12 @@ public final class SkyboxRender {
         gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertex_count);
         gl2 .glDisableVertexAttribArray(0);
         gl2.glBindVertexArray(0);
+        shader.stop();
+    }
+
+    public void updateMatrix(Matrix4f matrix4f){
+        shader.start();
+        shader.loadProjectionMatrix(matrix4f);
         shader.stop();
     }
 }

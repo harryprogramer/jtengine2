@@ -39,7 +39,7 @@ public class MoveArgument extends Argument {
             return;
         }
 
-        editor.getDisplay().requestFocus();
+        editor.getDisplay().focus();
 
         switch (args[1]){
             case "x" -> {

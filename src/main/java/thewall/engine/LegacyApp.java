@@ -272,13 +272,17 @@ public abstract class LegacyApp implements Application {
         //app.runtime = runtime;
     }
 
-    public static String getVersion(){
-        return JTESystem.name;
+    public String getName(){
+        return JTESystem.NAME;
+    }
+
+    public String getVersion(){
+        return JTESystem.VERSION;
     }
 
     private static void initialize(){
         if(!isInit.get()){
-            logger.info("Initializing Twilight " + JTESystem.name);
+            logger.info("Initializing Twilight " + JTESystem.NAME);
             logger.debug("Warming up JVM...");
 
             class Dummy {

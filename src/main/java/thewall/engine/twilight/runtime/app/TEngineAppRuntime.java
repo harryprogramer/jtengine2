@@ -86,7 +86,7 @@ public class TEngineAppRuntime extends AbstractRuntime<TwilightApp> {
             program.setWatchdog(watchdogMonitor);
             program.setImmediateModeGUI(this.imGui);
             glfwFocusWindow(program.getWindow());
-            program.showWindow();
+            program.show();
             try {
                 program.onEnable();
             }catch (Exception e){

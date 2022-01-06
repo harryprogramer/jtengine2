@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.opengl.GL11.*;
 
-@Deprecated
+@Deprecated(forRemoval = true)
 public class MasterRenderer {
     private final static Logger logger = LogManager.getLogger(MasterRenderer.class);
 
@@ -43,7 +43,7 @@ public class MasterRenderer {
     private final GLFWDisplayManager glfwDisplayManager;
     private final TerrainRenderer terrainRenderer;
     private final TerrainShader terrainShader = new TerrainShader();
-    private final SkyboxRender skyboxShader;
+    private final SkyboxRender skyboxShader = null;
 
     private final List<Terrain> terrains = new ArrayList<>();
 
@@ -56,7 +56,7 @@ public class MasterRenderer {
         createProjectionMatrix(-1, -1);
         //entityRenderer = new EntityRenderer(glfwDisplayManager, shader, this);
         terrainRenderer = new TerrainRenderer(terrainShader, getProjectionMatrix());
-        skyboxShader = new SkyboxRender(loader, projectionMatrix);
+        //skyboxShader = new SkyboxRender(loader, projectionMatrix); function removed 06.01.2022
     }
 
     public Matrix4f getProjectionMatrix(){

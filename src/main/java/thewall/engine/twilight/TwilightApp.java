@@ -379,7 +379,7 @@ public abstract class TwilightApp extends GLFWDisplay {
     }
 
     public void enableAutoWindowResizable(){
-        addDisplayResizeCallback(windowResizeSystem);
+        // addDisplayResizeCallback(windowResizeSystem); function removed 06.01.2022 01:09
     }
 
     public void disableAutoWindowResizable(){
@@ -387,11 +387,11 @@ public abstract class TwilightApp extends GLFWDisplay {
     }
 
     public void setWindowResizeCallback(DisplayResizeCallback callback){
-        addDisplayResizeCallback(callback);
+        // addDisplayResizeCallback(callback); function removed 06.01.2022 01:09
     }
 
     public void unregisterResizeCallback(DisplayResizeCallback callback){
-        unregisterDisplayCallback(callback);
+        // unregisterDisplayCallback(callback); function removed 06.01.2022 01:09
     }
 
 

@@ -16,6 +16,7 @@ import thewall.engine.twilight.events.EventManager;
 import thewall.engine.twilight.events.JTEEventManager;
 import thewall.engine.twilight.input.Input;
 import thewall.engine.twilight.input.glfw.GLFWInput;
+import thewall.engine.twilight.math.Maths;
 import thewall.engine.twilight.renderer.Renderer;
 import thewall.engine.twilight.renderer.opengl.GL;
 import thewall.engine.twilight.renderer.opengl.GL4;
@@ -29,6 +30,7 @@ import thewall.engine.twilight.texture.opengl.JTEGLTextureManager;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.glViewport;
 
 
 public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
@@ -130,12 +132,10 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
 
-
         createCapacities();
 
         if(!glContext.isGL4Support()){
             logger.warn("OpenGL 4.0+ is not supported, some features may not be available");
-            throw new UnsupportedOperationException("OpenGL 2.0+ unsupported");
         }else {
             logger.debug("OpenGL 4.0+ support available");
             logger.debug("Enabling OpenGL 4.0+ debug message callback");

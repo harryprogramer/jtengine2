@@ -219,7 +219,7 @@ public class TheWall extends TwilightApp {
     @OnImmediateGUI
     public void onImmediateGUI() {
         ImGuiDesigner gui = getImmediateGUI();
-        Vector2i windowSize = getSize();
+        // Vector2i windowSize = getSize(); function removed 06.01.2022 01:13
         if(!isWindowSizeSet) {
             gui.beginWindow("Engine Stats");
             isWindowSizeSet = true;
@@ -228,7 +228,7 @@ public class TheWall extends TwilightApp {
         }
         gui.text("Twilight " + getVersion());
         gui.text("Time: " + new SimpleDateFormat(    "yyyy-MM-dd HH:mm:ss.SSS").format(new Date()));
-        gui.text("Window: " + windowSize.x + "x" + windowSize.y);
+        //gui.text("Window: " + windowSize.x + "x" + windowSize.y);
         gui.text("FPS: " + fps);
         gui.text("Watchdog time: " + (System.currentTimeMillis() - getWatchdog().getKeepAliveTime()) / 1000.0);
 

@@ -13,7 +13,7 @@ public class Camera extends Spatial {
     private static final int MAX_FOV = 190;
     private float NEAR_PLANE = 0.1f;
     private float FAR_PLANE = 17000;
-    private int fov = 90;
+    private short fov = 90; /** fov =< MAX_FOV */
 
     public Camera() {
         setTransformation(0, -45, 0);
@@ -33,7 +33,7 @@ public class Camera extends Spatial {
      * Get camera FOV
      * @return camera fov
      */
-    public int getFOV(){
+    public short getFOV(){
         return fov;
     }
 
@@ -42,7 +42,7 @@ public class Camera extends Spatial {
      * @param fov camera fov
      * @return modifed camera
      */
-    public Camera setFOV(int fov){
+    public Camera setFOV(short fov){
         if(MAX_FOV < fov){
             throw new IllegalStateException("Max fov is: " + MAX_FOV);
         }
