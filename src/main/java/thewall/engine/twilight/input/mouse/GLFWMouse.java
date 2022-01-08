@@ -7,8 +7,11 @@ import thewall.engine.twilight.system.context.opengl.lwjgl.LegacyLwjglContext;
 
 import static org.lwjgl.glfw.GLFW.*;
 import java.nio.DoubleBuffer;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GLFWMouse implements Mouse{
+    private final Map<MouseButton, Byte> states = new ConcurrentHashMap<>();
     private final LegacyLwjglContext app;
 
     public GLFWMouse(@NotNull LegacyLwjglContext context){
@@ -54,13 +57,24 @@ public class GLFWMouse implements Mouse{
     }
 
     @Override
-    public boolean getMouseKeyPress(MouseButtons button) {
-        return glfwGetMouseButton(app.getWindowHandle(), MouseButtons.buttonToEnum(button)) == GLFW_PRESS;
+    public boolean mousePressed(MouseButton button) {
+        return glfwGetMouseButton(app.getWindowHandle(), MouseButton.buttonToEnum(button)) == GLFW_PRESS;
     }
 
     @Override
-    public boolean getMouseKeyReleased(MouseButtons button) {
-        return glfwGetMouseButton(app.getWindowHandle(), MouseButtons.buttonToEnum(button)) == GLFW_RELEASE;
+    public boolean mouseReleased(MouseButton button) {
+        byte state = (byte) glfwGetMouseButton(app.getWindowHandle(), MouseButton.buttonToEnum(button));
+
+        if(state == GLFW_PRESS){
+            states.put(button, state);
+        }else if(state == 0 && states.get(button) != null){
+            boolean statement = states.get(button) == GLFW_PRESS;
+            if(statement){
+                states.remove(button);
+            }
+            return statement;
+        }
+        return false;
     }
 
 

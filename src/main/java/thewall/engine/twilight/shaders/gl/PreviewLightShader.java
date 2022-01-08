@@ -1,6 +1,5 @@
 package thewall.engine.twilight.shaders.gl;
 
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Random;
 import org.joml.Vector2f;
@@ -8,9 +7,6 @@ import org.joml.Vector3f;
 import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.math.Maths;
 import thewall.engine.twilight.spatials.Camera;
-import thewall.engine.twilight.spatials.Light;
-
-import java.util.List;
 
 public class PreviewLightShader extends GLShaderProgram {
 
@@ -56,7 +52,7 @@ public class PreviewLightShader extends GLShaderProgram {
     }
 
     public void loadSkyColor(Colour colour){
-        super.loadVector(locationSkyColor, new Vector3f(colour.getRed(), colour.getGreen(), colour.getBlue()));
+        super.loadVector3f(locationSkyColor, new Vector3f(colour.getRed(), colour.getGreen(), colour.getBlue()));
     }
 
     public void loadTransformationMatrix(Matrix4f matrix4f){

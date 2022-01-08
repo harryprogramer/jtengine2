@@ -9,7 +9,6 @@ import thewall.engine.twilight.spatials.Camera;
 import thewall.engine.twilight.spatials.Light;
 import thewall.engine.twilight.math.Maths;
 import org.jetbrains.annotations.NotNull;
-import thewall.engine.twilight.renderer.opengl.GL;
 import thewall.engine.twilight.material.Colour;
 
 import java.util.List;
@@ -68,7 +67,7 @@ public final class StaticShader extends GLShaderProgram implements ShaderHandle 
     }
 
     public void loadSkyColor(Colour colour){
-        super.loadVector(locationSkyColor, new Vector3f(colour.getRed(), colour.getGreen(), colour.getBlue()));
+        super.loadVector3f(locationSkyColor, new Vector3f(colour.getRed(), colour.getGreen(), colour.getBlue()));
     }
 
     public void loadTransformationMatrix(Matrix4f matrix4f){
@@ -95,13 +94,13 @@ public final class StaticShader extends GLShaderProgram implements ShaderHandle 
     public void loadLights(@NotNull List<Light> lights){
         for(int i = 0; i < MAX_LIGHTS; i++) {
             if(i < lights.size()) {
-                super.loadVector(locationLightPosition[i], lights.get(i).getPosition());
-                super.loadVector(locationLightColor[i], lights.get(i).getColour().getVectorColor());
-                super.loadVector(locationAttenuation[i], lights.get(i).getAttenuation());
+                super.loadVector3f(locationLightPosition[i], lights.get(i).getPosition());
+                super.loadVector3f(locationLightColor[i], lights.get(i).getColour().getVectorColor());
+                super.loadVector3f(locationAttenuation[i], lights.get(i).getAttenuation());
             }else {
-                super.loadVector(locationLightColor[i], new Vector3f(0, 0, 0));
-                super.loadVector(locationLightPosition[i], new Vector3f(0, 0, 0));
-                super.loadVector(locationAttenuation[i], new Vector3f(1, 0, 0));
+                super.loadVector3f(locationLightColor[i], new Vector3f(0, 0, 0));
+                super.loadVector3f(locationLightPosition[i], new Vector3f(0, 0, 0));
+                super.loadVector3f(locationAttenuation[i], new Vector3f(1, 0, 0));
             }
         }
 

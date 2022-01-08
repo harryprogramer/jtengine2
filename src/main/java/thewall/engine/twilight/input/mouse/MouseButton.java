@@ -8,9 +8,12 @@ import org.jetbrains.annotations.Nullable;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public enum MouseButtons {
+public enum MouseButton {
+    /** Left button */
     MOUSE_BUTTON_1,
+    /** Right button */
     MOUSE_BUTTON_2,
+    /** Wheel button */
     MOUSE_BUTTON_3,
     MOUSE_BUTTON_4,
     MOUSE_BUTTON_5,
@@ -19,10 +22,10 @@ public enum MouseButtons {
     MOUSE_BUTTON_8
     ;
 
-    private final static Logger logger = LogManager.getLogger(MouseButtons.class);
+    private final static Logger logger = LogManager.getLogger(MouseButton.class);
 
     @Contract(pure = true)
-    public static @Nullable MouseButtons buttonToEnum(int button){
+    public static @Nullable MouseButton buttonToEnum(int button){
         switch (button){
             case GLFW_MOUSE_BUTTON_1 -> {
                 return MOUSE_BUTTON_1;
@@ -64,7 +67,7 @@ public enum MouseButtons {
     }
 
     @Contract(pure = true)
-    public static int buttonToEnum(@NotNull MouseButtons button){
+    public static int buttonToEnum(@NotNull MouseButton button){
         switch (button){
             case MOUSE_BUTTON_1 -> {
                 return GLFW_MOUSE_BUTTON_1;

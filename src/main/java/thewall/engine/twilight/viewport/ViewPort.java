@@ -1,8 +1,11 @@
 package thewall.engine.twilight.viewport;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.spatials.Camera;
 import thewall.engine.twilight.spatials.Light;
+import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.utils.Validation;
 
 import java.util.ArrayList;
@@ -13,7 +16,8 @@ public final class ViewPort {
     private Colour backgroundColour = Colour.AQUA;
     private static int VIEWPORT_NAME_INDEX = 0;
     private Camera camera = new Camera();
-    private List<Light> lights;
+    private Spatial skybox = null;
+    private final List<Light> lights;
     private String name;
 
     public ViewPort(String name){
@@ -24,6 +28,17 @@ public final class ViewPort {
 
     public ViewPort(){
         this("ViewPort-" + ++VIEWPORT_NAME_INDEX);
+    }
+
+    public void attachSkybox(@NotNull Spatial spatial){
+        if(!spatial.getMaterial().is3D()){
+            throw new IllegalArgumentException("Texture is not 3D.");
+        }
+        this.skybox = spatial;
+    }
+
+    public @Nullable Spatial getSkybox(){
+        return this.skybox;
     }
 
     public void attachScene(Node node){

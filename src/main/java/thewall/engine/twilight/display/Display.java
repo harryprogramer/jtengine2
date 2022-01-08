@@ -17,6 +17,7 @@ public interface Display {
 
     void hide();
 
+    @Deprecated
     void setSize(int x, int y);
 
     void setSize(Area area);

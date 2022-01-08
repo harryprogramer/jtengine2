@@ -63,4 +63,12 @@ public final class Area implements Serializable, JTESerializable  {
         this.width = area.width;
         this.height = area.height;
     }
+
+    @Override
+    public String toString() {
+        return "Area{" +
+                "width=" + width +
+                ", height=" + height +
+                '}';
+    }
 }

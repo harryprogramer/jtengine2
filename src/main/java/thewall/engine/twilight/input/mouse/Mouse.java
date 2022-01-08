@@ -11,9 +11,9 @@ public interface Mouse {
 
     void setCursorPosition(double posX, double posY);
 
-    boolean getMouseKeyPress(MouseButtons button);
+    boolean mousePressed(MouseButton button);
 
-    boolean getMouseKeyReleased(MouseButtons button);
+    boolean mouseReleased(MouseButton button);
 
     void createMouseKeyCallback(TMouseCallback callback);
 

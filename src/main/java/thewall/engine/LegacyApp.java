@@ -315,7 +315,7 @@ public abstract class LegacyApp implements Application {
             logger.debug("Creating GLFW error callback");
             GLFWErrorCallback.createPrint(System.err).set();
 
-            System.setProperty("log4j2.contextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");
+            //System.setProperty("log4j2.contextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");
 
             glfwSetErrorCallback((error1, description) -> {
                 logger.error("GLFW Error [" + error1 + "]: " + description);

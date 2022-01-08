@@ -1,5 +1,7 @@
 package thewall.engine.twilight.display;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -18,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class GLFWDisplay extends GLFWDisplayManager implements Display {
+    private final static Logger logger = LogManager.getLogger(GLFWDisplay.class);
     private final static short MAX_CALLBACKS = 10;
 
     private final AtomicReference<String> windowName = new AtomicReference<>(null);
@@ -57,7 +60,8 @@ public class GLFWDisplay extends GLFWDisplayManager implements Display {
 
     @Override
     public void setSize(Area area) {
-
+        logger.info("Setting display size to " + area);
+        glfwSetWindowSize(getWindow(), area.getWidth(), area.getHeight());
     }
 
     @Override
@@ -128,11 +132,18 @@ public class GLFWDisplay extends GLFWDisplayManager implements Display {
 
     @Override
     public void setMinimumSize(@NotNull Area area) {
+        if(area.getWidth() <= 0 || area.getHeight() <= 0){
+            throw new IllegalStateException("width or height is must greater than 0");
+        }
+
         glfwSetWindowSizeLimits(getWindow(), area.getWidth(), area.getHeight(), GLFW_DONT_CARE, GLFW_DONT_CARE);
     }
 
     @Override
     public void setMaximumSize(@NotNull Area area) {
+        if(area.getWidth() <= 0 || area.getHeight() <= 0){
+            throw new IllegalStateException("width or height is must greater than 0");
+        }
         glfwSetWindowSizeLimits(getWindow(), GLFW_DONT_CARE, GLFW_DONT_CARE, area.getWidth(), area.getHeight());
     }
 

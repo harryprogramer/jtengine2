@@ -410,4 +410,17 @@ public interface GL2 extends GL{
      * @see <a target="_blank" href="http://docs.gl/gl4/glBindAttribLocation">Reference Page</a>
      */
     void glBindAttribLocation(int program, int index, String name);
+
+    /**
+     * Specifies the value of a vec4 uniform variable for the current program object.
+     *
+     * @param location the location of the uniform variable to be modified
+     * @param x       the uniform x value
+     * @param y       the uniform y value
+     * @param z       the uniform z value
+     * @param w       the uniform w value
+     *
+     * @see <a target="_blank" href="http://docs.gl/gl4/glUniform">Reference Page</a>
+     */
+    void glUniform4f(int location, float x, float y, float z, float w);
 }

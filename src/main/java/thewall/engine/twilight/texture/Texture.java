@@ -6,6 +6,7 @@ public class Texture {
     private final PixelFormat pixelFormat;
     private final ByteBuffer buffer;
     private int textureAtlasSize = 1;
+    private boolean is3D;
     private int textureAtlasIndex = 0;
 
     private final int textureWidth, textureHeight;
@@ -14,13 +15,22 @@ public class Texture {
     private float shineDamper, reflectivity;
 
     public Texture(ByteBuffer buffer, PixelFormat pixelFormat, int width, int height){
+        this(buffer, pixelFormat, width, height, false);
+    }
+
+    public Texture(ByteBuffer buffer, PixelFormat pixelFormat, int width, int height, int textureAtlasSize){
+        this(buffer, pixelFormat, width, height, textureAtlasSize ,false);
+        this.textureAtlasSize = textureAtlasSize;
+    }
+
+    public Texture(ByteBuffer buffer, PixelFormat pixelFormat, int width, int height, boolean is3D){
         this.pixelFormat = pixelFormat;
         this.buffer = buffer;
         this.textureWidth = width;
         this.textureHeight = height;
     }
 
-    public Texture(ByteBuffer buffer, PixelFormat pixelFormat, int width, int height, int textureAtlasSize){
+    public Texture(ByteBuffer buffer, PixelFormat pixelFormat, int width, int height, int textureAtlasSize, boolean is3D){
         this(buffer, pixelFormat, width, height);
         this.textureAtlasSize = textureAtlasSize;
     }
@@ -51,6 +61,10 @@ public class Texture {
 
     public PixelFormat getPixelFormat(){
         return pixelFormat;
+    }
+
+    public boolean isTexture3D() {
+        return is3D;
     }
 
     public void setTransparency(boolean transparency){

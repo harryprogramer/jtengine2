@@ -3,6 +3,7 @@ package thewall.engine.twilight.texture.opengl;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.common.value.qual.ArrayLen;
 import org.checkerframework.common.value.qual.ArrayLenRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -13,6 +14,7 @@ import thewall.engine.twilight.renderer.opengl.GL;
 import thewall.engine.twilight.renderer.opengl.GL2;
 import thewall.engine.twilight.renderer.opengl.GL3;
 import thewall.engine.twilight.texture.PixelFormat;
+import thewall.engine.twilight.texture.Texture;
 import thewall.engine.twilight.utils.Validation;
 
 import java.io.FileInputStream;
@@ -140,7 +142,11 @@ public final class JTEGLTextureManager implements GLTextureManager {
         int width = textureData.getWidth(), height = textureData.getHeight();
 
         for(int i = 1; i < 6; i++){
-            buffers[i] = decodeTextureFile("res/texture/" + files[i]).getBuffer();
+            TextureData data = decodeTextureFile("res/texture/" + files[i]);
+            if(width != data.getWidth() || height != data.getHeight()){
+                logger.warn("Texture [{}] has different size than first texture. Primary: [{}/{}], This: [{}/{}]", files[i], width, height, data.getWidth(), data.getHeight());
+            }
+            buffers[i] = data.getBuffer();
         }
 
         return loadCubeMap(buffers, width, height, format, parameters);
@@ -154,7 +160,7 @@ public final class JTEGLTextureManager implements GLTextureManager {
         return loadCubeMap(buffers, width, height, pixelFormat, parameters);
     }
 
-    private int loadCubeMap(ByteBuffer[] buffers, int width, int height, PixelFormat pixelFormat, Map<GLTextureParameter, GLTextureFilter> parameters) {
+    private int loadCubeMap(@ArrayLenRange(to = 6) ByteBuffer[] buffers, int width, int height, PixelFormat pixelFormat, Map<GLTextureParameter, GLTextureFilter> parameters) {
         int texID = gl.glGenTextures();
         gl.glActiveTexture(gl.GL_TEXTURE0);
         gl.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);

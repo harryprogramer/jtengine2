@@ -47,7 +47,7 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
         logger.info("Context for [Sound Master]:        " + (this.soundMaster != null ? this.soundMaster.getClass().getName() : "No Context"));
         this.input = createBestInputManager(appSettings, this);
         logger.info("Context for [Input Manager]:       " + (this.input != null ? this.input.getClass().getName() : "No Context"));
-        this.renderer = new GLRenderer (glContext, new LegacyVAOManager(glContext), new JTEGLTextureManager(glContext), this, endpointHandler);
+        this.renderer = new GLRenderer (glContext, new LegacyVAOManager(glContext), new JTEGLTextureManager(glContext), this);
         logger.info("Context for [Renderer]:            " + this.renderer.getClass().getName());
         this.appSettings = appSettings;
     }

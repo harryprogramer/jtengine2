@@ -1,15 +1,14 @@
 package thewall.engine.twilight.skybox;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
-import thewall.engine.twilight.spatials.Camera;
-import thewall.engine.twilight.models.Loader;
 import thewall.engine.twilight.renderer.opengl.GL;
 import thewall.engine.twilight.renderer.opengl.GL2;
 import thewall.engine.twilight.renderer.opengl.GL3;
 import thewall.engine.twilight.renderer.opengl.vao.VAOManager;
 import thewall.engine.twilight.shaders.gl.SkyboxShader;
+import thewall.engine.twilight.spatials.Camera;
+import thewall.engine.twilight.spatials.Spatial;
 import thewall.engine.twilight.texture.opengl.GLTextureManager;
 import thewall.engine.twilight.utils.Validation;
 
@@ -105,13 +104,13 @@ public final class SkyboxRender {
         shader.stop();
     }
 
-    public void render(Camera camera){
+    public void render(Camera camera, Spatial skybox){
         shader.start();
         shader.loadViewMatrix(camera);
         gl3.glBindVertexArray(cube);
         gl2.glEnableVertexAttribArray(0);
         gl.glActiveTexture(GL.GL_TEXTURE0);
-        gl.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, texture);
+        gl.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, skybox.getMaterial().getID());
         gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertex_count);
         gl2 .glDisableVertexAttribArray(0);
         gl2.glBindVertexArray(0);

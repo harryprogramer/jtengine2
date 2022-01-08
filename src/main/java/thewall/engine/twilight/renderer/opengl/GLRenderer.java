@@ -6,13 +6,16 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import thewall.engine.twilight.Area;
 import thewall.engine.twilight.errors.OpenGLException;
+import thewall.engine.twilight.input.Input;
+import thewall.engine.twilight.input.mouse.MouseButton;
 import thewall.engine.twilight.models.Mesh;
 import thewall.engine.twilight.shaders.ShaderHandle;
 import thewall.engine.twilight.shaders.gl.*;
 import thewall.engine.twilight.spatials.Spatial2D;
+import thewall.engine.twilight.system.JTEContext;
+import thewall.engine.twilight.utils.MousePicker;
 import thewall.engine.twilight.viewport.*;
 import thewall.engine.twilight.display.Display;
 import thewall.engine.twilight.events.endpoints.EndpointHandler;
@@ -80,18 +83,21 @@ public final class GLRenderer implements Renderer {
     private final List<Terrain> terrains = new ArrayList<>();
 
     private final EndpointHandler endpointHandler;
+    private final Input input;
+    private MousePicker mousePicker;
 
-    public GLRenderer(GL gl, VAOManager vao, GLTextureManager glTextureManager, Display display, EndpointHandler endpointHandler){
+    public GLRenderer(GL gl, VAOManager vao, GLTextureManager glTextureManager, JTEContext context){
         Validation.checkNull(gl);
         Validation.checkNull(vao);
         Validation.checkNull(glTextureManager);
+        this.vaoManager = vao;
+        this.textureManager = glTextureManager;
+        this.display = context.getDisplay();
+        this.endpointHandler = context.getEndpointHandler();
+        this.input = context.getInput();
         this.gl = gl;
         this.gl2 = gl instanceof GL2 ? (GL2) gl : null;
         this.gl3 = gl instanceof GL3 ? (GL3) gl : null;
-        this.vaoManager = vao;
-        this.textureManager = glTextureManager;
-        this.display = display;
-        this.endpointHandler = endpointHandler;
 
         String error = "";
 
@@ -170,6 +176,9 @@ public final class GLRenderer implements Renderer {
         createProjectionMatrix(windowSize.getWidth(), windowSize.getHeight(), viewPort);
         setViewPort(0, 0, windowSize.getWidth(), windowSize.getHeight());
 
+        display.setSize(new Area(800, 800));
+        display.setMinimumSize(new Area(600, 300));
+
         display.sizeChangedListener((x, y) -> {
             createProjectionMatrix(x, y, this.latestViewport);
             setViewPort(0, 0, x, y);
@@ -177,6 +186,8 @@ public final class GLRenderer implements Renderer {
                 skyboxRender.updateMatrix(viewMatrix);
             }
         });
+
+        mousePicker = new MousePicker(viewPort.getCamera(), viewMatrix, input, display);
 
         this.skyboxRender = new SkyboxRender(textureManager, viewMatrix, gl, vaoManager);
         this.terrainShader = new TerrainShader();
@@ -451,6 +462,10 @@ public final class GLRenderer implements Renderer {
             throw new NullPointerException("Shader is null");
         }
 
+        mousePicker.update();
+        if(input.getMouse().mouseReleased(MouseButton.MOUSE_BUTTON_1))
+            logger.info(mousePicker.getCurrentRay());
+
         shader.start();
         shader.loadSkyColor(backgroundColour);
         shader.loadLights(lights);
@@ -458,8 +473,10 @@ public final class GLRenderer implements Renderer {
         render3D(viewPort);
         shader.stop();
 
-        if(isSkybox) {
-            skyboxRender.render(viewPort.getCamera());
+        Spatial skybox = viewPort.getSkybox();
+
+        if(skybox != null) {
+            skyboxRender.render(viewPort.getCamera(), skybox);
         }
         render2D(viewPort2D);
 

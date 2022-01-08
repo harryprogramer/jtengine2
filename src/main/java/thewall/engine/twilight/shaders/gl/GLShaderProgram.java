@@ -6,6 +6,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import org.joml.Vector4f;
+import org.lwjgl.opengl.GL40;
 import thewall.engine.twilight.errors.OpenGLException;
 import thewall.engine.twilight.material.Colour;
 import thewall.engine.twilight.renderer.opengl.GL;
@@ -123,8 +125,11 @@ public abstract class GLShaderProgram implements ShaderHandle {
         gl2.glUniform1f(location, value);
     }
 
-    protected void loadVector(int location, @NotNull Vector3f vector3f){
+    protected void loadVector3f(int location, @NotNull Vector3f vector3f){
         gl2.glUniform3f(location, vector3f.x, vector3f.y, vector3f.z);
+    }
+    protected void loadVector4f(int location, @NotNull Vector4f vector4f){
+        gl2.glUniform4f(location, vector4f.x, vector4f.y, vector4f.z, vector4f.w);
     }
 
     protected void loadInt(int location , @NotNull int value){

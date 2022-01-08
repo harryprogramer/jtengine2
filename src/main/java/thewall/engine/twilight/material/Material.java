@@ -19,7 +19,7 @@ public class Material {
     private ByteBuffer materialBuffer;
     private PixelFormat materialFormat;
     private final String name;
-    private boolean transparency = true,  isFakeLighting = false;
+    private boolean transparency = true,  isFakeLighting = false, is3D = false;
     private int textureIndex = 1;
     private ShaderHandle shader = null;
 
@@ -112,7 +112,16 @@ public class Material {
         this.reflectivity = texture.getReflectivity();
         this.textureIndex = texture.getTextureAtlasIndex();
         this.materialFormat = texture.getPixelFormat();
+        this.is3D = texture.isTexture3D();
         this.id = -1;
+    }
+
+    public void set3D(boolean is3D){
+        this.is3D = is3D;
+    }
+
+    public boolean is3D(){
+        return is3D;
     }
 
     /**

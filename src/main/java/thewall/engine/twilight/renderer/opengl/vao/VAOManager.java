@@ -13,6 +13,9 @@ public interface VAOManager {
     int loadToVAO(float[] vertices, int[] indices, float[] textureCoordinates, float[] geometryNormals);
 
     @Contract(pure = true)
+    int loadToVAO(float[] vertices, int[] indices, float[] textureCoordinates, float[] geometryNormals, float[] tangents);
+
+    @Contract(pure = true)
     int loadToVAO(List<Float> vertices, List<Integer> indices, List<Float> textureCoordinates, List<Float> geometryNormals);
 
     @Contract(pure = true)

@@ -165,6 +165,18 @@ public class LegacyVAOManager implements VAOManager {
     }
 
     @Override
+    public int loadToVAO(float[] vertices, int[] indices, float[] textureCoordinates, float[] geometryNormals, float[] tangents) {
+        int vao = createVAO();
+        bindIndicesBuffer(indices);
+        storeDataInVAO(0, 3, vertices, vao);
+        storeDataInVAO(1, 2, textureCoordinates, vao);
+        storeDataInVAO(2, 3, geometryNormals, vao);
+        storeDataInVAO(3, 3, tangents, vao);
+        unbindVAO();
+        return vao;
+    }
+
+    @Override
     public int loadToVAO(List<Float> vertices, List<Integer> indices, List<Float> textureCoordinates, List<Float> geometryNormals) {
         return loadToVAO(Floats.toArray(vertices), Ints.toArray(indices), Floats.toArray(textureCoordinates), Floats.toArray(geometryNormals));
     }

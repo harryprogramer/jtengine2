@@ -122,7 +122,7 @@ public class MasterRenderer {
         terrainShader.loadViewMatrix(camera);
         terrainRenderer.render(terrains);
         terrainShader.stop();
-        skyboxShader.render(camera);
+        skyboxShader.render(camera, null);
         terrains.clear();
         entities.clear();
     }
