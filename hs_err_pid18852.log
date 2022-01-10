@@ -18,7 +18,7 @@
 
 ---------------  S U M M A R Y ------------
 
-Command Line: C:\Users\szymo\IdeaProjects\thewall\lwjgl-edu-1.0-SNAPSHOT-shaded.jar
+Command Line: C:\Users\szymo\IdeaProjects\jte2\lwjgl-edu-1.0-SNAPSHOT-shaded.jar
 
 Host: Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz, 8 cores, 15G,  Windows 10 , 64 bit Build 19041 (10.0.19041.1348)
 Time: Sat Nov 20 11:57:02 2021  Windows 10 , 64 bit Build 19041 (10.0.19041.1348) elapsed time: 1.615830 seconds (0d 0h 0m 1s)
@@ -36,8 +36,8 @@ j  org.fusesource.jansi.internal.CLibrary.isatty(I)I+0
 j  org.fusesource.jansi.AnsiConsole.ansiStream(Z)Lorg/fusesource/jansi/AnsiPrintStream;+62
 j  org.fusesource.jansi.AnsiConsole.initStreams()V+7
 j  org.fusesource.jansi.AnsiConsole.systemInstall()V+15
-j  thewall.engine.twilight.TwilightApp.init()V+26
-j  thewall.game.thewall.Game.main([Ljava/lang/String;)V+4
+j  jte2.engine.twilight.TwilightApp.init()V+26
+j  jte2.game.jte2.Game.main([Ljava/lang/String;)V+4
 v  ~StubRoutines::call_stub
 
 siginfo: EXCEPTION_ACCESS_VIOLATION (0xc0000005), writing address 0x0000000000000000
@@ -184,7 +184,7 @@ Other Threads:
   0x000001fd469929f0 ConcurrentGCThread "G1 Service" [stack: 0x0000006718e00000,0x0000006718f00000] [id=19736]
 
 Threads with active compile tasks:
-C2 CompilerThread1     1659 1988 % !   4       thewall.engine.twilight.models.obj.thinmatrix.OBJFileLoader::loadOBJ @ 316 (512 bytes)
+C2 CompilerThread1     1659 1988 % !   4       jte2.engine.twilight.models.obj.thinmatrix.OBJFileLoader::loadOBJ @ 316 (512 bytes)
 
 VM state: not at safepoint (normal execution)
 
@@ -420,9 +420,9 @@ CodeHeap 'non-nmethods': size=5760Kb used=1634Kb max_used=1695Kb free=4125Kb
 Compilation events (20 events):
 Event: 1.581 Thread 0x000001fd46afa0c0 2004       3       java.util.concurrent.ThreadPoolExecutor::runStateAtLeast (11 bytes)
 Event: 1.581 Thread 0x000001fd46afa0c0 nmethod 2004 0x000001fd2bfb2610 code [0x000001fd2bfb27a0, 0x000001fd2bfb28f8]
-Event: 1.581 Thread 0x000001fd46afa0c0 2005   !   3       thewall.engine.twilight.TwilightApp::init (260 bytes)
+Event: 1.581 Thread 0x000001fd46afa0c0 2005   !   3       jte2.engine.twilight.TwilightApp::init (260 bytes)
 Event: 1.582 Thread 0x000001fd46afa0c0 nmethod 2005 0x000001fd2bfb2990 code [0x000001fd2bfb2de0, 0x000001fd2bfb45c8]
-Event: 1.582 Thread 0x000001fd46af76f0 2006 % !   4       thewall.engine.twilight.TwilightApp::init @ 2 (260 bytes)
+Event: 1.582 Thread 0x000001fd46af76f0 2006 % !   4       jte2.engine.twilight.TwilightApp::init @ 2 (260 bytes)
 Event: 1.584 Thread 0x000001fd46af76f0 nmethod 2006% 0x000001fd3320d090 code [0x000001fd3320d200, 0x000001fd3320d2b8]
 Event: 1.585 Thread 0x000001fd47d6ee00 nmethod 1996 0x000001fd3320d390 code [0x000001fd3320d580, 0x000001fd3320e398]
 Event: 1.589 Thread 0x000001fd46afa0c0 2007   !   3       jdk.internal.loader.BuiltinClassLoader$2::run (114 bytes)
@@ -473,17 +473,17 @@ Deoptimization events (20 events):
 Event: 1.534 Thread 0x000001fd23e4b220 DEOPT PACKING pc=0x000001fd3320a480 sp=0x00000067189ff0d0
 Event: 1.534 Thread 0x000001fd23e4b220 DEOPT UNPACKING pc=0x000001fd2b6b23a3 sp=0x00000067189ff088 mode 2
 Event: 1.567 Thread 0x000001fd23e4b220 Uncommon trap: trap_request=0xffffff45 fr.pc=0x000001fd3320b30c relative=0x000000000000090c
-Event: 1.568 Thread 0x000001fd23e4b220 Uncommon trap: reason=unstable_if action=reinterpret pc=0x000001fd3320b30c method=thewall.engine.twilight.models.obj.thinmatrix.OBJFileLoader.convertDataToArrays(Ljava/util/List;Ljava/util/List;Ljava/util/List;[F[F[F)F @ 14 c2
+Event: 1.568 Thread 0x000001fd23e4b220 Uncommon trap: reason=unstable_if action=reinterpret pc=0x000001fd3320b30c method=jte2.engine.twilight.models.obj.thinmatrix.OBJFileLoader.convertDataToArrays(Ljava/util/List;Ljava/util/List;Ljava/util/List;[F[F[F)F @ 14 c2
 Event: 1.568 Thread 0x000001fd23e4b220 DEOPT PACKING pc=0x000001fd3320b30c sp=0x00000067189ff090
 Event: 1.568 Thread 0x000001fd23e4b220 DEOPT UNPACKING pc=0x000001fd2b6b23a3 sp=0x00000067189ff038 mode 2
 Event: 1.575 Thread 0x000001fd23e4b220 Uncommon trap: trap_request=0xffffff45 fr.pc=0x000001fd3320c010 relative=0x00000000000001f0
-Event: 1.575 Thread 0x000001fd23e4b220 Uncommon trap: reason=unstable_if action=reinterpret pc=0x000001fd3320c010 method=thewall.engine.twilight.models.obj.thinmatrix.OBJFileLoader.convertIndicesListToArray(Ljava/util/List;)[I @ 14 c2
+Event: 1.575 Thread 0x000001fd23e4b220 Uncommon trap: reason=unstable_if action=reinterpret pc=0x000001fd3320c010 method=jte2.engine.twilight.models.obj.thinmatrix.OBJFileLoader.convertIndicesListToArray(Ljava/util/List;)[I @ 14 c2
 Event: 1.575 Thread 0x000001fd23e4b220 DEOPT PACKING pc=0x000001fd3320c010 sp=0x00000067189ff0c0
 Event: 1.575 Thread 0x000001fd23e4b220 DEOPT UNPACKING pc=0x000001fd2b6b23a3 sp=0x00000067189ff080 mode 2
 Event: 1.584 Thread 0x000001fd23e4b220 DEOPT PACKING pc=0x000001fd2bfb1391 sp=0x00000067189ff620
 Event: 1.584 Thread 0x000001fd23e4b220 DEOPT UNPACKING pc=0x000001fd2b6b2b43 sp=0x00000067189feb30 mode 0
 Event: 1.584 Thread 0x000001fd23e4b220 Uncommon trap: trap_request=0xffffff45 fr.pc=0x000001fd3320d280 relative=0x0000000000000080
-Event: 1.584 Thread 0x000001fd23e4b220 Uncommon trap: reason=unstable_if action=reinterpret pc=0x000001fd3320d280 method=thewall.engine.twilight.TwilightApp.init()V @ 5 c2
+Event: 1.584 Thread 0x000001fd23e4b220 Uncommon trap: reason=unstable_if action=reinterpret pc=0x000001fd3320d280 method=jte2.engine.twilight.TwilightApp.init()V @ 5 c2
 Event: 1.584 Thread 0x000001fd23e4b220 DEOPT PACKING pc=0x000001fd3320d280 sp=0x00000067189ff6a0
 Event: 1.584 Thread 0x000001fd23e4b220 DEOPT UNPACKING pc=0x000001fd2b6b23a3 sp=0x00000067189ff630 mode 2
 Event: 1.589 Thread 0x000001fd23e4b220 Uncommon trap: trap_request=0xffffff45 fr.pc=0x000001fd331be0e4 relative=0x0000000000002504
@@ -659,8 +659,8 @@ dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
 symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Program Files\Java\jdk-17.0.1\bin;C:\Windows\SYSTEM32;C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.19041.1110_none_60b5254171f9507e;C:\Program Files\Java\jdk-17.0.1\bin\server;C:\Users\szymo\AppData\Local\Temp\lwjglszymo\3.2.3-SNAPSHOT;C:\Users\szymo\AppData\Local\Temp
 
 VM Arguments:
-java_command: C:\Users\szymo\IdeaProjects\thewall\lwjgl-edu-1.0-SNAPSHOT-shaded.jar
-java_class_path (initial): C:\Users\szymo\IdeaProjects\thewall\lwjgl-edu-1.0-SNAPSHOT-shaded.jar
+java_command: C:\Users\szymo\IdeaProjects\jte2\lwjgl-edu-1.0-SNAPSHOT-shaded.jar
+java_class_path (initial): C:\Users\szymo\IdeaProjects\jte2\lwjgl-edu-1.0-SNAPSHOT-shaded.jar
 Launcher Type: SUN_STANDARD
 
 [Global flags]

@@ -2,9 +2,9 @@ package tests.renderEngine.engine.scripting;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import thewall.engine.twilight.scripting.JSScriptManager;
-import thewall.engine.twilight.scripting.ScriptManager;
-import thewall.engine.twilight.scripting.ScriptPlugin;
+import jte2.engine.twilight.scripting.JSScriptManager;
+import jte2.engine.twilight.scripting.ScriptManager;
+import jte2.engine.twilight.scripting.ScriptPlugin;
 
 import java.io.File;
 import java.io.FileNotFoundException;

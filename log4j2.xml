@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO" shutdownHook="true" packages="thewall.engine.twilight.debugger">
+<Configuration status="INFO" shutdownHook="true" packages="jte2.engine.twilight.debugger">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout disableAnsi="false"  pattern="%highlight{[%d{HH:mm:ss}] %t/%-5level] - %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, DEBUG=blue bold}"/>
@@ -10,7 +10,7 @@
             -->
         </Console>
         <RollingFile name="RollingFile"
-                     filePattern="logs/%d{yyyy-MM-dd}/%d{HH.mm.ss}-thewall-%i.log" immediateFlush="true">
+                     filePattern="logs/%d{yyyy-MM-dd}/%d{HH.mm.ss}-jte2-%i.log" immediateFlush="true">
             <PatternLayout pattern="[%c] [%d{HH:mm:ss}] %t/%-5level] - %msg%n"/>
             <Policies>
                <TimeBasedTriggeringPolicy interval="86400"/>

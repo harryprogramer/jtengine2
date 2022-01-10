@@ -1,10 +1,10 @@
-package thewall.engine.twilight.spatials;
+package jte2.engine.twilight.spatials;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import thewall.engine.twilight.models.TexturedModel;
+import jte2.engine.twilight.models.TexturedModel;
 import lombok.Getter;
-import thewall.engine.twilight.terrain.Terrain;
+import jte2.engine.twilight.terrain.Terrain;
 
 @Deprecated(forRemoval = true)
 public abstract class Entity {

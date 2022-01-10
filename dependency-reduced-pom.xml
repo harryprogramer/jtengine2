@@ -19,7 +19,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>thewall.engine.sdk.leveleditor.Editor</mainClass>
+              <mainClass>jte2.engine.sdk.leveleditor.Editor</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -31,7 +31,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>thewall.engine.sdk.leveleditor.Editor</mainClass>
+              <mainClass>jte2.engine.sdk.leveleditor.Editor</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
@@ -52,7 +52,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>thewall.engine.sdk.leveleditor.Editor</mainClass>
+                  <mainClass>jte2.engine.sdk.leveleditor.Editor</mainClass>
                   <manifestEntries>
                     <Multi-Release>true</Multi-Release>
                   </manifestEntries>
