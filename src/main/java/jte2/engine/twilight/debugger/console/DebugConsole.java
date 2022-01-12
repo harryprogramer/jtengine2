@@ -26,7 +26,7 @@ public final class DebugConsole {
 
     private static final Logger logger = LogManager.getLogger(DebugConsole.class);
 
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(TEngineThreadFactory.getInstance());
+    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(TEngineThreadFactory.INSTANCE);
     private volatile List<LogData> logQueue = new ArrayList<>();
     private static boolean isGLFWInit = false;
 

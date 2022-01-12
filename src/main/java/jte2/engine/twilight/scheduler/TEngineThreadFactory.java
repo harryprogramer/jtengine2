@@ -7,11 +7,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TEngineThreadFactory implements ThreadFactory {
-    @Getter
-    private static final TEngineThreadFactory instance = new TEngineThreadFactory();
+    public static final TEngineThreadFactory INSTANCE = new TEngineThreadFactory();
 
     private TEngineThreadFactory(){
-        if(instance != null){
+        if(INSTANCE != null){
             throw new IllegalStateException("This class can be have only one instance");
         }
     }

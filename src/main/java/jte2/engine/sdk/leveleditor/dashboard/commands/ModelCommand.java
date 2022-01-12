@@ -51,6 +51,11 @@ public class ModelCommand extends Argument {
         logger.info("Loaded model [" + filename + "] to ID: [" + id + "]");
     }
 
+    @Override
+    public String getHelpDescription() {
+        return null;
+    }
+
     private void echoText(String text, @NotNull ConsoleSession session){
         logger.error(text);
         session.writeLine(text, Colour.RED);

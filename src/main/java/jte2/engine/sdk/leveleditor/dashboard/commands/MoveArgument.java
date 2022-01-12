@@ -59,6 +59,11 @@ public class MoveArgument extends Argument {
         }
     }
 
+    @Override
+    public String getHelpDescription() {
+        return null;
+    }
+
     private static float moveSensitivity = 0.01f;
 
     public void moveSpatialMouseX(Spatial spatial, ConsoleSession session){

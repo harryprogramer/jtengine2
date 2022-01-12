@@ -8,7 +8,10 @@ import jte2.engine.sdk.leveleditor.dashboard.args.parser.LineArgument;
 import jte2.engine.sdk.leveleditor.dashboard.args.parser.LineParser;
 import jte2.engine.twilight.material.Colour;
 import jte2.engine.twilight.utils.Validation;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -47,6 +50,11 @@ public final class ArgsHandlerService {
 
     public Argument getHandle(String argName){
         return args.get(argName);
+    }
+
+    @Contract(pure = true)
+    public @NotNull Map<String, Argument> getHandles(){
+        return args;
     }
 
     public void removeHandle(String argName){

@@ -8,4 +8,6 @@ public interface SoundMaster {
     @NotNull
     @NonBlocking
     SoundChannel playBackground(float volume, float pitch, String file);
+
+    void stopMaster();
 }

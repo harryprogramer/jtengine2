@@ -67,6 +67,11 @@ public class BoxArgument extends Argument {
         }
     }
 
+    @Override
+    public String getHelpDescription() {
+        return null;
+    }
+
     private void errorEcho(String text, @NotNull ConsoleSession session){
         logger.error(text);
         session.writeLine(text, Colour.RED);

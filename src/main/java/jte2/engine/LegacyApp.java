@@ -157,7 +157,6 @@ public abstract class LegacyApp implements Application {
 
     @Override
     public void onClose() {
-        logger.info("Closing app");
         onExit();
     }
 
@@ -206,7 +205,7 @@ public abstract class LegacyApp implements Application {
 
         logger.info("Found runtime [" + runtime.getClass().getName() + "], executing program...");
         Thread thread = new Thread(() -> runtime.execute(this));
-        thread.setName("TwLight Main Thread");
+        thread.setName("Twilight");
 
         logger.debug("Runtime thread exception guard is ready");
         thread.setUncaughtExceptionHandler((t, e) -> {

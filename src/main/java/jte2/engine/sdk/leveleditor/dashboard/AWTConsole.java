@@ -1,5 +1,6 @@
 package jte2.engine.sdk.leveleditor.dashboard;
 
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -20,8 +21,9 @@ import java.awt.event.*;
 
 public class AWTConsole extends JFrame implements EditorDashboard, ConsoleSession {
     private static final Logger logger = LogManager.getLogger(AWTConsole.class);
+    @Getter
     private final ArgsHandlerService argsHandlerService;
-    private final static String VERSION = "1.0.20";
+    private final static String VERSION = "1.2";
     private final LineParser lineParser = new JTEArgumentParser();
     private final ColorPane textPane;
     private final JScrollPane scroll;
@@ -186,8 +188,10 @@ public class AWTConsole extends JFrame implements EditorDashboard, ConsoleSessio
         textPane.setCharacterAttributes(aset, false);
 
 
-        textPane.replaceSelection("\nJTELevelEditor " + VERSION);
-        textPane.replaceSelection("\nUNIX Style Level Editor for Twilight Engine");
+        writeLine("UNIX Style Level Editor for Twilight Engine", Colour.WHITE, false);
+        writeLine("JTELevelEditor " + VERSION, Colour.WHITE, false);
+        writeLine("To create new scene use 'newmdl <name>'", Colour.ORANGE, false);
+        writeLine("For more information on a specific command, type help", Colour.ORANGE, false);
 
         textPane.setCaretPosition(textPane.getDocument().getLength());
     }
@@ -249,7 +253,11 @@ public class AWTConsole extends JFrame implements EditorDashboard, ConsoleSessio
     }
 
     @Override
-    public void writeLine(String text, @NotNull Colour colour) {
+    public void writeLine(String text, Colour colour) {
+        writeLine(text, colour, true);
+    }
+
+    public void writeLine(String text, @NotNull Colour colour, boolean format) {
         StyleContext sc = StyleContext.getDefaultStyleContext();
         AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY,
                 StyleConstants.Foreground, colour.getColor());
@@ -258,7 +266,11 @@ public class AWTConsole extends JFrame implements EditorDashboard, ConsoleSessio
         textPane.setCaretPosition(len);
         textPane.setCharacterAttributes(aset, false);
 
-        textPane.replaceSelection("\n</> " + text);
+        if(format) {
+            textPane.replaceSelection("\n</> " + text);
+        }else {
+            textPane.replaceSelection("\n" + text);
+        }
         textPane.setCaretPosition(textPane.getDocument().getLength());
     }
 

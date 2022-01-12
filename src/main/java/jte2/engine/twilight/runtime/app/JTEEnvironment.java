@@ -124,17 +124,14 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
 
         context.init();
 
+        logger.info("Available processors to the JVM: {}", Runtime.getRuntime().availableProcessors());
         logger.info("CPU:                       " + app.getHardware().getProcessor().getName());
         logger.info("Renderer:                  " + context.getRenderer().getName());
         logger.info("GPU:                       " + app.getHardware().getUsedGraphic().getName());
         logger.info("Vendor:                    " + app.getHardware().getUsedGraphic().getVendor());
         logger.info("Memory :                   " + (app.getHardware().getMemory().getTotal()) / (1024L * 1024L) + "MB");
         logger.info("Baseboard:                 "  + app.getHardware().getBaseboardManufacturer() + " " + app.getHardware().getBaseboardModel());
-        List<SoundCard> soundCards = app.getHardware().getSoundCards();
-        int i = 0;
-        for(SoundCard soundCard : soundCards) {
-            logger.info(String.format("Sound %d:   %s %s %s", ++i ,soundCard.getName(), soundCard.getCodec(), soundCard.getDriverVersion()));
-        }
+
         logger.info("Context found! [" + context.getClass().getName() + "]");
 
         initAppCapacities();
@@ -210,6 +207,7 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
         logger.info("Stopping JTE runtime watchdog");
         watchdog.stop();
         app.onClose();
+        context.getSoundMaster().stopMaster();
         DebugConsole.getConsole().closeConsole();
     }
 

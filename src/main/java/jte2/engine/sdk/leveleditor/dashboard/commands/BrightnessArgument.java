@@ -36,6 +36,11 @@ public class BrightnessArgument extends Argument {
         logger.info("Scene light brightness change to [" + brightness + "]");
     }
 
+    @Override
+    public String getHelpDescription() {
+        return null;
+    }
+
     private void echoText(String text, @NotNull ConsoleSession session){
         logger.error(text);
         session.writeLine(text, Colour.RED);

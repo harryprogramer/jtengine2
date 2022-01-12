@@ -42,6 +42,11 @@ public class ScaleArgument extends Argument {
         spatial.setScale(scale);
     }
 
+    @Override
+    public String getHelpDescription() {
+        return null;
+    }
+
     private void echoText(String text, @NotNull ConsoleSession session){
         logger.error(text);
         session.writeLine(text, Colour.RED);

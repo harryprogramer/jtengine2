@@ -51,4 +51,9 @@ public class DestroyArgument extends Argument {
         spatialService.removeSpatial(id);
         session.writeLine("Spatial [" + id + "] destroyed.", Colour.GREEN);
     }
+
+    @Override
+    public String getHelpDescription() {
+        return null;
+    }
 }

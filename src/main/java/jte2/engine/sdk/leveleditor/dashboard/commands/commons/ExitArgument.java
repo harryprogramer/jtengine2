@@ -9,4 +9,9 @@ public class ExitArgument extends Argument {
     public void handle(LineArgument arg, ConsoleSession session) {
         System.exit(-1);
     }
+
+    @Override
+    public String getHelpDescription() {
+        return null;
+    }
 }

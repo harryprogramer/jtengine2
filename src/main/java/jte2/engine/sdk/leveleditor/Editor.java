@@ -1,6 +1,8 @@
 package jte2.engine.sdk.leveleditor;
 
 
+import jte2.engine.sdk.leveleditor.dashboard.CommonsArgsProvider;
+import jte2.engine.sdk.leveleditor.dashboard.args.handler.ArgsHandlerService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Vector3f;
@@ -58,16 +60,13 @@ public class Editor extends LegacyApp {
         getInput().getMouse().disableCursor();
         setFrameLimit(190);
         getDisplay().setVSync(false);
-        //getViewPort().addLight(new Light(new Vector3f(0, 5000, 0), Colour.WHITE, new Vector3f(0.000001f, 0.000001f, 0.000001f)));
-        //setShader(new PreviewLightShader());
         Spatial spatial = new Box(2, 2, 2);
-        //spatial.getMaterial().setShader(new StaticShader());
         spatial.setScale(25);
         spatial.getMaterial().setTexture(getAssetsManager().loadTexture("pob_vafor_em_epica.png"));
         spatial.getMaterial().setColour(Colour.RED);
         this.viewPort.detachScene(rootNode);
 
-        //rootNode.attachChild(spatial);
+        getSound().playBackground(0.009f, 1f, "res/music/ambient/void.wav");
     }
 
     public void setScene(Node node){

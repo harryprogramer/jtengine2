@@ -176,7 +176,6 @@ public final class GLRenderer implements Renderer {
         createProjectionMatrix(windowSize.getWidth(), windowSize.getHeight(), viewPort);
         setViewPort(0, 0, windowSize.getWidth(), windowSize.getHeight());
 
-        display.setSize(new Area(800, 800));
         display.setMinimumSize(new Area(600, 300));
 
         display.sizeChangedListener((x, y) -> {

@@ -47,4 +47,9 @@ public class SaveModelArgument extends Argument {
             session.writeLine("Cannot save model, " + e.getMessage(), Colour.RED);
         }
     }
+
+    @Override
+    public String getHelpDescription() {
+        return null;
+    }
 }

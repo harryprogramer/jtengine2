@@ -36,6 +36,11 @@ public class CreateModelArgument extends Argument {
         editor.setScene(node);
     }
 
+    @Override
+    public String getHelpDescription() {
+        return null;
+    }
+
     private void errorEcho(String text, @NotNull ConsoleSession session){
         logger.error(text);
         session.writeLine(text, Colour.RED);

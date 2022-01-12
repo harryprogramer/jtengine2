@@ -37,6 +37,11 @@ public class TeleportArgument extends Argument {
         }
     }
 
+    @Override
+    public String getHelpDescription() {
+        return null;
+    }
+
     private void echoText(String text, @NotNull ConsoleSession session){
         logger.error(text);
         session.writeLine(text, Colour.RED);

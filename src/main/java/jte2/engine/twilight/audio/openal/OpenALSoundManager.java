@@ -10,4 +10,9 @@ public final class OpenALSoundManager implements SoundMaster {
     public @NotNull SoundChannel playBackground(float volume, float pitch, String file) {
         return null; // TODO
     }
+
+    @Override
+    public void stopMaster() {
+
+    }
 }

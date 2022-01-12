@@ -65,14 +65,14 @@ public class TwilightRuntimeService {
     }
 
     private static class RuntimeServiceShutdown extends Thread{
-        public RuntimeServiceShutdown(){
-            setName("Runtime Shutdown Service");
+        private RuntimeServiceShutdown(){
+            setName("Shutdown Service");
         }
 
         @Override
         public void run() {
             if(!activeRuntime.isEmpty()) {
-                logger.info("Closing all runtimes");
+                logger.info("Closing all runtimes, {} to close.", activeRuntime.size());
                 for (Iterator<AbstractRuntime<?>> taskIterator = activeRuntime.values().iterator(); taskIterator.hasNext(); ) {
                     AbstractRuntime<?> runtime = taskIterator.next();
                     runtime.forceStop();

@@ -63,4 +63,9 @@ public class MaterialArgument extends Argument {
             logger.warn("Syntax error for [" + arg.getName() + "], no material type provided");
         }
     }
+
+    @Override
+    public String getHelpDescription() {
+        return null;
+    }
 }

@@ -148,7 +148,7 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
                 String sourceMsg, typeMsg;
                 switch (source){
                     case GL4.GL_DEBUG_SOURCE_API ->             sourceMsg = "SOURCE";
-                    case GL4.GL_DEBUG_SOURCE_WINDOW_SYSTEM ->   sourceMsg = "WINDOW_SYSTEM";
+                    case GL4.GL_DEBUG_SOURCE_WINDOW_SYSTEM ->   sourceMsg = "WINDOW SYSTEM";
                     case GL4.GL_DEBUG_SOURCE_SHADER_COMPILER -> sourceMsg = "SHADER";
                     case GL4.GL_DEBUG_SOURCE_THIRD_PARTY ->     sourceMsg = "EXTERNAL";
                     case GL4.GL_DEBUG_SOURCE_APPLICATION ->     sourceMsg = "APPLICATION";

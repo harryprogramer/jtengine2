@@ -199,7 +199,7 @@ public class GLFWInputUtils {
 
             default -> {
                 if(!(lastErrorCode == code)) {
-                    logger.warn("Unknown key id: " + code);
+                    logger.warn("Cannot translate glfw key, unknown key id: " + code);
                 }
                 lastErrorCode = code;
                 return null;
