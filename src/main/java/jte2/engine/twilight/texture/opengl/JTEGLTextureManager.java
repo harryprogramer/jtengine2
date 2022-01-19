@@ -15,23 +15,28 @@ import jte2.engine.twilight.renderer.opengl.GL3;
 import jte2.engine.twilight.texture.PixelFormat;
 import jte2.engine.twilight.utils.Validation;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.*;
 
 
 // TODO: optimizations
 public final class JTEGLTextureManager implements GLTextureManager {
     private final static Logger logger = LogManager.getLogger(JTEGLTextureManager.class);
-    private List<Integer> textures = new ArrayList<>();
+    private final List<Integer> textures = new ArrayList<>();
     private float mipmappingLevel = -0.04f;
     private final GL gl;
     private final GL2 gl2;
     private final GL3 gl3;
 
     public JTEGLTextureManager(GL gl){
-        this.gl = gl != null ? (GL) gl : null;
+        this.gl = gl;
         this.gl2 = gl instanceof GL2 ? (GL2) gl : null;
         this.gl3 = gl instanceof GL3 ? (GL3) gl : null;
 
@@ -77,6 +82,7 @@ public final class JTEGLTextureManager implements GLTextureManager {
     }
 
     private int generateTextureFromFile(String filename, PixelFormat pixelFormat, Map<GLTextureParameter, GLTextureFilter> parameters) throws IOException {
+        logger.info("Loading texture [" + filename + "] to memory, with parameters " + parameters);
         PNGDecoder decoder = new PNGDecoder(new FileInputStream("res/texture/" + filename + ".png"));
         ByteBuffer buffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
         PNGDecoder.Format format;
@@ -87,9 +93,20 @@ public final class JTEGLTextureManager implements GLTextureManager {
         }
         decoder.decode(buffer, decoder.getWidth() * 4, format);
         buffer.flip();
-
         return generateTexture(buffer, decoder.getWidth(), decoder.getHeight(), pixelFormat, parameters);
     }
+
+    /* Thanks to https://stackoverflow.com/questions/29301838/converting-bufferedimage-to-bytebuffer */
+    private static @NotNull ByteBuffer convertImageData(@NotNull BufferedImage bi)
+    {
+        byte[] pixelData = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
+        ByteBuffer buf = ByteBuffer.allocateDirect(pixelData.length);
+        buf.order(ByteOrder.nativeOrder());
+        buf.put(pixelData);
+        buf.flip();
+        return buf;
+    }
+
 
     private int generateTextureFromFile(String filename, PixelFormat format) throws IOException {
         Map<GLTextureParameter, GLTextureFilter> parameters = new HashMap<>();
@@ -116,7 +133,7 @@ public final class JTEGLTextureManager implements GLTextureManager {
             pngDecoder.decode(buffer, width * 4, PNGDecoder.Format.RGBA);
             buffer.flip();
             in.close();
-            logger.info("Texture [" + fileName + "] loaded with [" + readableDecoder(pngDecoder) + "]");
+            logger.info("Texture [" + fileName + "] was direct loaded with [" + readableDecoder(pngDecoder) + "].");
         }catch (Exception e){
             logger.error("Texture file decoder error, cannot decode [" + fileName + "]", e);
             throw new TextureDecoderException(e);
@@ -168,7 +185,7 @@ public final class JTEGLTextureManager implements GLTextureManager {
         gl.glActiveTexture(gl.GL_TEXTURE0);
         gl.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
 
-        Validation.checkNull(getClass(), buffers);
+        Validation.checkNull(getClass(), buffers, "cube map buffers are null");
         int coordinates = gl.GL_TEXTURE_CUBE_MAP_POSITIVE_X - 1;
         for(int i = 0; i < 6; i++){
             ByteBuffer buffer = buffers[i];
@@ -189,7 +206,7 @@ public final class JTEGLTextureManager implements GLTextureManager {
 
     @Override
     public int loadTexture(String filename) {
-        return 0;
+        return loadTexture(filename, PixelFormat.RGBA);
     }
 
     @Override

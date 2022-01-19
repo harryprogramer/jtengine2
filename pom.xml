@@ -733,9 +733,6 @@
             <artifactId>pngdecoder</artifactId>
             <version>1.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/io.github.spair/imgui-java-binding -->
-        <!-- https://mvnrepository.com/artifact/io.github.spair/imgui-java-binding -->
-        <!-- https://mvnrepository.com/artifact/io.github.spair/imgui-java-binding -->
         <dependency>
             <groupId>io.github.spair</groupId>
             <artifactId>imgui-java-binding</artifactId>

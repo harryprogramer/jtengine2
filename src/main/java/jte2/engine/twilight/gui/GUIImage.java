@@ -1,8 +1,8 @@
 package jte2.engine.twilight.gui;
 
+import jte2.engine.twilight.texture.Texture;
 import org.joml.Vector2f;
 import jte2.engine.twilight.material.Material;
-import jte2.engine.twilight.texture.Texture;
 
 public class GUIImage extends GUIComponent {
     private Material material;

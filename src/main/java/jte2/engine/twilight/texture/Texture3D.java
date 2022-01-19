@@ -1,22 +1,26 @@
 package jte2.engine.twilight.texture;
 
-import de.matthiasmann.twl.utils.PNGDecoder;
 import jte2.engine.twilight.Area;
 import jte2.engine.twilight.errors.TextureDecoderException;
+import jte2.engine.twilight.utils.Validation;
+import org.checkerframework.common.value.qual.ArrayLenRange;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileInputStream;
-import java.nio.ByteBuffer;
-
-public class Texture3D extends AbstractTexture {
+public class Texture3D extends Texture {
     private final Picture[] cubeTextures;
 
-    private static final String[] TEXTURE_FILES = {"skybox/right.png", "skybox/left.png", "skybox/top.png",
-            "skybox/bottom.png", "skybox/back.png", "skybox/front.png"};
+    public enum Face {
+        RIGHT,
+        LEFT,
+        FRONT,
+        BACK,
+        UP,
+        DOWN
+    }
 
-    public Texture3D(PixelFormat pixelFormat, int width, int height, Picture @NotNull [] pictures) {
+    public Texture3D(PixelFormat pixelFormat, int width, int height, Picture @ArrayLenRange(from = 0, to = 5) @NotNull [] pictures) {
         super(pixelFormat, width, height);
-        if(pictures.length != 5){
+        if(pictures.length != 6){
             throw new IllegalStateException("incorrect pictures array");
         }
 
@@ -33,27 +37,40 @@ public class Texture3D extends AbstractTexture {
         }
     }
 
-    public Picture getRight(){
-        return cubeTextures[0];
+    public @ArrayLenRange(from = 0, to = 5) Picture[] getTextures(){
+        return cubeTextures;
     }
 
-    public Picture getLeft(){
-        return cubeTextures[1];
+    public Picture getFace(@NotNull Face face){
+        switch (face){
+            case RIGHT -> {
+                return cubeTextures[0];
+            }
+
+            case LEFT -> {
+                return cubeTextures[1];
+            }
+
+            case FRONT -> {
+                return cubeTextures[2];
+            }
+
+            case BACK -> {
+                return cubeTextures[3];
+            }
+
+            case UP -> {
+                return cubeTextures[4];
+            }
+
+            case DOWN -> {
+                return cubeTextures[5];
+            }
+
+            default -> throw new IllegalStateException("invalid face");
+        }
     }
 
-    public Picture getFront(){
-        return cubeTextures[2];
-    }
 
-    public Picture getBack(){
-        return cubeTextures[3];
-    }
 
-    public Picture getUp(){
-        return cubeTextures[4];
-    }
-
-    public Picture getDown(){
-        return cubeTextures[5];
-    }
 }

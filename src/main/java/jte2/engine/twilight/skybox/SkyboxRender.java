@@ -65,7 +65,6 @@ public final class SkyboxRender {
     private static final String[] TEXTURE_FILES = {"skybox/right.png", "skybox/left.png", "skybox/top.png",
             "skybox/bottom.png", "skybox/back.png", "skybox/front.png"};
 
-    private final int texture;
     private final SkyboxShader shader;
     private final GL gl;
     private final GL2 gl2;
@@ -94,7 +93,6 @@ public final class SkyboxRender {
         }
 
         this.cube = vaoManager.loadToVAO(VERTICES, 3);
-        this.texture = loader.load3DTexture(TEXTURE_FILES);
         this.vertex_count = VERTICES.length / 3;
         this.shader = new SkyboxShader();
         this.shader.setGL(gl);
@@ -105,16 +103,18 @@ public final class SkyboxRender {
     }
 
     public void render(Camera camera, Spatial skybox){
-        shader.start();
-        shader.loadViewMatrix(camera);
-        gl3.glBindVertexArray(cube);
-        gl2.glEnableVertexAttribArray(0);
-        gl.glActiveTexture(GL.GL_TEXTURE0);
-        gl.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, skybox.getMaterial().getID());
-        gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertex_count);
-        gl2 .glDisableVertexAttribArray(0);
-        gl2.glBindVertexArray(0);
-        shader.stop();
+        if(skybox != null) {
+            shader.start();
+            shader.loadViewMatrix(camera);
+            gl3.glBindVertexArray(cube);
+            gl2.glEnableVertexAttribArray(0);
+            gl.glActiveTexture(GL.GL_TEXTURE0);
+            gl.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, skybox.getMaterial().getTexture().getID());
+            gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertex_count);
+            gl2.glDisableVertexAttribArray(0);
+            gl2.glBindVertexArray(0);
+            shader.stop();
+        }
     }
 
     public void updateMatrix(Matrix4f matrix4f){

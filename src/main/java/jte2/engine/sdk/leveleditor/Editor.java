@@ -15,11 +15,13 @@ import jte2.engine.sdk.leveleditor.net.UpdateException;
 import jte2.engine.sdk.leveleditor.net.UpdateManager;
 import jte2.engine.twilight.material.Colour;
 import jte2.engine.twilight.networking.ConnectionRefusedException;
+import jte2.engine.twilight.skybox.Skybox;
 import jte2.engine.twilight.spatials.Box;
 import jte2.engine.twilight.spatials.Light;
 import jte2.engine.twilight.spatials.Spatial;
 import jte2.engine.twilight.system.NativeContext;
 import jte2.engine.twilight.system.context.opengl.lwjgl.LegacyLwjglContext;
+import jte2.engine.twilight.texture.Texture;
 import jte2.engine.twilight.viewport.Node;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,7 +65,10 @@ public class Editor extends LegacyApp {
         spatial.getMaterial().setTexture(getAssetsManager().loadTexture("pob_vafor_em_epica.png"));
         spatial.getMaterial().setColour(Colour.RED);
         viewPort.detachScene(rootNode);
+        Texture texture = getAssetsManager().loadTexture3D(new String[]{"skybox/right.png", "skybox/left.png", "skybox/top.png",
+                "skybox/bottom.png", "skybox/back.png", "skybox/front.png"});
 
+        viewPort.attachSkybox(new Skybox(texture));
         updateCheck();
 
         getSound().playBackground(0.009f, 1f, "res/music/ambient/void.wav");

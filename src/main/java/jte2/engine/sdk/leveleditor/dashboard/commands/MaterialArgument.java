@@ -1,5 +1,6 @@
 package jte2.engine.sdk.leveleditor.dashboard.commands;
 
+import jte2.engine.twilight.texture.Texture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import jte2.engine.sdk.leveleditor.dashboard.ConsoleSession;
@@ -10,7 +11,6 @@ import jte2.engine.twilight.assets.AssetManager;
 import jte2.engine.twilight.spatials.Spatial;
 import jte2.engine.twilight.material.Material;
 import jte2.engine.twilight.material.Colour;
-import jte2.engine.twilight.texture.Texture;
 
 public class MaterialArgument extends Argument {
     private final static Logger logger = LogManager.getLogger(MaterialArgument.class);

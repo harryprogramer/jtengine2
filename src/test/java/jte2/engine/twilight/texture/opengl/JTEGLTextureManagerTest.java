@@ -17,13 +17,12 @@ class JTEGLTextureManagerTest {
         long window = GLFW.glfwCreateWindow(1280, 720, "gowno", 0, 0);
         GLFW.glfwMakeContextCurrent(window);
         GL.createCapabilities();
-        for(int i = 0; i < 100; i++) {
-            long start = System.currentTimeMillis();
-            int textureID = textureManager.loadTexture("box", PixelFormat.RGBA);
-            long end = System.currentTimeMillis();
-            System.out.println("time: " + (end - start) / 1000.0);
-            System.out.println("id: " + textureID);
-        }
+        long start = System.currentTimeMillis();
+        int textureID = textureManager.loadTexture("box", PixelFormat.RGBA);
+        long end = System.currentTimeMillis();
+        System.out.println("time: " + (end - start) / 1000.0);
+        System.out.println("id: " + textureID);
+
         textureManager.cleanUp();
     }
 }

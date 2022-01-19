@@ -14,9 +14,21 @@ public interface AssetManager {
 
     Texture loadTexture(ByteBuffer buffer, int width, int height, PixelFormat format);
 
-    Texture loadTexture(InputStream inputStream, int width, int height, PixelFormat format);
+    Texture loadTexture(InputStream inputStream, PixelFormat format);
 
-    Texture loadTexture3D();
+    /**
+     * File [1]: Right Face<p>
+     * File [2]: Left Face<p>
+     * File [3]: Top Face<p>
+     * File [4]: Bottom Face<p>
+     * File [5]: Back Face<p>
+     * File [6]: Front Face
+     * @param filename array of files to cube texture
+     * @return 3d texture
+     */
+    Texture loadTexture3D(String[] filename);
+
+    Texture loadTexture3D(String[] filename, PixelFormat format);
 
     Spatial loadModel(String filename);
 

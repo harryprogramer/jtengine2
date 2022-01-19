@@ -1,31 +1,30 @@
 package jte2.engine.twilight.material;
 
+import jte2.engine.twilight.texture.Texture;
+import jte2.engine.twilight.texture.Texture2D;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 import jte2.engine.twilight.shaders.ShaderHandle;
 import jte2.engine.twilight.texture.PixelFormat;
-import jte2.engine.twilight.texture.Texture;
 import jte2.engine.twilight.utils.Validation;
 
 import java.nio.ByteBuffer;
 
 public class Material {
     private final static Logger logger = LogManager.getLogger(Material.class);
-
-    private static int index = -1;
-    private int x, y, id = -1;
-    private ByteBuffer materialBuffer;
-    private PixelFormat materialFormat;
-    private final String name;
-    private boolean transparency = true,  isFakeLighting = false, is3D = false;
-    private int textureIndex = 1;
-    private ShaderHandle shader = null;
-
-    private int multiTextureRows = 1;
-
+    private boolean transparency = true,  isFakeLighting = false;
     private float shineDamper = 1, reflectivity = 0;
+    private PixelFormat materialFormat;
+    private ByteBuffer materialBuffer;
+    private ShaderHandle shader = null;
+    private int multiTextureRows = 1;
+    private static int index = -1;
+    private Texture texture = null;
+    private int textureIndex = 1;
+    private int x, y, id = -1;
+    private final String name;
 
     public Material(String name){
         Validation.checkNull(name);
@@ -102,26 +101,11 @@ public class Material {
      */
     public void setTexture(Texture texture){
         Validation.checkNull(texture);
-        this.materialBuffer = texture.getTextureBuffer();
-        this.x = texture.getTextureWidth();
-        this.y = texture.getTextureHeight();
-        this.isFakeLighting = texture.isFakeLighting();
-        this.transparency = texture.isTransparency();
-        this.shineDamper = texture.getShineDamper();
-        this.multiTextureRows = texture.getTextureAtlasSize();
-        this.reflectivity = texture.getReflectivity();
-        this.textureIndex = texture.getTextureAtlasIndex();
-        this.materialFormat = texture.getPixelFormat();
-        this.is3D = texture.isTexture3D();
-        this.id = -1;
+        this.texture = texture;
     }
 
-    public void set3D(boolean is3D){
-        this.is3D = is3D;
-    }
-
-    public boolean is3D(){
-        return is3D;
+    public Texture getTexture(){
+        return texture;
     }
 
     /**

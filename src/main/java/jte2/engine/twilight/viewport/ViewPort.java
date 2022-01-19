@@ -1,5 +1,6 @@
 package jte2.engine.twilight.viewport;
 
+import jte2.engine.twilight.texture.Texture3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import jte2.engine.twilight.material.Colour;
@@ -31,7 +32,7 @@ public final class ViewPort {
     }
 
     public void attachSkybox(@NotNull Spatial spatial){
-        if(!spatial.getMaterial().is3D()){
+        if(!(spatial.getMaterial().getTexture() instanceof Texture3D)){
             throw new IllegalArgumentException("Texture is not 3D.");
         }
         this.skybox = spatial;

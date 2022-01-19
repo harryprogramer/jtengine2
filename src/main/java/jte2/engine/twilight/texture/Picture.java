@@ -1,27 +1,58 @@
 package jte2.engine.twilight.texture;
 
 import jte2.engine.twilight.Area;
+import jte2.engine.twilight.errors.TextureDecoderException;
+import jte2.engine.twilight.utils.Validation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.BufferUtils;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class Picture {
-    private final BufferedImage image;
-    private final ByteBuffer buffer;
-    private final PixelFormat format;
-    private final Area resolution;
-    private final int x, y;
+    private final static Logger logger = LogManager.getLogger(Picture.class);
+    private ByteBuffer buffer;
+    private BufferedImage image;
+    private PixelFormat format;
+    private Area resolution;
 
-    public Picture(BufferedImage buffer, int width, int height, PixelFormat format){
-        this.resolution = new Area(width, height);
-        this.buffer = convertImageData(buffer);
+    public Picture(BufferedImage buffer, PixelFormat format){
+        this.resolution = new Area(buffer.getWidth(), buffer.getHeight());
+        this.buffer = convertImageData(buffer, format);
         this.format = format;
         this.image = buffer;
-        this.x = width;
-        this.y = height;
+    }
+
+    public Picture(String filename){
+        Validation.checkNull(filename);
+        loadPicture(filename, PixelFormat.RGBA);
+    }
+
+    public Picture(String filename, PixelFormat format){
+        Validation.checkNull(filename);
+        loadPicture(filename, format);
+    }
+
+    public void loadPicture(String filename, PixelFormat format){
+        try {
+            BufferedImage image = ImageIO.read(new File("res/texture/" + filename));
+            this.resolution = new Area(image.getWidth(), image.getHeight());
+            this.buffer = convertImageData(image, format);
+            this.format = format;
+            this.image = image;
+        }catch (Exception e){
+            logger.warn("Cannot decode image [{}], {}", filename, e.getMessage());
+        }
+
     }
 
     /**
@@ -30,22 +61,6 @@ public class Picture {
      */
     public BufferedImage getImage(){
         return image;
-    }
-
-    /**
-     * Get picture {@link Picture#x} width
-     * @return width
-     */
-    public int getWidth(){
-        return x;
-    }
-
-    /**
-     * Get picture {@link Picture#y} height
-     * @return width
-     */
-    public int getHeight(){
-        return y;
     }
 
     /**
@@ -72,15 +87,32 @@ public class Picture {
         return buffer;
     }
 
-    /* Thanks to https://stackoverflow.com/questions/29301838/converting-bufferedimage-to-bytebuffer */
-    private static @NotNull ByteBuffer convertImageData(@NotNull BufferedImage bi)
-    {
-        byte[] pixelData = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
-        ByteBuffer buf = ByteBuffer.allocateDirect(pixelData.length);
-        buf.order(ByteOrder.nativeOrder());
-        buf.put(pixelData);
-        buf.flip();
-        return buf;
+    public int getWidth(){
+        return resolution.getWidth();
+    }
+
+    public int getHeight(){
+        return resolution.getHeight();
+    }
+
+    private static @NotNull ByteBuffer convertImageData(@NotNull BufferedImage image, @NotNull PixelFormat format) {
+        int[] pixels = new int[image.getWidth() * image.getHeight()];
+        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+
+        ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * format.getSize()); //4 for RGBA, 3 for RGB
+
+        for(int y = 0; y < image.getHeight(); y++){
+            for(int x = 0; x < image.getWidth(); x++){
+                int pixel = pixels[y * image.getWidth() + x];
+                buffer.put((byte) ((pixel >> 16) & 0xFF));     // Red component
+                buffer.put((byte) ((pixel >> 8) & 0xFF));      // Green component
+                buffer.put((byte) (pixel & 0xFF));               // Blue component
+                buffer.put((byte) ((pixel >> 24) & 0xFF));    // Alpha component. Only for RGBA
+            }
+        }
+
+        buffer.flip(); //FOR THE LOVE OF GOD DO NOT FORGET THIS
+        return buffer;
     }
 
 }

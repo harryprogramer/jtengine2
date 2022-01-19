@@ -1,6 +1,8 @@
 package jte2.engine.twilight.renderer.opengl;
 
 import com.google.common.primitives.Floats;
+import jte2.engine.twilight.texture.*;
+import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -30,14 +32,13 @@ import jte2.engine.twilight.renderer.TerrainRenderer;
 import jte2.engine.twilight.renderer.opengl.vao.VAOManager;
 import jte2.engine.twilight.skybox.SkyboxRender;
 import jte2.engine.twilight.terrain.Terrain;
-import jte2.engine.twilight.texture.PixelFormat;
-import jte2.engine.twilight.texture.TerrainTexture;
-import jte2.engine.twilight.texture.TerrainTexturePack;
 import jte2.engine.twilight.texture.opengl.GLTextureManager;
 import jte2.engine.twilight.material.Colour;
 import jte2.engine.twilight.utils.Validation;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -234,7 +235,41 @@ public final class GLRenderer implements Renderer {
                     spatial.getMesh().setID(vaoManager.loadToVAO(Floats.toArray(spatial.getMesh().getVertices()), 2));
                 }
 
-                if (spatial.getMaterial().getID() == -1) {
+                if(spatial.getMaterial().getTexture() != null){
+                    if(spatial.getMaterial().getTexture() instanceof Texture2D texture2D){
+                        if(texture2D.getID() == -1){
+                            Picture picture = texture2D.getTexture();
+                            int id = textureManager.loadTexture(picture.getImageBuffer(),
+                                    picture.getWidth(),
+                                    picture.getHeight(),
+                                    picture.getFormat());
+                            if(id == 0 || id == -1){
+                                logger.error("Cannot load texture [{}] to OpenGL memory, id is incorrect", texture2D);
+                            }
+                            texture2D.setID(id);
+                        }
+                    }else if(spatial.getMaterial().getTexture() instanceof Texture3D texture3D){
+                        ByteBuffer[] buffers = new ByteBuffer[5];
+                        for(int l = 0; i < 5; i++){
+                            buffers[l] = texture3D.getTextures()[l].getImageBuffer();
+                        }
+                        int id = textureManager.load3DTexture(buffers, texture3D.getTextures()[0].getWidth(),
+                                texture3D.getTextures()[0].getHeight(),
+                                texture3D.getPixelFormat());
+
+                        if(id == 0 || id == -1){
+                            logger.error("Cannot load texture [{}] to OpenGL memory, id is incorrect", texture3D);
+                        }
+
+                        texture3D.setID(id);
+
+                    }else {
+                        throw new TextureDecoderException("unknown texture instance -type");
+                    }
+                }
+
+                if ((spatial.getMaterial().getID() == -1 || spatial.getMaterial().getID() == 0)
+                        && spatial.getMaterial().getTexture() == null) {
                     Material material = spatial.getMaterial();
                     if (material.getMaterialBuffer() == null || material.getMaterialBuffer().capacity() == 0) {
                         throw new IllegalStateException("Material has null or zero texture buffer");
@@ -271,7 +306,41 @@ public final class GLRenderer implements Renderer {
                     spatial.getMesh().setID(vaoManager.loadToVAO(spatial.getMesh()));
                 }
 
-                if (spatial.getMaterial().getID() == -1) {
+                if(spatial.getMaterial().getTexture() != null){
+                    if(spatial.getMaterial().getTexture() instanceof Texture2D texture2D){
+                        if(texture2D.getID() == -1){
+                            Picture picture = texture2D.getTexture();
+                            int id = textureManager.loadTexture(picture.getImageBuffer(),
+                                    picture.getWidth(),
+                                    picture.getHeight(),
+                                    picture.getFormat());
+                            if(id == 0 || id == -1){
+                                logger.error("Cannot load texture [{}] to OpenGL memory, id is incorrect", texture2D);
+                            }
+                            texture2D.setID(id);
+                        }
+                    }else if(spatial.getMaterial().getTexture() instanceof Texture3D texture3D){
+                        ByteBuffer[] buffers = new ByteBuffer[5];
+                        for(int l = 0; i < 5; i++){
+                            buffers[l] = texture3D.getTextures()[l].getImageBuffer();
+                        }
+                        int id = textureManager.load3DTexture(buffers, texture3D.getTextures()[0].getWidth(),
+                                texture3D.getTextures()[0].getHeight(),
+                                texture3D.getPixelFormat());
+
+                        if(id == 0 || id == -1){
+                            logger.error("Cannot load texture [{}] to OpenGL memory, id is incorrect", texture3D);
+                        }
+
+                        texture3D.setID(id);
+
+                    }else {
+                        throw new TextureDecoderException("unknown texture instance -type");
+                    }
+                }
+
+                if ((spatial.getMaterial().getID() == -1 || spatial.getMaterial().getID() == 0)
+                        && spatial.getMaterial().getTexture() == null) {
                     Material material = spatial.getMaterial();
                     if (material.getMaterialBuffer() == null || material.getMaterialBuffer().capacity() == 0) {
                         throw new IllegalStateException("Material has null or zero texture buffer");
@@ -412,7 +481,6 @@ public final class GLRenderer implements Renderer {
     }
 
     private void render3D(ViewPort viewPort){
-        //logger.info(viewPort.getRenderQueue().size() != 0 ? viewPort.getRenderQueue().size() + " " + viewPort.getRenderQueue().get(0) : "niema jeszczczenaijsdnasd");
         for(Material model : queue.keySet()){
             ShaderHandle shader = model.getShader();
             List<Light> lights = viewPort.getLights();
@@ -440,6 +508,7 @@ public final class GLRenderer implements Renderer {
         }
     }
 
+    @SneakyThrows
     @Override
     public void render(@NotNull ViewPort viewPort, ViewPort2D viewPort2D) {
         prepare();
@@ -473,8 +542,23 @@ public final class GLRenderer implements Renderer {
         shader.stop();
 
         Spatial skybox = viewPort.getSkybox();
-
         if(skybox != null) {
+            if(skybox.getMaterial().getTexture().getID() == 0 ||
+                    skybox.getMaterial().getTexture().getID() == -1){
+                logger.info("Loading skybox texture for [{}]", skybox.getMaterial().getTexture());
+                Texture3D texture3D = (Texture3D) skybox.getMaterial().getTexture();
+                ByteBuffer[] buffers = new ByteBuffer[6];
+                for(int i = 0; i < 5; i++){
+                    buffers[i] = texture3D.getTextures()[i].getImageBuffer();
+                }
+                Picture picture = texture3D.getTextures()[0];
+                int id = textureManager.load3DTexture(buffers, picture.getWidth(), picture.getHeight(), picture.getFormat());
+                if(id == 0 || id == -1){
+                    logger.error("Cannot load skybox texture [{}] to OpenGL memory, id is incorrect", skybox.getMaterial().getTexture());
+                }else {
+                    skybox.getMaterial().getTexture().setID(id);
+                }
+            }
             skyboxRender.render(viewPort.getCamera(), skybox);
         }
         render2D(viewPort2D);
@@ -489,9 +573,17 @@ public final class GLRenderer implements Renderer {
         int id = spatial.getMesh().getID();
         int materialID = material.getID();
 
-        if(materialID == 0 || materialID == -1){
-            materialID =  textureManager.loadTexture(material.getMaterialBuffer(), material.getMaterialWidth(), material.getMaterialHeight() ,material.getMaterialFormat());
-            //throw new OpenGLException("Material is not bind or ID is null_ptr");
+        if(material.getTexture() == null) {
+            if (materialID == 0 || materialID == -1) {
+                materialID = textureManager.loadTexture(material.getMaterialBuffer(), material.getMaterialWidth(), material.getMaterialHeight(), material.getMaterialFormat());
+                //throw new OpenGLException("Material is not bind or ID is null_ptr");
+            }
+        }else {
+            if(material.getTexture().getID() == 0){
+                logger.fatal("Material [{}/{}] was not properly loaded although it passed the pipeline.", material, material.getTexture());
+                return;
+            }
+            materialID = material.getTexture().getID();
         }
 
         if(id == 0 || id == -1){

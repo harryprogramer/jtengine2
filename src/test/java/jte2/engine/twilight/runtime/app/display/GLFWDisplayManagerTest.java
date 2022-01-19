@@ -1,4 +1,4 @@
-package jte2.engine.twilight.display;
+package jte2.engine.twilight.runtime.app.display;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
