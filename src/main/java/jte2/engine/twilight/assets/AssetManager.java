@@ -16,6 +16,8 @@ public interface AssetManager {
 
     Texture loadTexture(InputStream inputStream, int width, int height, PixelFormat format);
 
+    Texture loadTexture3D();
+
     Spatial loadModel(String filename);
 
 }

@@ -10,6 +10,8 @@ import jte2.engine.twilight.system.context.opengl.lwjgl.linux.LinuxJTEContext;
 import jte2.engine.twilight.system.context.opengl.lwjgl.macos.MacOSJTEContext;
 import jte2.engine.twilight.system.context.opengl.lwjgl.windows.WindowsJTEContext;
 
+import javax.swing.*;
+
 /**
  * Static access class for system for Java Twilight Engine
  * This class can create and find e.g. context or managers
@@ -71,5 +73,9 @@ public final class JTESystem {
     @Contract(value = " -> new", pure = true)
     public static @NotNull Hardware createBestHardware() {
         return new RealtimeHNAccess(); // TODO find the best hardware
+    }
+
+    public static void showErrorDialog(String title, String message){
+        JOptionPane.showMessageDialog(new JFrame(), message, title, JOptionPane.ERROR_MESSAGE);
     }
 }

@@ -1,11 +1,6 @@
 package jte2.engine.sdk.leveleditor;
 
 
-import jte2.engine.sdk.leveleditor.dashboard.CommonsArgsProvider;
-import jte2.engine.sdk.leveleditor.dashboard.args.handler.ArgsHandlerService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.joml.Vector3f;
 import jte2.engine.LegacyApp;
 import jte2.engine.sdk.leveleditor.dashboard.AWTConsole;
 import jte2.engine.sdk.leveleditor.dashboard.EditorCamera;
@@ -23,10 +18,12 @@ import jte2.engine.twilight.networking.ConnectionRefusedException;
 import jte2.engine.twilight.spatials.Box;
 import jte2.engine.twilight.spatials.Light;
 import jte2.engine.twilight.spatials.Spatial;
-import jte2.engine.twilight.system.AppSettings;
 import jte2.engine.twilight.system.NativeContext;
 import jte2.engine.twilight.system.context.opengl.lwjgl.LegacyLwjglContext;
 import jte2.engine.twilight.viewport.Node;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.joml.Vector3f;
 
 @NativeContext(context = LegacyLwjglContext.class)
 public class Editor extends LegacyApp {
@@ -44,6 +41,7 @@ public class Editor extends LegacyApp {
 
     public Editor(){
         console = new AWTConsole();
+        Thread.currentThread().setName("JTEditorThread");
     }
 
     @Override
@@ -64,7 +62,9 @@ public class Editor extends LegacyApp {
         spatial.setScale(25);
         spatial.getMaterial().setTexture(getAssetsManager().loadTexture("pob_vafor_em_epica.png"));
         spatial.getMaterial().setColour(Colour.RED);
-        this.viewPort.detachScene(rootNode);
+        viewPort.detachScene(rootNode);
+
+        updateCheck();
 
         getSound().playBackground(0.009f, 1f, "res/music/ambient/void.wav");
     }
@@ -136,14 +136,13 @@ public class Editor extends LegacyApp {
         return VERSION_NUMBER;
     }
 
-    public static void main(String[] args) {
-        Editor editor = new Editor();
+    public void updateCheck(){
         UpdateData data;
         try {
-            data = editor.updateManager.checkLatestVersion();
+            data = updateManager.checkLatestVersion();
             if(data.getVersionNumber() > Editor.getVersionNumber()){
                 logger.info("New update found [{}]", data.getName());
-                editor.updateManager.updateVersion(data.getVersion());
+                updateManager.updateVersion(data.getVersion());
                 logger.info("Restarting editor...");
                 System.exit(15);
             }else {
@@ -151,7 +150,11 @@ public class Editor extends LegacyApp {
             }
         } catch (ConnectionRefusedException | UpdateException e) {
             logger.warn("Cannot check updates", e);
-        };
+        }
+    }
+
+    public static void main(String[] args) {
+        Editor editor = new Editor();
         editor.start();
         editor.console.startDashboard();
     }

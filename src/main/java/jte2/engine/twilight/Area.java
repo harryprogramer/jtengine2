@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import jte2.engine.twilight.serialization.JTESerializable;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public final class Area implements Serializable, JTESerializable  {
     private int width, height;
@@ -62,6 +63,19 @@ public final class Area implements Serializable, JTESerializable  {
     public void setArea(@NotNull Area area){
         this.width = area.width;
         this.height = area.height;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Area area = (Area) o;
+        return width == area.width && height == area.height;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(width, height);
     }
 
     @Override

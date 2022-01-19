@@ -224,11 +224,27 @@
     </repository>
     <repository>
       <id>maven-eclipse-repo</id>
-      <url>http://maven-eclipse.github.io/maven</url>
+      <url>https://maven-eclipse.github.io/maven</url>
+    </repository>
+    <repository>
+      <id>mulesoft</id>
+      <url>https://repository.mulesoft.org/nexus/content/repositories/public</url>
     </repository>
     <repository>
       <id>uqbar</id>
       <url>https://maven.uqbar.org/releases/</url>
+    </repository>
+    <repository>
+      <id>jitpack</id>
+      <url>https://jitpack.io</url>
+    </repository>
+    <repository>
+      <id>dcm4che</id>
+      <url>https://www.dcm4che.org/maven2</url>
+    </repository>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/caprica/vlcj</url>
     </repository>
   </repositories>
   <dependencies>
@@ -241,7 +257,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>5.8.1</version>
+      <version>5.8.2</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>

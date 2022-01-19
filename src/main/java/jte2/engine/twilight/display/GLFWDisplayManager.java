@@ -1,5 +1,6 @@
 package jte2.engine.twilight.display;
 
+import jte2.engine.twilight.system.JTESystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;

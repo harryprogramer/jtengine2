@@ -1,6 +1,7 @@
 package jte2.engine.twilight.audio.jmf;
 
 import io.swagger.models.auth.In;
+import jte2.engine.twilight.errors.AssetsNotFoundException;
 import jte2.engine.twilight.utils.SafeArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -117,7 +118,7 @@ public final class SoundManager implements SoundMaster {
             try{
                 soundThread = new SoundThread(volume, volume, file, new BufferedInputStream(new FileInputStream("./res/music/" + file)), id);
             }catch (FileNotFoundException ignored){
-                throw new RuntimeException(String.format("File [%s] couldn't not be found", file));
+                throw new AssetsNotFoundException(String.format("Cannot find file %s, is the resource folder in the same folder as the program?", file));
             }
         }
         clips.put(id, soundThread);

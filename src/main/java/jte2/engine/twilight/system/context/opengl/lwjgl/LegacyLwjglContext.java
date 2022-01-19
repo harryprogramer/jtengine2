@@ -2,10 +2,11 @@ package jte2.engine.twilight.system.context.opengl.lwjgl;
 
 import jte2.engine.twilight.Area;
 import jte2.engine.twilight.audio.jmf.SoundManager;
+import jte2.engine.twilight.system.JTESystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryUtil;
 import jte2.engine.twilight.assets.AssetManager;
 import jte2.engine.twilight.assets.DesktopAssetManager;
@@ -39,6 +40,7 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
     private final GL glContext = new LwjglGL();
     private final AppSettings appSettings;
     private final SoundMaster soundMaster;
+    private GLCapabilities capabilities;
     private final Renderer renderer;
     private final Input input;
 
@@ -78,7 +80,7 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
 
     @Override
     public EventManager getEventManager() {
-        return new JTEEventManager(); // TODO best event manager
+        return new JTEEventManager();
     }
 
     @Override
@@ -103,11 +105,11 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
     @Override
     public void update() {
         updateDisplay();
-
     }
 
     @Override
     public void init() {
+
         if(!glContext.isGL2Support()){
             logger.fatal("OpenGL 2.0+ is required to start");
             throw new UnsupportedOperationException("OpenGL 2.0+ unsupported");
@@ -122,7 +124,7 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
             logger.debug("OpenGL 3.0+ support available");
         }
 
-        GLFWErrorCallback.createPrint(System.err).set();
+        glfwSetErrorCallback(new GLFWErrorCallback(logger));
 
         Area area = appSettings.getParam(AppSettings.SettingsType.DISPLAY_RESOLUTION, Area.class);
 
@@ -132,11 +134,20 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
 
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_RED_BITS, 8);
+        glfwWindowHint(GLFW_GREEN_BITS, 8);
+        glfwWindowHint(GLFW_BLUE_BITS, 8);
+        glfwWindowHint(GLFW_ALPHA_BITS, 8);
+        glfwWindowHint(GLFW_DEPTH_BITS, 0);
+        glfwWindowHint(GLFW_STENCIL_BITS, 8);
 
 
         createCapacities();
 
-        if(!glContext.isGL4Support()){
+        if(!glContext.isGL4Support() || !capabilities.OpenGL40){
             logger.warn("OpenGL 4.0+ is not supported, some features may not be available");
         }else {
             logger.debug("OpenGL 4.0+ support available");
@@ -148,7 +159,7 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
                 String sourceMsg, typeMsg;
                 switch (source){
                     case GL4.GL_DEBUG_SOURCE_API ->             sourceMsg = "SOURCE";
-                    case GL4.GL_DEBUG_SOURCE_WINDOW_SYSTEM ->   sourceMsg = "WINDOW SYSTEM";
+                    case GL4.GL_DEBUG_SOURCE_WINDOW_SYSTEM ->   sourceMsg = "WINDOW";
                     case GL4.GL_DEBUG_SOURCE_SHADER_COMPILER -> sourceMsg = "SHADER";
                     case GL4.GL_DEBUG_SOURCE_THIRD_PARTY ->     sourceMsg = "EXTERNAL";
                     case GL4.GL_DEBUG_SOURCE_APPLICATION ->     sourceMsg = "APPLICATION";
@@ -166,8 +177,22 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
                     case GL4.GL_DEBUG_TYPE_MARKER ->                typeMsg = "MARKER";
                     default -> typeMsg = "UNKNOWN";
                 }
+                String logMsg = String.format("OpenGL [%s] [%s] [%d]: %s", typeMsg ,sourceMsg ,id, msg);
 
-                logger.warn(String.format("OpenGL %s [%s] [%d]: %s", typeMsg ,sourceMsg ,id, msg));
+                if(type == GL4.GL_DEBUG_TYPE_ERROR){
+                    logger.error(logMsg);
+                }else if(type == GL4.GL_DEBUG_TYPE_MARKER ||
+                        type == GL4.GL_DEBUG_TYPE_PERFORMANCE ||
+                        type == GL4.GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR ||
+                        type == GL4.GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR ||
+                        type == GL4.GL_DEBUG_TYPE_PORTABILITY) {
+                    logger.warn(logMsg);
+                }else{
+                    logger.info(logMsg);
+                }
+
+
+
             }, MemoryUtil.NULL);
         }
     }
@@ -175,7 +200,7 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
     @Override
     public void destroy() {
         glfwTerminate();
-        GLFWErrorCallback callback = glfwSetErrorCallback(null);
+        org.lwjgl.glfw.GLFWErrorCallback callback = glfwSetErrorCallback(null);
         if(callback != null){
             callback.free();
         }
@@ -183,7 +208,18 @@ public class LegacyLwjglContext extends GLFWDisplay implements JTEContext {
 
     private void createCapacities() {
         glfwMakeContextCurrent(getWindow());
-        org.lwjgl.opengl.GL.createCapabilities();
+        capabilities = org.lwjgl.opengl.GL.createCapabilities();
+        if(!capabilities.OpenGL33){
+            JTESystem.showErrorDialog("OpenGL Version Conflict", "Your graphics cars does not support OpenGL 4.0+.\n" +
+                    "Version 3.3 is required for the engine to run normally.\n" +
+                    "Sad news, this program will not run on your graphics card.\n" +
+                    "If you think this is an error try restarting the program or computer.\n");
+            System.exit(-1);
+        }
+        if(!capabilities.OpenGL40){
+           JTESystem.showErrorDialog("OpenGL Version Conflict", "Your graphics cars does not support OpenGL 4.0+.\n" +
+                   "Version 4.0 is recommended but not required, minor problems may occur and some features may not be available.");
+       }
     }
 
     @SuppressWarnings("unchecked")

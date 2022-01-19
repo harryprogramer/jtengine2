@@ -102,6 +102,11 @@ public class DesktopAssetManager implements AssetManager {
     }
 
     @Override
+    public Texture loadTexture3D() {
+        return null;
+    }
+
+    @Override
     public Spatial loadModel(String filename) {
         Mesh mesh = OBJFileLoader.loadOBJMesh(filename);
         return new Model(mesh);

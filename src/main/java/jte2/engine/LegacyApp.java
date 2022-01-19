@@ -42,9 +42,9 @@ import static jte2.engine.twilight.utils.Validation.checkNull;
 
 public abstract class LegacyApp implements Application {
     private final static PlatformEnum[] supportedPlatform = {PlatformEnum.WINDOWS, PlatformEnum.LINUX, PlatformEnum.MACOS};
+    private static final AtomicBoolean isInit = new AtomicBoolean(false);
     private final static Logger logger = LogManager.getLogger(LegacyApp.class);
     private final Hardware hardware = JTESystem.createBestHardware();
-    private static final AtomicBoolean isInit = new AtomicBoolean(false);
     private ShaderHandle shader = new UnshadedShader();
     public final Node2D guiNode = new Node2D();
     public final Node rootNode = new Node();
@@ -299,26 +299,14 @@ public abstract class LegacyApp implements Application {
                 }
 
             }
-
-            logger.debug("Setting ANSI console out OutputStream [" + AnsiConsole.out().toString() + "]" );
-            logger.debug("Setting ANSI console err OutputStream [" + AnsiConsole.err().toString() + "]" );
             System.setOut(AnsiConsole.out());
             System.setErr(AnsiConsole.err());
 
-            logger.debug("Creating GLFW error callback");
-            GLFWErrorCallback.createPrint(System.err).set();
-
             //System.setProperty("log4j2.contextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");
 
-            glfwSetErrorCallback((error1, description) -> {
-                logger.error("GLFW Error [" + error1 + "]: " + description);
-            });
-
-
-            logger.debug("Setting stream proxy JTE debug console");
             TEngineDebugger.setPrintProxyDebugger(DebugConsole.getConsole());
 
-            logger.debug("Starting Twilight Runtime Service");
+            logger.debug("Starting runtime service");
             TwilightRuntimeService.init();
 
             if(isInit.compareAndSet(false, true)) {

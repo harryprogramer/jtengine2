@@ -265,7 +265,7 @@ public abstract class TwilightApp extends GLFWDisplay {
         logger.info("Initializing Twilight " + getVersion());
 
         glfwSetErrorCallback((error1, description) -> {
-            logger.error("GLFW Error [" + error1 + "]: " + description);
+            logger.error("[GLFW]: [" + error1 + "]: " + description);
         });
 
         boolean isSupported = false;

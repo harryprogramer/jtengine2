@@ -2,6 +2,7 @@ package jte2.engine.twilight.texture;
 
 import java.nio.ByteBuffer;
 
+@Deprecated
 public class Texture {
     private final PixelFormat pixelFormat;
     private final ByteBuffer buffer;

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import jte2.engine.twilight.audio.SoundMaster;
 import jte2.engine.twilight.audio.jmf.SoundManager;
 import jte2.engine.twilight.input.glfw.GLFWInput;
+import org.lwjgl.assimp.Assimp;
 
 import static jte2.engine.twilight.utils.Validation.*;
 
@@ -25,7 +26,8 @@ public final class AppSettings {
         SOUND_RENDERER("sound_renderer_context"),
         INPUT_CONTEXT("input_context"),
         DISPLAY_RESOLUTION("display_res"),
-        AUTO_FOCUS("auto_focus")
+        AUTO_FOCUS("auto_focus"),
+        ASYNC_INIT("")
         ;
 
         private final String name;
