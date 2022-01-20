@@ -1,16 +1,28 @@
 package jte2.engine.twilight.texture;
 
 import jte2.engine.twilight.Area;
+import jte2.engine.twilight.errors.NotImplementedException;
+import jte2.engine.twilight.errors.TextureDecoderException;
 import jte2.engine.twilight.utils.Validation;
+import net.sf.image4j.codec.ico.ICODecoder;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.swt.widgets.IME;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Iterator;
+import java.util.List;
 
 public class Picture {
     private final static Logger logger = LogManager.getLogger(Picture.class);
@@ -18,6 +30,14 @@ public class Picture {
     private BufferedImage image;
     private PixelFormat format;
     private Area resolution;
+
+    public enum ImageFormat {
+        JPEG,
+        ICO,
+        PNG,
+        JPG,
+        BMP
+    }
 
     public Picture(BufferedImage buffer, PixelFormat format){
         this.resolution = new Area(buffer.getWidth(), buffer.getHeight());
@@ -27,24 +47,85 @@ public class Picture {
     }
 
     public Picture(String filename){
-        Validation.checkNull(filename);
-        loadPicture(filename, PixelFormat.RGBA);
+        this(filename, PixelFormat.RGBA);
     }
 
     public Picture(String filename, PixelFormat format){
         Validation.checkNull(filename);
         loadPicture(filename, format);
+        if(image == null) {
+            throw new TextureDecoderException("cannot read picture [" + filename + "], with " + format.name());
+        }
+        this.resolution = new Area(image.getWidth(), image.getHeight());
     }
 
-    public void loadPicture(String filename, PixelFormat format){
+    private ImageFormat resolveFormat(Iterator<ImageReader> iter, String filename){
+        String imageFormat = null;
         try {
-            BufferedImage image = ImageIO.read(new File("res/texture/" + filename));
+            imageFormat = iter.next().getFormatName().toUpperCase();
+        }catch (Exception e){
+            logger.info("No metadata was found in image [{}], a primitive method will be used.", filename);
+        }
+        if(imageFormat == null){
+            imageFormat = FilenameUtils.getExtension(filename).toUpperCase();
+        }
+        ImageFormat format;
+        switch (imageFormat){
+            case "PNG" -> format = ImageFormat.PNG;
+            case "ICO" -> format = ImageFormat.ICO;
+            case "JPEG" -> format = ImageFormat.JPEG;
+            case "JPG" -> format = ImageFormat.JPG;
+            case "BMP" -> format = ImageFormat.BMP;
+            default -> throw new TextureDecoderException("unsupported format: " + imageFormat);
+        }
+        return format;
+
+    }
+
+    @Contract(pure = true)
+    private BufferedImage loadByFormat(@NotNull ImageFormat format, File image) throws IOException {
+        switch (format){
+            case JPEG, BMP, PNG -> {
+                return ImageIO.read(image);
+            }
+
+            case JPG -> {
+                throw NotImplementedException.NOT_IMPLEMENTED;
+            }
+
+            case ICO -> {
+                List<BufferedImage> icos = ICODecoder.read(image);
+                return icos.get(icos.size() - 1);
+            }
+
+            default -> throw new TextureDecoderException("no supported format: " + format.name());
+        }
+    }
+
+    private void loadPicture(String filename, PixelFormat format){
+        File file = new File("res/texture/" + filename);
+        if(!file.exists()){
+            file = new File(filename);
+            if(!file.exists()){
+                logger.error("Cannot find image (texture) [{}] at {}", filename, System.getProperty("user.dir"));
+                throw new TextureDecoderException("cannot find picture " + filename);
+            }
+        }
+        try {
+            ImageInputStream iis = ImageIO.createImageInputStream(file);
+            Iterator<ImageReader> iter = ImageIO.getImageReaders(iis);
+            ImageFormat imageFormat = resolveFormat(iter, file.getName());
+            logger.info("Resolved file format for [{}] is {}", file.getName(), format);
+            BufferedImage image = loadByFormat(imageFormat, file);
+            logger.info("Decoding image [{}] with format [{}], metadata: {}", file.getName(), format.name(), iter.hasNext() ? iter : null);
             this.resolution = new Area(image.getWidth(), image.getHeight());
             this.buffer = convertImageData(image, format);
             this.format = format;
             this.image = image;
         }catch (Exception e){
+            e.printStackTrace();
             logger.warn("Cannot decode image [{}], {}", filename, e.getMessage());
+            throw new TextureDecoderException(e);
         }
 
     }

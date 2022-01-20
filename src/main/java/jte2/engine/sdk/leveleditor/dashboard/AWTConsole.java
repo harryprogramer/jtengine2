@@ -1,5 +1,6 @@
 package jte2.engine.sdk.leveleditor.dashboard;
 
+import jte2.engine.sdk.leveleditor.Version;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +24,7 @@ public class AWTConsole extends JFrame implements EditorDashboard, ConsoleSessio
     private static final Logger logger = LogManager.getLogger(AWTConsole.class);
     @Getter
     private final ArgsHandlerService argsHandlerService;
-    private final static String VERSION = "1.2";
+    private final static String VERSION = Version.EDITOR_DASHBOARD_VERSION;
     private final LineParser lineParser = new JTEArgumentParser();
     private final ColorPane textPane;
     private final JScrollPane scroll;

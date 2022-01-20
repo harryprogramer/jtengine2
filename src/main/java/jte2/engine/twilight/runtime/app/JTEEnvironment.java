@@ -137,7 +137,7 @@ public final class JTEEnvironment extends AbstractRuntime<Application> {
 
         renderer.init(app.getViewPort());
 
-        displayIntro();
+        //displayIntro();
 
         app.onInit();
 

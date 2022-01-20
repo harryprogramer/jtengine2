@@ -1,0 +1,37 @@
+<ChangeLog>
+  <hasContent>true</hasContent>
+  <readTime></readTime>
+  <hasRead>true</hasRead>
+  <content>
+    Zmiany w aktualizacji JTEditor 1.5: &lt;br>
+    &amp;nbsp * nowe shadery oświetleniowe &lt;br>
+    &amp;nbsp  * opcjonalna opcja włączenia muzyki w tle &lt;br>
+    &amp;nbsp  * częściowa obsługa serializacji obiektów &lt;br>
+    &amp;nbsp  * możliwość tworzenia nowych obiektów &lt;br>
+    &amp;nbsp  * możliwość dodania własnego skybox'a &lt;br>
+    &amp;nbsp  * Zmiany w konsoli JTEEditor 1.2.5: &lt;br>
+    &amp;nbsp  * aktualizacja kolorów tekstu &lt;br>
+    &amp;nbsp  * obsługa wyświetlenia pomocy do każdej &lt;br>
+    &amp;nbsp     komendy za pomocą komendy help. &lt;br>
+    &amp;nbsp &amp;nbsp  * nowe komendy: &lt;br>
+    &amp;nbsp &amp;nbsp  * bt - zmiana oświetlenia sceny &lt;br>
+    &amp;nbsp &amp;nbsp  * newmdl - opcja tworzenia nowego modelu &lt;br>
+    &amp;nbsp &amp;nbsp  * shader  - wybiera aktualny shader dla sceny &lt;br>
+
+    Zmiany w aktualizacji silnika 1.3: &lt;br>
+    &amp;nbsp  * dodano wstępną obsługę odtwarzania formatów wideo &lt;br>
+    &amp;nbsp  * nowy interfejs obsługi obrazu, zdjęć, tekstur itp. &lt;br>
+    &amp;nbsp  * wstępna obsługa mapowania wysokości i normal map &lt;br>
+    &amp;nbsp  * kolejne ułatwienia i przydatne funkcje w api silnika &lt;br>
+    &amp;nbsp  * nowa abstrakcyjna platforma do ładowania niestandartowych shaderów &lt;br>
+    &amp;nbsp  * poprawiono obsługę dźwięku &lt;br>
+    &amp;nbsp  * znacznie lepsza obsługa błedów &lt;br>
+    &amp;nbsp  * obsługa tekstur sześciennych &lt;br>
+    &amp;nbsp  * dodano obsługe kastomizacji skybox'a >br>
+    &amp;nbsp  * wiele usprawnień i naprawa bugów &lt;br>
+
+  </content>
+  <title>JTEEditor Test Changelog</title>
+  <version>1.2v</version>
+  <priority>MINOR_CHANGES</priority>
+</ChangeLog>

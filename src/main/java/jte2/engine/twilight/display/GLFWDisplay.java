@@ -1,5 +1,6 @@
 package jte2.engine.twilight.display;
 
+import jte2.engine.twilight.texture.Picture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -8,6 +9,7 @@ import org.lwjgl.BufferUtils;
 import jte2.engine.twilight.Area;
 import jte2.engine.twilight.errors.NotImplementedException;
 import jte2.engine.twilight.utils.SafeArrayList;
+import org.lwjgl.glfw.GLFWImage;
 
 import java.awt.image.BufferedImage;
 import java.nio.IntBuffer;
@@ -155,14 +157,14 @@ public class GLFWDisplay extends GLFWDisplayManager implements Display {
     }
 
     @Override
-    public void setIcon(BufferedImage bufferedImage) {
-        throw NotImplementedException.NOT_IMPLEMENTED; // TODO
+    public void setIcon(Picture picture) {
+        GLFWImage.Buffer imagebf = GLFWImage.malloc(1);
+        GLFWImage image = GLFWImage.malloc();
+        image.set(picture.getWidth(), picture.getHeight(), picture.getImageBuffer());
+        imagebf.put(0, image);
+        glfwSetWindowIcon(getWindow(), imagebf);
     }
 
-    @Override
-    public void setIcon(String file) {
-        throw NotImplementedException.NOT_IMPLEMENTED; // TODO
-    }
 
     @Override
     public void sendAttention() {

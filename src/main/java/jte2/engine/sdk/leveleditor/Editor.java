@@ -21,19 +21,23 @@ import jte2.engine.twilight.spatials.Light;
 import jte2.engine.twilight.spatials.Spatial;
 import jte2.engine.twilight.system.NativeContext;
 import jte2.engine.twilight.system.context.opengl.lwjgl.LegacyLwjglContext;
+import jte2.engine.twilight.texture.Picture;
 import jte2.engine.twilight.texture.Texture;
 import jte2.engine.twilight.viewport.Node;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Vector3f;
 
+import java.io.IOException;
+
 @NativeContext(context = LegacyLwjglContext.class)
 public class Editor extends LegacyApp {
     private final static Logger logger = LogManager.getLogger(Editor.class);
+    private final ChangelogManager changelogManager = new ChangelogManager();
     private final SpatialService spatialService = new SpatialService();
     private final UpdateManager updateManager = new HTTPUpdate(this);
-    private final static String VERSION = "JTEEditor 1.3.4";
-    private final static int VERSION_NUMBER = 134;
+    private final static String VERSION = Version.EDITOR_VERSION;
+    private final static int VERSION_NUMBER = Version.EDITOR_VERSION_NUMBER;
     private final AWTConsole console;
     private Node currentScene;
     private EditorCamera camera;
@@ -50,7 +54,20 @@ public class Editor extends LegacyApp {
     protected void init() {
         initArgs();
 
-        getDisplay().setTitle("JTEEditor Preview 1.41");
+        getDisplay().setTitle("JTEEditor " + VERSION);
+        logger.info("Reading the changelog for further information...");
+        try {
+            ChangelogManager.ChangeLog changeLog = changelogManager.getChangeLog();
+            if(changeLog == null){
+                logger.warn("No changelog found in path [" + System.getProperty("user.dir"));
+            }else {
+                if(!changeLog.hasRead) {
+                    ChangelogForm.showChangelogForm(changeLog, changelogManager);
+                }
+            }
+        } catch (IOException e) {
+            logger.error("Cannot read changelog" + e);
+        }
 
         camera = new EditorCamera(this);
         light = new Light(camera.getTransformation(), Colour.WHITE, new Vector3f(0.1f, 0.1f, 0.1f));
@@ -70,6 +87,10 @@ public class Editor extends LegacyApp {
 
         viewPort.attachSkybox(new Skybox(texture));
         updateCheck();
+
+        Picture picture = new Picture("editor.ico");
+        getDisplay().setIcon(picture);
+
 
         getSound().playBackground(0.009f, 1f, "res/music/ambient/void.wav");
     }
@@ -102,8 +123,8 @@ public class Editor extends LegacyApp {
         }
 
         Vector3f camera = getViewPort().getCamera().getTransformation();
-        getDisplay().setTitle(String.format("JTEEditor Preview 1.2 | FPS: %d | X: %.0f | Y: %.0f | Z: %.0f | LOOKING AT: %f",
-                getFPS(), camera.x, camera.y, camera.z,
+        getDisplay().setTitle(String.format("JTEEditor %s | FPS: %d | X: %.0f | Y: %.0f | Z: %.0f | LOOKING AT: %f",
+                VERSION, getFPS(), camera.x, camera.y, camera.z,
                 getViewPort().getCamera().getRotation().y));
 
     }

@@ -248,23 +248,11 @@ public final class GLRenderer implements Renderer {
                             }
                             texture2D.setID(id);
                         }
-                    }else if(spatial.getMaterial().getTexture() instanceof Texture3D texture3D){
-                        ByteBuffer[] buffers = new ByteBuffer[5];
-                        for(int l = 0; i < 5; i++){
-                            buffers[l] = texture3D.getTextures()[l].getImageBuffer();
-                        }
-                        int id = textureManager.load3DTexture(buffers, texture3D.getTextures()[0].getWidth(),
-                                texture3D.getTextures()[0].getHeight(),
-                                texture3D.getPixelFormat());
-
-                        if(id == 0 || id == -1){
-                            logger.error("Cannot load texture [{}] to OpenGL memory, id is incorrect", texture3D);
-                        }
-
-                        texture3D.setID(id);
+                    }else if(spatial.getMaterial().getTexture() instanceof Texture3D){
+                        throw new IllegalStateException("3d texture in 2d universe");
 
                     }else {
-                        throw new TextureDecoderException("unknown texture instance -type");
+                        throw new TextureDecoderException("unknown texture");
                     }
                 }
 
@@ -461,7 +449,18 @@ public final class GLRenderer implements Renderer {
             List<Spatial2D> guis = node2D.getChildren();
             for (Spatial2D gui : guis) {
                 gl.glActiveTexture(GL_TEXTURE0);
-                gl.glBindTexture(GL_TEXTURE_2D, gui.getMaterial().getID());
+                if(gui.getMaterial().getTexture() != null){
+                    if(gui.getMaterial().getTexture().getID() == -1 || gui.getMaterial().getTexture().getID() == 0){
+                        return;
+                    }
+                    gl.glBindTexture(GL_TEXTURE_2D, gui.getMaterial().getTexture().getID());
+                }else {
+                    if (gui.getMaterial().getID() != 0 || gui.getMaterial().getID() != -1) {
+                        gl.glBindTexture(GL_TEXTURE_2D, gui.getMaterial().getID());
+                    }else {
+                        return;
+                    }
+                }
                 Matrix4f matrix = Maths.createTransformationMatrix(gui.getTransformation(), gui.getScale());
                 guiShader.loadTransformation(matrix);
                 gl.glDrawArrays(GL_TRIANGLE_STRIP, 0, quadVAO.getID());

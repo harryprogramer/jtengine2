@@ -1,5 +1,6 @@
 package jte2.engine.twilight.display;
 
+import jte2.engine.twilight.texture.Picture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import jte2.engine.twilight.Area;
@@ -37,9 +38,7 @@ public interface Display {
 
     Area getLocation();
 
-    void setIcon(BufferedImage bufferedImage);
-
-    void setIcon(String file);
+    void setIcon(Picture image);
 
     void sendAttention();
 
