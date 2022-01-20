@@ -1,0 +1,26 @@
+Zmiany w aktualizacji JTEditor 1.5:
+* nowe shadery oświetleniowe
+* opcjonalna opcja włączenia muzyki w tle
+* częściowa obsługa serializacji obiektów
+* możliwość tworzenia nowych obiektów
+* możliwość dodania własnego skybox'a
+* Zmiany w konsoli JTEEditor 1.2.5:
+	* aktualizacja kolorów tekstu
+	* obsługa wyświetlenia pomocy do każdej
+	  komendy za pomocą komendy help.
+	* nowe komendy:
+		* bt - zmiana oświetlenia sceny
+		* newmdl - opcja tworzenia nowego modelu
+		* shader  - wybiera aktualny shader dla sceny
+
+Zmiany w aktualizacji silnika 1.3:
+* dodano wstępną obsługę odtwarzania formatów wideo
+* nowy interfejs obsługi obrazu, zdjęć, tekstur itp.
+* wstępna obsługa mapowania wysokości i normal map
+* kolejne ułatwienia i przydatne funkcje w api silnika
+* nowa abstrakcyjna platforma do ładowania niestandartowych shaderów
+* poprawiono obsługę dźwięku
+* znacznie lepsza obsługa błedów
+* obsługa tekstur sześciennych
+* dodano obsługe kastomizacji skybox'a
+* wiele usprawnień i naprawa bugów
