@@ -3,10 +3,14 @@ package jte2.engine.twilight.texture;
 import jte2.engine.twilight.Area;
 import jte2.engine.twilight.errors.TextureDecoderException;
 import jte2.engine.twilight.utils.Validation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.common.value.qual.ArrayLenRange;
 import org.jetbrains.annotations.NotNull;
 
 public class Texture3D extends Texture {
+    private final static Logger logger = LogManager.getLogger(Texture3D.class);
+
     private final Picture[] cubeTextures;
 
     public enum Face {
@@ -18,7 +22,7 @@ public class Texture3D extends Texture {
         DOWN
     }
 
-    public Texture3D(PixelFormat pixelFormat, int width, int height, Picture @ArrayLenRange(from = 0, to = 5) @NotNull [] pictures) {
+    public Texture3D(PixelFormat pixelFormat, int width, int height, Picture @NotNull [] pictures) {
         super(pixelFormat, width, height);
         if(pictures.length != 6){
             throw new IllegalStateException("incorrect pictures array");
@@ -30,14 +34,19 @@ public class Texture3D extends Texture {
 
     private static void validatePictures(Picture @NotNull [] pictures){
         Area resolution = pictures[0].getResolution();
-        for(int i = 1; i < 5; i++){
-            if(!pictures[i].getResolution().equals(resolution)){
-                throw new TextureDecoderException("cube texture must have the same resolution in all pictures");
+        for(int i = 1; i < 6; i++){
+            if(pictures[i] == null){
+                logger.error("Provided 3D Texture has null picture buffer at index [{}]", i);
+                throw new NullPointerException("texture at index [" + i + "] is null");
+            }else {
+                if (!pictures[i].getResolution().equals(resolution)) {
+                    throw new TextureDecoderException("cube texture must have the same resolution in all pictures");
+                }
             }
         }
     }
 
-    public @ArrayLenRange(from = 0, to = 5) Picture[] getTextures(){
+    public Picture[] getTextures(){
         return cubeTextures;
     }
 

@@ -1,7 +1,6 @@
 package jte2.engine.twilight.texture;
 
 import jte2.engine.twilight.Area;
-import jte2.engine.twilight.errors.TextureDecoderException;
 import jte2.engine.twilight.utils.Validation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,13 +9,8 @@ import org.lwjgl.BufferUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 public class Picture {
     private final static Logger logger = LogManager.getLogger(Picture.class);

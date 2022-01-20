@@ -40,8 +40,8 @@ public class HTTPUpdate implements UpdateManager {
     private final static int UPDATE_UNZIP_FAULT =           0xF006;
     private final static int UPDATE_FEEDBACK_FAULT =        0xF007;
     private final static int GENERAL_IO_FAULT =             0xF008;
-    private final static String VERSION_ENDPOINT_HOST = "gateway.lagpixel.pl";
-    private final static String VERSION_ENDPOINT = String.format("http://%s/jte/editor", VERSION_ENDPOINT_HOST);
+    private final static String VERSION_ENDPOINT_HOST = "lagpixel.pl";
+    private final static String VERSION_ENDPOINT = String.format("https://%s/jte/editor", VERSION_ENDPOINT_HOST);
     private final static Logger logger = LogManager.getLogger(HTTPUpdate.class);
     private final Editor editor;
 

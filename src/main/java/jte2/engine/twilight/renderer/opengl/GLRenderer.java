@@ -548,8 +548,14 @@ public final class GLRenderer implements Renderer {
                 logger.info("Loading skybox texture for [{}]", skybox.getMaterial().getTexture());
                 Texture3D texture3D = (Texture3D) skybox.getMaterial().getTexture();
                 ByteBuffer[] buffers = new ByteBuffer[6];
-                for(int i = 0; i < 5; i++){
-                    buffers[i] = texture3D.getTextures()[i].getImageBuffer();
+                for(int i = 0; i < 6; i++){
+                    Picture imageBuffer = texture3D.getTextures()[i];
+                    if(imageBuffer == null){
+                        logger.error("Skybox texture buffer [{}] on index [{}] is null", texture3D, i);
+                        viewPort.attachSkybox(null);
+                        break;
+                    }
+                    buffers[i] = imageBuffer.getImageBuffer();
                 }
                 Picture picture = texture3D.getTextures()[0];
                 int id = textureManager.load3DTexture(buffers, picture.getWidth(), picture.getHeight(), picture.getFormat());

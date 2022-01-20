@@ -124,7 +124,7 @@ public class DesktopAssetManager implements AssetManager {
             throw new IllegalStateException("invalid filenames array length, excepted 5 but got " + filename.length);
         }
         Picture[] textures = new Picture[6];
-        for(int i = 0; i < 5; i++){
+        for(int i = 0; i < 6; i++){
             try {
                 textures[i] = ((Texture2D) loadTexture(filename[i], PixelFormat.RGBA)).getTexture();
             }catch (Exception e){

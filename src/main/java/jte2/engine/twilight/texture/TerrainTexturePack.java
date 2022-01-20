@@ -3,7 +3,6 @@ package jte2.engine.twilight.texture;
 import lombok.Data;
 
 @Data
-@Deprecated
 public class TerrainTexturePack {
     private final TerrainTexture backgroundTexture;
     private final TerrainTexture rTexture;

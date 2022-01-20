@@ -31,10 +31,13 @@ public final class ViewPort {
         this("ViewPort-" + ++VIEWPORT_NAME_INDEX);
     }
 
-    public void attachSkybox(@NotNull Spatial spatial){
-        if(!(spatial.getMaterial().getTexture() instanceof Texture3D)){
-            throw new IllegalArgumentException("Texture is not 3D.");
+    public void attachSkybox(Spatial spatial){
+        if(spatial != null) {
+            if (!(spatial.getMaterial().getTexture() instanceof Texture3D)) {
+                throw new IllegalArgumentException("Texture is not 3D.");
+            }
         }
+
         this.skybox = spatial;
     }
 

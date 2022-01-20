@@ -222,7 +222,7 @@ public abstract class LegacyApp implements Application {
         logger.debug("Waiting for runtime to continue");
         while (!runtime.isReady()){
             if(isError){
-                logger.fatal("Unexpected Twilight runtime error, aborting. [" +  error + "]");
+                logger.fatal("Unexpected Twilight runtime fault, aborting launch. [" +  error + "]");
                 if(!thread.isAlive()){
                     logger.debug("Thread is alive, interrupting...");
                     thread.interrupt();

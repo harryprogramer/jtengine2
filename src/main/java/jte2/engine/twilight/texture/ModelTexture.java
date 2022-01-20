@@ -3,7 +3,6 @@ package jte2.engine.twilight.texture;
 import lombok.Getter;
 import lombok.Setter;
 
-@Deprecated
 public final class ModelTexture {
     private final int textureID;
 
